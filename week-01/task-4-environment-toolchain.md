@@ -2,59 +2,51 @@
 
 ## 1. Install
 
-- [ ] Node.js (LTS) installed
-- [ ] Git installed
-- [ ] Editor installed (VS Code / Cursor)
-- [ ] Claude Code set up in terminal (or Cursor as IDE)
+Already had these set up and working:
+- [x] Node.js LTS (v22.16.0)
+- [x] Git (v2.49.0)
+- [x] VS Code (v1.128.0)
+- [x] Claude Code (v2.1.90)
 
-## 2. Capstone Repo
+## 2. Capstone repo
 
-- [ ] GitHub repo created: `<repo-url-here>`
-- [ ] README stub added
-- [ ] LICENSE added (MIT default)
-- [ ] `.gitignore` added
-- [ ] `CLAUDE.md` (or Cursor rules file) describing stack + conventions
+- [x] Created on GitHub: https://github.com/ZAYNINFINITY/flyrank-ai-internship
+- [x] README added
+- [x] LICENSE added (MIT)
+- [x] `.gitignore` added
+- [x] `CLAUDE.md` added, describing stack and conventions for this repo
 
-Example `CLAUDE.md` starting point:
+## 3. First three commits (Conventional Commits)
 
-```markdown
-# Project Conventions
-
-## Stack
-- React + Vite
-- TypeScript
-- Tailwind CSS
-
-## Conventions
-- Components: PascalCase, one per file
-- Commits: Conventional Commits format
-- Tests: colocated with components as *.test.tsx
+```
+chore: initial repo setup with README, license, gitignore
+docs: add CLAUDE.md with stack and conventions
+feat: add week 1 onboarding deliverables
 ```
 
-## 3. First Three Commits (Conventional Commits format)
+All pushed to `main`.
 
-```bash
-git add README.md LICENSE .gitignore
-git commit -m "chore: initial repo setup with README, license, gitignore"
+## 4. AI critique of my README
 
-git add CLAUDE.md
-git commit -m "docs: add CLAUDE.md with stack and conventions"
+Claude Code needed either a Pro/Max subscription or paid API credits, which
+I don't have on the free plan, so I used Cursor instead — the brief allows
+either. Ran the critique with Cursor's included model.
 
-git commit -m "feat: scaffold initial project structure"
+**What it found:**
+- Most of the README was just empty week placeholders — accurate, but not
+  useful to anyone reading it
+- The intro repeated itself
+- No clear "start here" pointer
+- Week 1 status looked inconsistent between the root README and the week-01
+  README
+
+**What I changed:**
+Replaced the list of empty week bullets with an actual progress table
+showing status per week, and added a clear pointer to start at
+`week-01/README.md`. Committed as:
+```
+docs: replace filler week bullets with progress table per AI critique
 ```
 
-- [ ] Commit 1 done
-- [ ] Commit 2 done
-- [ ] Commit 3 done
-
-## 4. AI-Assisted README Critique
-
-- [ ] Ran: `claude "Critique my README.md and suggest one concrete improvement"`
-- [ ] Applied one improvement
-- [ ] Committed the change
-- [ ] Screenshot saved: `week-01/claude-code-terminal-screenshot.png`
-
-## Deliverable Checklist
-
-- [ ] Repo URL ready to submit
-- [ ] Screenshot of Claude Code / Cursor working in the environment
+Screenshot of Cursor doing the critique: saved from the session (chat +
+README both visible).

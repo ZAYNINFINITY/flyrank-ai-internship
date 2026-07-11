@@ -1,12 +1,21 @@
 # FlyRank AI Internship — Frontend AI Engineering
 
-Folder structure for all 8 weeks of the internship.
+Weekly deliverables and documentation for an 8-week Frontend AI Engineering
+internship at FlyRank AI — covering AI-assisted workflow practices, a
+capstone portfolio build, and hands-on frontend/full-stack tasks.
 
-- `week-01/` — Onboarding / Setup (in progress, see week-01/README.md)
-- `week-02/` — (empty, ready for next week's tasks)
-- `week-03/` — (empty)
-- `week-04/` — (empty)
-- `week-05/` — (empty)
-- `week-06/` — (empty)
-- `week-07/` — (empty)
-- `week-08/` — (empty)
+## Progress
+
+| Week | Focus | Status |
+|------|-------|--------|
+| [week-01/](week-01/) | Onboarding / Setup | Complete |
+| week-02/ | – | Not started |
+| week-03/ | – | Not started |
+| week-04/ | – | Not started |
+| week-05/ | – | Not started |
+| week-06/ | – | Not started |
+| week-07/ | – | Not started |
+| week-08/ | – | Not started |
+
+Each week folder contains task write-ups named `task-N-description.md`.
+Start with [week-01/README.md](week-01/README.md).

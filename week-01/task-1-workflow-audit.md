@@ -1,5 +1,7 @@
 # FL-01: AI Workflow Audit and Tool Setup
 
+**Week 1 · AI Fluency track**
+
 ## 1. Workflow Audit — my actual week
 
 I built this list from what I really do, not a generic list. A lot of it

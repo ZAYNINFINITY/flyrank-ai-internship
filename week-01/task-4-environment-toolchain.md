@@ -1,5 +1,7 @@
 # FE-01: Environment and AI Toolchain
 
+**Week 1 · Frontend AI Engineering track**
+
 ## 1. Install
 
 Already had these set up and working:

@@ -1,5 +1,7 @@
 # Draw the Path: Portfolio Sitemap + Toolkit
 
+**Week 1 · AI Fluency track**
+
 ## 1. My sitemap
 
 I kept this to 4 pages on purpose — every extra page is just a click

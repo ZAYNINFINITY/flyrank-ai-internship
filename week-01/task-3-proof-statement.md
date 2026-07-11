@@ -1,5 +1,7 @@
 # What Are You Proving? — My Proof Statement
 
+**Week 1 · AI Fluency track**
+
 ## The statement
 
 I build full-stack SaaS products for real businesses — POS-it is the proof,
@@ -21,8 +23,3 @@ cross-platform course project I had to rework through several failed
 approaches before landing on one that held up. It also can't show that a
 real pharmacy is running software I built. That's the part a portfolio
 proves that a resume just can't.
-
----
-*Note to self: double check "book a call" is really the CTA I want before
-posting — could also be "try the live POS-it demo" depending on how I want
-to lead.*

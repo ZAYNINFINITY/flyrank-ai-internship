@@ -24,3 +24,17 @@ Engineering internship (8 weeks), plus the capstone portfolio build.
 - Keep weekly folders self-contained — don't cross-reference internal
   client/project specifics that aren't meant to be public
 - Prioritize honest, specific documentation over generic filler
+
+## Rules learned (Week 2 — FE-03 Workflow Drill)
+
+- Forms use `react-hook-form` + `zod`, never uncontrolled inputs managed
+  by hand with `useState` per field. Enforced by test: every form
+  component must have a test asserting invalid submissions are blocked.
+- Every form input must have a real `<label htmlFor>` linked to a
+  matching `id` — placeholders are never a substitute for labels.
+  Enforced by test: `getByLabelText` must succeed for every field.
+- Check the installed major version of a validation/schema library
+  (e.g. `zod`) before writing custom error-message syntax — the
+  error-customization API changes between major versions and mismatches
+  fail silently instead of throwing. Enforced by: running the test suite
+  before committing.

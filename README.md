@@ -9,7 +9,7 @@ capstone portfolio build, and hands-on frontend/full-stack tasks.
 | Week | Focus | Status |
 |------|-------|--------|
 | [week-01/](week-01/) | Onboarding / Setup | Complete |
-| week-02/ | – | Not started |
+| [week-02/](week-02/) | Foundations — Case Studies, Prompting, Workflow Drill | Complete |
 | week-03/ | – | Not started |
 | week-04/ | – | Not started |
 | week-05/ | – | Not started |

@@ -10,7 +10,9 @@
 
 **What I did.** I built the module as a completely separate piece: its own `project-costing.db` SQLite file, kept strictly isolated from POS-it's core database and logic. If I hardcode one client's workflow into the main app, every future client-specific module becomes a mess to maintain. Isolating it means the pattern can be reused instead of rebuilt from scratch next time.
 
-**What came of it.** Still actively in development. No finished result to report yet — but the isolation is holding up: POS-it core stays untouched and stable while this module builds alongside it, which was the whole point of the architecture decision.
+**What came of it.** The P&L calculation is working end-to-end on a real completed project — a CCTV installation job with a contract value of Rs 100,000. The module correctly pulled together invoiced revenue (Rs 250,500), collected cash, purchase costs, an inventory adjustment, service costs, and expenses, and calculated a final profit of Rs 280,600 at a 112% margin. That's the isolation decision proving out in practice: real project data, real cost tracking, computed correctly, without touching POS-it's core.
+
+*Evidence: screenshot of the Projects → P&L tab for a completed project, showing the full revenue/cost breakdown and calculated profit/margin.*
 
 ---
 

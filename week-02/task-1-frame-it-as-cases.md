@@ -12,7 +12,7 @@
 
 **What came of it.** The P&L calculation is working end-to-end on a real completed project — a CCTV installation job with a contract value of Rs 100,000. The module correctly pulled together invoiced revenue (Rs 250,500), collected cash, purchase costs, an inventory adjustment, service costs, and expenses, and calculated a final profit of Rs 280,600 at a 112% margin. That's the isolation decision proving out in practice: real project data, real cost tracking, computed correctly, without touching POS-it's core.
 
-*Evidence: screenshot of the Projects → P&L tab for a completed project, showing the full revenue/cost breakdown and calculated profit/margin.*
+![Project Costing P&L view showing a completed project's revenue, cost breakdown, profit, and margin](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-02/project-costing-pnl-evidence.png?raw=true)
 
 ---
 

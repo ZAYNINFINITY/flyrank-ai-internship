@@ -4,7 +4,7 @@
 
 **"A room for every project you've shipped."**
 
-This is the one that matches the thing you're actually building. The gallery metaphor isn't decorative — visitors will literally be standing in rooms on `/exhibit/[username]`, scrolling through one project per full-viewport beat. The claim names that experience directly: a *room*, not a card, not a grid, not a tile. It's calm and invitational rather than adversarial, which fits Plinth's voice (gallery spotlight, not wallpaper). It also scales — works as a platform-level claim on the landing page, and still makes emotional sense when someone's inside an exhibit looking at real work. The other two options both lose something: "Your work deserves more than a card in a grid" is punchy but slightly negs the competition, which isn't the tone here. "Open-source. One exhibit per builder. Yours starts here." tries to do three things at once and lands on none.
+This is the one that matches the thing you're actually building. The gallery metaphor isn't decorative — visitors will literally be standing in rooms on `/exhibit/[username]`, scrolling through one project per full-viewport beat. The claim names that experience directly: a *room*, not a card, not a grid. It's calm and invitational, which fits Plinth's voice.
 
 ---
 
@@ -25,7 +25,7 @@ This is the one that matches the thing you're actually building. The gallery met
 
 ## Still Need to Gather
 
-These are real gaps — not polish items, not "nice-to-haves." The build can't start without most of them.
+What's done, what's still needed. Most items are completed — the remaining blockers are real gaps that affect the exhibit page quality.
 
 ### Content Zayn Must Provide
 
@@ -49,6 +49,4 @@ These are real gaps — not polish items, not "nice-to-haves." The build can't s
 - **Extract Zayn's current site copy.** ✅ Done — pulled from `zainportfoli0.netlify.app`. Real project descriptions available for all four exhibit projects.
 - **App scaffolded and deployed.** ✅ Next.js 16, all 8 routes, build passes. Deploy to Vercel/Netlify pending.
 
----
 
-*This document is the source of truth for Plinth's content structure. Every route, every component, every piece of copy should trace back to this map. If something isn't listed here, it doesn't exist yet.*

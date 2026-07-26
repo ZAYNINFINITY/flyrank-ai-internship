@@ -1,12 +1,5 @@
 <p align="center">
-  <img src="https://internship.flyrank.ai/assets/flyrank-wordmark-onDark.svg" alt="FlyRank" width="200">
-</p>
-
-<h1 align="center">flyrank-ai-internship</h1>
-
-<p align="center">
-  Frontend AI Engineering internship at FlyRank AI.<br>
-  Self-paced. Built around real work. The work has a visible trail.
+  <img src="header.svg" alt="FlyRank AI Internship" width="800">
 </p>
 
 ---

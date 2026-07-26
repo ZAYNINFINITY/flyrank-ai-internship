@@ -10,8 +10,8 @@
 
 Plinth is an open-source platform where developers create gallery-style exhibit pages for their projects. Built with Next.js 16, React 19, Tailwind CSS v4, and TypeScript. 8 routes, responsive across 375px/768px/1280px, accessibility-first.
 
-**Live preview:** *(deploy pending — will add Vercel URL)*
-**Repo:** `week-3/app/` under the main project repo
+**Live preview:** https://plinth-cyan.vercel.app
+**Repo:** https://github.com/ZAYNINFINITY/flyrank-ai-internship (root: `week-03/app/`)
 
 ---
 

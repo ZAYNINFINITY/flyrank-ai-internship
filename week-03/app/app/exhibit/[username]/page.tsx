@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { FloorDirectory } from "@/components/primitives/floor-directory";
 import { Frame } from "@/components/primitives/frame";
@@ -28,11 +29,14 @@ export default async function ExhibitPage({ params }: PageProps) {
       <section className="flex min-h-[100dvh] flex-col justify-center px-6 py-24 sm:px-8 md:px-12">
         <div className="mx-auto w-full max-w-[640px]">
           <div className="flex items-center gap-6">
-            {/* Placeholder avatar — blocked until Zayn provides real photo */}
-            <div className="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-full border border-text/10 bg-text/5">
-              <span className="font-body text-[11px] uppercase tracking-[0.05em] text-text/30">
-                Photo
-              </span>
+            <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-full border border-text/10">
+              <Image
+                src={exhibit.avatar}
+                alt={exhibit.name}
+                fill
+                className="object-cover"
+                sizes="64px"
+              />
             </div>
             <div>
               <h1 className="font-heading text-[28px] font-medium text-text md:text-[36px]">
@@ -68,17 +72,28 @@ export default async function ExhibitPage({ params }: PageProps) {
                 className={`order-1 ${isImageLeft ? "md:order-1" : "md:order-2"}`}
               >
                 <Frame className="flex aspect-[4/3] items-center justify-center">
-                  {/* Placeholder — blocked until Zayn provides real screenshots */}
-                  <div className="flex flex-col items-center gap-3">
-                    <div className="flex h-12 w-12 items-center justify-center rounded border border-text/10">
-                      <span className="font-body text-[11px] uppercase tracking-[0.05em] text-text/30">
-                        Screenshot
+                  {project.image ? (
+                    <div className="relative h-full w-full">
+                      <Image
+                        src={project.image}
+                        alt={project.title}
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 768px) 100vw, 560px"
+                      />
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center gap-3">
+                      <div className="flex h-12 w-12 items-center justify-center rounded border border-text/10">
+                        <span className="font-body text-[11px] uppercase tracking-[0.05em] text-text/30">
+                          Screenshot
+                        </span>
+                      </div>
+                      <span className="font-body text-[12px] text-text/20">
+                        {project.title}
                       </span>
                     </div>
-                    <span className="font-body text-[12px] text-text/20">
-                      {project.title}
-                    </span>
-                  </div>
+                  )}
                 </Frame>
               </div>
 

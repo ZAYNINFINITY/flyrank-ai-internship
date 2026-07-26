@@ -1,21 +1,24 @@
-# FlyRank AI Internship — Frontend AI Engineering
+# flyrank-ai-internship
 
-Weekly deliverables and documentation for an 8-week Frontend AI Engineering
-internship at FlyRank AI — covering AI-assisted workflow practices, a
-capstone portfolio build, and hands-on frontend/full-stack tasks.
+Frontend AI Engineering internship at FlyRank AI.
+Self-paced. Built around real work. The work has a visible trail.
+
+![Plinth exhibit preview](preview.gif)
+
+**Plinth** — gallery-style exhibit pages for developers.
+Live → plinth-cyan.vercel.app
 
 ## Progress
 
 | Week | Focus | Status |
 |------|-------|--------|
-| [week-01/](week-01/) | Onboarding / Setup | Complete |
-| [week-02/](week-02/) | Foundations — Case Studies, Prompting, Workflow Drill | Complete |
-| [week-03/](week-03/) | Plinth — Capstone Skeleton, Docs, Submission Materials | Complete |
-| week-04/ | – | Not started |
-| week-05/ | – | Not started |
-| week-06/ | – | Not started |
-| week-07/ | – | Not started |
-| week-08/ | – | Not started |
+| [week-01/](week-01/) | Onboarding / Setup | Done |
+| [week-02/](week-02/) | Foundations — Case Studies, Prompting, Workflow Drill | Done |
+| [week-03/](week-03/) | Plinth — Capstone Skeleton, Docs, Submission Materials | Done |
+| week-04/ | — | — |
+| week-05/ | — | — |
+| week-06/ | — | — |
+| week-07/ | — | — |
+| week-08/ | — | — |
 
-Each week folder contains task write-ups named `task-N-description.md`.
 Start with [week-01/README.md](week-01/README.md).

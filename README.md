@@ -1,12 +1,18 @@
-# flyrank-ai-internship
+<p align="center">
+  <img src="https://internship.flyrank.ai/assets/flyrank-wordmark-onDark.svg" alt="FlyRank" width="200">
+</p>
 
-Frontend AI Engineering internship at FlyRank AI.
-Self-paced. Built around real work. The work has a visible trail.
+<h1 align="center">flyrank-ai-internship</h1>
 
-![Plinth exhibit preview](preview.gif)
+<p align="center">
+  Frontend AI Engineering internship at FlyRank AI.<br>
+  Self-paced. Built around real work. The work has a visible trail.
+</p>
+
+---
 
 **Plinth** — gallery-style exhibit pages for developers.
-Live → plinth-cyan.vercel.app
+Live → [plinth-cyan.vercel.app](https://plinth-cyan.vercel.app)
 
 ## Progress
 

@@ -10,7 +10,7 @@ capstone portfolio build, and hands-on frontend/full-stack tasks.
 |------|-------|--------|
 | [week-01/](week-01/) | Onboarding / Setup | Complete |
 | [week-02/](week-02/) | Foundations — Case Studies, Prompting, Workflow Drill | Complete |
-| week-03/ | – | Not started |
+| [week-03/](week-03/) | Plinth — Capstone Skeleton, Docs, Submission Materials | Complete |
 | week-04/ | – | Not started |
 | week-05/ | – | Not started |
 | week-06/ | – | Not started |

@@ -2,9 +2,6 @@
   <img src="https://internship.flyrank.ai/assets/flyrank-wordmark-onDark.svg" alt="FlyRank" width="180">
 </p>
 
-<p align="center">
-  <img src="header.svg" alt="flyrank-ai-internship" width="800">
-</p>
 
 ---
 

@@ -1,10 +1,11 @@
 import { createGoogle } from "@ai-sdk/google";
 import { config } from "./config";
 
-const apiKey = process.env["FLYRANK Gemini API Key"];
-
 const google = createGoogle({
-  apiKey,
+  apiKey:
+    process.env["FLYRANK Gemini API Key"] ||
+    process.env.GOOGLE_GENERATIVE_AI_API_KEY ||
+    undefined,
 });
 
 export const model = google(config.model);

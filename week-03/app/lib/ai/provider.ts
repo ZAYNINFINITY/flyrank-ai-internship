@@ -1,7 +1,8 @@
-import { createOpenAI } from "@ai-sdk/openai";
+import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 import { config } from "./config";
 
-const openrouter = createOpenAI({
+const openrouter = createOpenAICompatible({
+  name: "openrouter",
   baseURL: "https://openrouter.ai/api/v1",
   apiKey: process.env.OPENROUTER_API_KEY,
   headers: {

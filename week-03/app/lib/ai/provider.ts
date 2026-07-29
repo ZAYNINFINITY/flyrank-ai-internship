@@ -1,14 +1,7 @@
-import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
+// AI provider configuration for Plinth.
+// Currently using raw fetch to OpenRouter API (see /app/api/chat/route.ts).
+// The config below is kept as a reference for future SDK-based usage.
+
 import { config } from "./config";
 
-const openrouter = createOpenAICompatible({
-  name: "openrouter",
-  baseURL: "https://openrouter.ai/api/v1",
-  apiKey: process.env.OPENROUTER_API_KEY,
-  headers: {
-    "HTTP-Referer": "https://plinth-cyan.vercel.app",
-    "X-Title": "Plinth",
-  },
-});
-
-export const model = openrouter(config.model);
+export const model = config.model;

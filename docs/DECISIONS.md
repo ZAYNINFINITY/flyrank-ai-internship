@@ -1,0 +1,66 @@
+# Decision Log
+
+Project memory for "why," so this doesn't get re-litigated every few weeks. Each entry reflects a decision already made and repository-verified — this is a record, not a proposal.
+
+---
+
+### Why Next.js
+
+Compared against Astro+MDX and a Vite React SPA (`week-04/task-2-stack-rationale.md`). Next.js was chosen because it has server components and API routes built in, so the AI streaming layer (Milestone 4) is a file addition, not a framework fight or restructure. Astro would require bolting React on as an island for the chat interface; a Vite SPA would need a separate backend added later. Vercel deployment is zero-config for Next.js specifically.
+
+### Why AI SDK (`@ai-sdk/react` `useChat`)
+
+Chosen for FE-06 because it already understands the `uiMessageChunkSchema` streaming format and handles multi-turn message state, auto-scroll, and stop-generation semantics out of the box on the client side — avoiding hand-rolled SSE parsing in React.
+
+### Why raw `fetch` instead of an AI SDK provider package server-side
+
+`@ai-sdk/openai` validates model IDs against known OpenAI model names and rejects non-OpenAI IDs like `google/gemini-2.5-flash-lite` routed through OpenRouter. Calling OpenRouter directly via `fetch` in `app/api/chat/route.ts` sidesteps that validation while still emitting the same SSE event shape `useChat` expects (`start`, `text-start`, `text-delta`, `text-end`, `finish`, `error`).
+
+### Why provider abstraction (`lib/ai/provider.ts`, `lib/ai/config.ts`)
+
+Model name and token limits live in one file (`config.ts`) so swapping providers or models later is a one-line change, not a search-and-replace across the codebase. `provider.ts` currently just re-exports the model name (the actual call is the raw `fetch` in `route.ts`) — kept as the named seam for when a full SDK-based provider call replaces the raw fetch.
+
+### Why Google Gemini (via OpenRouter) instead of Claude directly
+
+The assignment brief suggested Claude/Anthropic, but Anthropic has no free tier and Google AI Studio's free tier has a `generate_content_free_tier_requests` limit of 0. Per FlyRank's own Q&A (2026-07-26), using Gemini instead of Claude was explicitly approved. OpenRouter was used as the access path because it exposes an OpenAI-compatible API for Gemini, which is easier to call directly than Google's native API.
+
+### Why MCP (Model Context Protocol)
+
+Chosen for FL-05 and planned for Milestone 5 (Curator Intelligence) because it standardizes tool/resource/prompt access across any AI host, rather than writing bespoke integration code per data source. Concretely: the Curator Agent will need to pull GitHub repo data, museum content (exhibits/visitors), and documentation — MCP lets all three be added as servers behind one client interface (`lib/mcp/client.ts`, planned) instead of three separate custom API integrations.
+
+### Why streaming (rather than a single blocking response)
+
+A museum "curator" experience is conversational — waiting for a full response before showing anything reads as broken/slow for a chat UI. Token-by-token streaming with a stop button matches the FE-06 assignment requirement and is also just the right UX for the eventual Curator Agent.
+
+### Why manual accessible components (Modal, Tabs, Disclosure) instead of only shadcn
+
+FE-05 required a manual implementation *and* a shadcn comparison — both exist side by side on purpose (`playground/modal.tsx` etc. vs `components/ui/dialog.tsx` etc.). Beyond satisfying the assignment, the manual versions are simpler and more directly stylable for Plinth's specific "museum" visual language (inline control over animation/backdrop/portal behavior) even though they currently lack shadcn's portal rendering, exit animation, and dynamic-content focus-trap handling — those gaps are captured as known future work in `playground/NOTES.md`, not accidental omissions.
+
+### Why the NotebookLM workflow (FL-04)
+
+NotebookLM was used as the AI-research tool because it lets sources be pinned per-notebook and queried in a repeatable, structured pipeline (Gather → Synthesize → Draft), which matches the assignment's requirement of a reusable, repeatable automation workflow rather than a one-off manual research session. The pipeline is documented so it can be re-run on any future topic (e.g., weekly engineering briefs beyond the internship).
+
+### Why the current deployment (`week-03/app` on `main`) stays unchanged going into Week 5
+
+It is the actual graded/submitted artifact for FE-05, FE-06, Three Roads, and Empty but Live — several of which were implemented specifically against this version. Changing it now would invalidate already-submitted or about-to-be-submitted evidence (screenshots, live links) tied to its current state. Week 5 builds forward on top of it (Milestone 2/3) rather than modifying what's already built.
+
+### Why architecture "remains unmerged" — status note
+
+**Repository-verified fact:** no separate architecture branch or folder was found in this repository (only one branch, `main`, exists, and `docs/architecture.md`/`docs/roadmap.md` are already committed to it).
+
+**Project Context (asserted by project owner, not independently verifiable from this repository):** a broader Plinth architecture has been planned outside the currently merged implementation, and is intentionally being brought in incrementally as future milestones land rather than merged in wholesale now. Future assistants should treat this as stated intent, not something to confirm or deny by inspecting the repo alone — and should not recommend merging or redesigning against it prematurely. See the Project Timelines section of `REPOSITORY_STATE.md` for the fuller framing.
+
+---
+
+## Do Not
+
+Project guardrails. These exist so future assistants (Claude, OpenCode, or otherwise) don't need to re-derive them by re-auditing the repo each time.
+
+- **Do not rebuild completed assignments.** FE-05, FE-06, Three Roads, Empty but Live, and FL-04/FL-05's core implementations are done — treat gaps flagged in `REPOSITORY_STATE.md` as evidence/packaging notes unless explicitly marked an implementation gap.
+- **Do not replace assignment implementations solely because the final architecture differs.** A mismatch between today's code and the long-term vision is expected at this stage — extend forward, don't rewrite backward.
+- **Do not merge or reconcile "Timeline B" into "Timeline A" prematurely.** There is currently only one branch (`main`); do not invent a merge step that isn't part of the documented incremental strategy.
+- **Do not treat `playground/` or other demo routes as production features.** They exist to satisfy assignment requirements and as a component-reuse source — not as museum-facing routes themselves.
+- **Do not regenerate accepted documentation** (`NOTES.md`, `task-*.md`, `fl-*.md`, submission files) without a specific, verified reason — these are graded/submitted artifacts.
+- **Do not change deployment strategy** (framework, hosting, branch structure) unless a specific assignment requires it.
+- **Do not remove historical assignment artifacts** (screenshots, NotebookLM docs, stack-rationale docs) without first verifying they aren't still needed for submission.
+- **Do not present unverified claims about the future architecture as repository fact.** Keep the distinction between repository-verified evidence and Project Context intact in any future edits to these docs.

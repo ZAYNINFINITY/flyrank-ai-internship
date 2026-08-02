@@ -15,7 +15,10 @@ Technical architecture for Plinth — the digital museum for developer projects.
 - **Provider abstraction:** `lib/ai/provider.ts` — single model export, one-line provider swap
 - **Prompt abstraction:** `lib/ai/prompts.ts` — system prompts separated from logic
 - **Config:** `lib/ai/config.ts` — model name, params, all AI settings
-- **Streaming:** `app/api/chat/route.ts` → `useChat` client hook
+- **Streaming:** `app/api/chat/route.ts` → `useChat` client hook (AI SDK `streamText` + `createOpenAICompatible` → OpenRouter)
+- **Tools:** `lib/ai/tools/exhibit.ts` — `exhibitLookup` tool, Zod `inputSchema`, structured `Exhibit[]` output
+- **Repository seam:** `lib/repository/index.ts` — `getExhibitRepository()`; tools depend on the `ExhibitRepository` interface only
+- **Chat UI:** `components/ai/` — reusable `ChatPanel`, `ToolStateViews` (4 tool states), `ExhibitToolResult`
 - **Provider:** Google Gemini (free tier), swappable to OpenAI/Groq/OpenRouter
 
 ## Future

@@ -16,6 +16,10 @@ Chosen for FE-06 because it already understands the `uiMessageChunkSchema` strea
 
 `@ai-sdk/openai` validates model IDs against known OpenAI model names and rejects non-OpenAI IDs like `google/gemini-2.5-flash-lite` routed through OpenRouter. Calling OpenRouter directly via `fetch` in `app/api/chat/route.ts` sidesteps that validation while still emitting the same SSE event shape `useChat` expects (`start`, `text-start`, `text-delta`, `text-end`, `finish`, `error`).
 
+### Why AI SDK `streamText` (+ `@ai-sdk/openai-compatible`) superseded the raw `fetch` route (FE-07)
+
+The raw fetch route was correct for FE-06 (no tools, just streaming). FE-07 adds **tool calls**, which need structured, schema-validated input/output — hand-rolling tool-call streaming on top of raw `fetch` would have reinvented the AI SDK. `@ai-sdk/openai-compatible` (`createOpenAICompatible({ baseURL: "https://openrouter.ai/api/v1" })`) keeps the same OpenRouter + Gemini model while avoiding `@ai-sdk/openai`'s model-ID validation that forced the raw fetch approach in the first place. `streamText` + `tool({ inputSchema })` (Zod) give: model-driven tool execution, typed `Exhibit[]` output, and the exact same SSE protocol via `toUIMessageStreamResponse()` — so the existing FE-06 client (`useChat` + `DefaultChatTransport`) works unchanged. Note the v7 rename: `maxTokens` → `maxOutputTokens`. Supersedes the "raw fetch" decision above.
+
 ### Why provider abstraction (`lib/ai/provider.ts`, `lib/ai/config.ts`)
 
 Model name and token limits live in one file (`config.ts`) so swapping providers or models later is a one-line change, not a search-and-replace across the codebase. `provider.ts` currently just re-exports the model name (the actual call is the raw `fetch` in `route.ts`) — kept as the named seam for when a full SDK-based provider call replaces the raw fetch.

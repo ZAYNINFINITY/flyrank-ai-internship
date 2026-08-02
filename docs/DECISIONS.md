@@ -54,6 +54,18 @@ It is the actual graded/submitted artifact for FE-05, FE-06, Three Roads, and Em
 
 **Project Context (asserted by project owner, not independently verifiable from this repository):** a broader Plinth architecture has been planned outside the currently merged implementation, and is intentionally being brought in incrementally as future milestones land rather than merged in wholesale now. Future assistants should treat this as stated intent, not something to confirm or deny by inspecting the repo alone — and should not recommend merging or redesigning against it prematurely. See the Project Timelines section of `REPOSITORY_STATE.md` for the fuller framing.
 
+### Why chat error handling is built on AI SDK primitives, not a custom error framework (FE-08)
+
+`useChat` already surfaces failures as a typed `error` plus `status`, and provides `regenerate()`, `clearError()`, and `stop()` as recovery surfaces. Building a bespoke error system on top would duplicate SDK state machine logic and drift from SDK behavior. So FE-08 only *classifies and renders* the SDK's error (`chat-error-banner.tsx`), and Retry/Dismiss call `regenerate()`/`clearError()` directly — genuine recovery, no fake retries or page reloads.
+
+### Why the route 500 body is now a friendly constant instead of the raw error message (FE-08)
+
+The SDK's `DefaultChatTransport` throws `new Error(await response.text())` on non-OK responses, so whatever the route puts in the 500 body becomes the client-side `error.message`. Returning the raw provider message leaked internals toward any error UI. The route now returns a stable `{ error: "The assistant couldn't respond. Please try again." }` (the client can surface it verbatim) while the real cause is `console.error`'d server-side only. The 400 body (`"No messages provided"`) is unchanged.
+
+### Why an empty-response banner was NOT added (FE-08)
+
+The SDK never commits an assistant message with zero content parts — `write()` fires only on content events (`text-start`, `tool-input-start`, …), so a no-content turn simply produces no message. A "No response" banner would be unreachable dead code, so it was removed during verification rather than shipped as fake logic.
+
 ---
 
 ## Do Not

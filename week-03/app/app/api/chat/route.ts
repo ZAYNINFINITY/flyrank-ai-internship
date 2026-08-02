@@ -41,7 +41,10 @@ export async function POST(req: Request) {
 
     return result.toUIMessageStreamResponse();
   } catch (e: unknown) {
-    const message = e instanceof Error ? e.message : String(e);
-    return Response.json({ error: message }, { status: 500 });
+    console.error("[api/chat] failed to produce a response:", e);
+    return Response.json(
+      { error: "The assistant couldn't respond. Please try again." },
+      { status: 500 },
+    );
   }
 }

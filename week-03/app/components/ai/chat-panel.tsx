@@ -5,6 +5,7 @@ import { DefaultChatTransport, isTextUIPart, isToolUIPart } from "ai";
 import { useEffect, useRef, useState } from "react";
 import { ToolStateViews, type ToolViewPart } from "./tool-state-views";
 import { ExhibitToolResult, isExhibitArray } from "./exhibit-tool-result";
+import { ChatErrorBanner } from "./chat-error-banner";
 
 function renderExhibitOutput(output: unknown) {
   if (isExhibitArray(output)) {
@@ -33,9 +34,10 @@ export function ChatPanel({
   heading?: string;
   subtitle?: string;
 }) {
-  const { messages, sendMessage, stop, status, error } = useChat({
-    transport: new DefaultChatTransport({ api: "/api/chat" }),
-  });
+  const { messages, sendMessage, stop, regenerate, clearError, status, error } =
+    useChat({
+      transport: new DefaultChatTransport({ api: "/api/chat" }),
+    });
 
   const [input, setInput] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -118,6 +120,10 @@ export function ChatPanel({
               );
             }
 
+            if (textParts.length === 0 && toolParts.length === 0) {
+              return null;
+            }
+
             return (
               <div key={message.id} className="flex justify-start">
                 <div className="max-w-[85%] space-y-3">
@@ -162,9 +168,11 @@ export function ChatPanel({
           )}
 
           {error && (
-            <div className="rounded-lg bg-red-50 px-4 py-3 font-body text-[13px] text-red-600">
-              Something went wrong. Please try again.
-            </div>
+            <ChatErrorBanner
+              error={error}
+              onRetry={() => void regenerate()}
+              onDismiss={clearError}
+            />
           )}
 
           <div ref={messagesEndRef} />

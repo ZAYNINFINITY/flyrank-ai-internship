@@ -118,6 +118,7 @@ Evidence:
   assistant message with zero content parts (`write()` only fires on content
   events), so a "No response" banner would have been unreachable dead code.
   Nothing is rendered for it; the guard against empty bubbles is kept.
+- **Known limitation:** FE-08 intentionally relies on AI SDK transport semantics. If future SDK versions change error propagation or streaming behavior, the chat error layer should be revalidated rather than extended with custom recovery logic.
 
 ---
 

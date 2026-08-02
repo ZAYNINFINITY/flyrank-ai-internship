@@ -96,6 +96,43 @@ User: "show me infrastructure exhibits"
 
 ---
 
+## Functional Verification (2026-08-02)
+
+Verified end-to-end against a running production build. No prompt changes were needed — the model used the tool on its own.
+
+### 1. Genuine tool call through `/api/chat`
+
+`POST /api/chat` with `"List the exhibits in the infrastructure collection."` produced a real model tool call:
+
+- `tool-input-start` / `tool-input-delta` → `tool-input-available` with `{"collection":"infrastructure"}`
+- `tool-output-available` with the typed `Exhibit[]` (pos-it, collaborative-workspace, museum-architecture)
+- `finishReason: "tool-calls"`
+
+Raw capture: `week-05/fe-07-sse-tool-call.txt`. The model invoked the tool in **every** test message (infrastructure, visual-design, experiments, free-text) — no prompt tuning required.
+
+### 2. All four lifecycle states rendered (DOM-verified)
+
+A 25 ms DOM watcher recorded the state sequence during live tool calls:
+
+| State | DOM marker | Result |
+|-------|-----------|--------|
+| **Input Streaming** | "Asking the museum…" pulse | ✅ caught (~50 ms — inherently transient) |
+| **Input Available** | "Searching the collection" + `collection:` chip | ✅ caught (~2.1 s) |
+| **Output Available** | exhibit card grid | ✅ caught + screenshot |
+| **Output Error** | "Museum search failed" alert card | ✅ caught + screenshot |
+
+Screenshots: `week-05/screenshots/fe-07-output-available.png`, `week-05/screenshots/fe-07-output-error.png`.
+
+The error state was verified via temporary failure injection (tool `execute` threw for one build, then fully reverted — current code has no throw and builds green). The error card renders with `role="alert"`, a recovery hint, and the SDK-safe error text "An error occurred." (the SDK genericizes tool errors — no raw error leaks to the client).
+
+### 3. Findings
+
+- **Input-streaming is genuinely transient.** Gemini streams the tool-input JSON in a single chunk, so the pulse lasts ~50 ms — correct rendering confirmed by the DOM watcher, but it cannot be screenshot at human speed. This is a provider characteristic, not a defect.
+- **No hardcoding or artificial tool calls.** Every tool call above was the model deciding to use the tool. The only temporary change was failure injection to exercise the error state, since no natural error path exists with valid data — reverted after capture.
+- **Tool reliability is model-dependent.** The free-tier model used the tool consistently in this session, but Gemini sometimes answers collection questions from memory instead of calling the tool. If that happens in production, the fix is a minimal system-prompt nudge toward tool use (Phase D Curator work), not a workaround.
+
+---
+
 ## Links
 
 - **Preview URL:** https://plinth-cyan.vercel.app/assistant

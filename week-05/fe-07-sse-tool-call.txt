@@ -1,0 +1,25 @@
+# FE-07 — Captured SSE stream for a genuine `exhibitLookup` tool call
+
+Captured 2026-08-02 from `POST /api/chat` with the message:
+`"List the exhibits in the infrastructure collection."`
+
+The model (google/gemini-2.5-flash-lite via OpenRouter) genuinely invoked the
+`exhibitLookup` tool. Full event sequence received from `toUIMessageStreamResponse()`:
+
+```
+data: {"type":"start"}
+data: {"type":"start-step"}
+data: {"type":"tool-input-start","toolCallId":"tool_exhibitLookup_LNjx3zoEcMa2XfdFvPUi","toolName":"exhibitLookup"}
+data: {"type":"tool-input-delta","toolCallId":"tool_exhibitLookup_LNjx3zoEcMa2XfdFvPUi","inputTextDelta":"{\"collection\":\"infrastructure\"}"}
+data: {"type":"tool-input-available","toolCallId":"tool_exhibitLookup_LNjx3zoEcMa2XfdFvPUi","toolName":"exhibitLookup","input":{"collection":"infrastructure"}}
+data: {"type":"tool-output-available","toolCallId":"tool_exhibitLookup_LNjx3zoEcMa2XfdFvPUi","output":[{"id":"pos-it","title":"POS-it","tagline":"Offline-first point-of-sale for pharmacies","description":"Professional offline point-of-sale system built with Electron, React, and SQLite. Real-time inventory, multi-user support, PDF invoicing, and auto-updates. Currently in production-grade development with a live pharmacy pilot.","media":[{"type":"image","src":"/images/pos-it.png","alt":"POS-it dashboard"}],"artifacts":[{"id":"pos-it-invoice","label":"Invoice template","description":"PDF invoice with auto-calculation"},{"id":"pos-it-api","label":"REST API spec","description":"Offline-first sync protocol"}],"curatorNotes":"POS-it demonstrates offline resilience - a pattern worth studying for any production-grade desktop app.","collection":"infrastructure","developer":"Zain Ul Abideen","year":"2026"},{"id":"collaborative-workspace","title":"Collaborative Workspace","tagline":"Real-time MERN collaboration platform","description":"Full-stack MERN collaboration platform with live chat via Socket.io, multi-user document editing, Kanban task boards, and OAuth 2.0 authentication. Built to handle concurrent users with real-time event broadcasting.","media":[{"type":"image","src":"/images/collab.png","alt":"Workspace board"}],"artifacts":[{"id":"collab-kanban","label":"Kanban board","description":"Drag-and-drop task management"},{"id":"collab-chat","label":"Live chat","description":"Socket.io real-time messaging"}],"curatorNotes":"This project showcases real-time architecture at the application level. The socket event model is cleanly separated from the REST layer.","collection":"infrastructure","developer":"Zain Ul Abideen","year":"2026"},{"id":"museum-architecture","title":"Museum Architecture","tagline":"Domain model for the Plinth museum","description":"The Plinth museum domain model: a pure TypeScript world with Building > Floor > Wing > Room > Surface > Anchor hierarchy. Separated from React, independent of framework, designed to be rendered by any frontend. This is the architecture behind this very exhibit.","media":[],"artifacts":[{"id":"ma-types","label":"Type system","description":"20+ domain types with no framework deps"},{"id":"ma-adapter","label":"Navigation adapter","description":"RoomId > Route mapping for Next.js"}],"curatorNotes":"This exhibit is self-referential - it occupies the very room defined by its own architecture. The renderer that displays this text is the same one you're using now.","collection":"infrastructure","developer":"Zain Ul Abideen","year":"2026"}]}
+data: {"type":"finish-step"}
+data: {"type":"finish","finishReason":"tool-calls"}
+```
+
+## What this proves
+
+- `tool-input-start` + `tool-input-delta` → the tool part enters the **input-streaming** lifecycle state.
+- `tool-input-available` → **input-available**, with the model's structured input `{"collection":"infrastructure"}`.
+- `tool-output-available` → **output-available**, with the typed `Exhibit[]` returned by `getExhibitRepository()` (3 infrastructure exhibits).
+- `finishReason: "tool-calls"` → the conversation ended on a genuine model tool call.

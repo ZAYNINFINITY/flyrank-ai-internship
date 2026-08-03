@@ -1,6 +1,6 @@
 # Repository State
 
-Last verified against repository contents: 2026-07-31.
+Last verified against repository contents: 2026-08-04.
 This document is a snapshot, not a prediction — update it as work lands, don't rewrite history in it.
 
 ---
@@ -9,7 +9,7 @@ This document is a snapshot, not a prediction — update it as work lands, don't
 
 - **Branch:** `main` (only branch present in `.git/refs/heads` at time of writing)
 - **Purpose:** Tracks weekly FlyRank AI Frontend Engineering internship deliverables (`week-01/` – `week-08/`) plus the in-progress Plinth capstone build living in `week-03/app/`
-- **Current deployment:** [plinth-cyan.vercel.app](https://plinth-cyan.vercel.app) — Next.js 16 / React 19 / Tailwind v4 app, 8 routes (entrance, explore, gallery, exhibit, dashboard, login, about, health), deployed via Vercel from `week-03/app/`
+- **Current deployment:** [plinth-cyan.vercel.app](https://plinth-cyan.vercel.app) — Next.js 16 / React 19 / Tailwind v4 app, 17 routes (entrance, explore, gallery, collection, exhibit/e/[id], exhibit/[username], assistant, dashboard, login, about, health, playground, api/chat, home, reception, icon, 404), deployed via Vercel from `week-03/app/`
 
 ### Assignments Completed (repository-verified)
 
@@ -24,6 +24,9 @@ This document is a snapshot, not a prediction — update it as work lands, don't
 | Empty but Live | Done (implementation + submission pointer `week-04/empty-but-live.md` + screenshots) |
 | FL-04 — Automation Workflow | Done (manual comparison run executed 2026-07-31 — see fl-04-automation-workflow.md § Manual Run Comparison) |
 | FL-05 — Agent Concepts & MCP | Done (screenshot filename reference fixed to the actual file on disk) |
+| FE-07 — Tool Results & Structured Output | Done (implementation + evidence: `week-05/fe-07-tool-results.md`, raw SSE capture `week-05/fe-07-sse-tool-call.txt`, 2 screenshots) |
+| FE-08 — Chat Error States & Recovery | Done (implementation + evidence: `week-05/fe-08-error-recovery.md`, 2 screenshots) |
+| Phase C — Cohesive Museum Wiring | Done (implementation + evidence: `week-05/phase-c-cohesive-wiring.md`, 7 screenshots, T1–T12 verification) |
 
 ### Known Gaps (genuine, not documentation nitpicks)
 
@@ -34,7 +37,7 @@ For each item below, the implementation is not in question — these are optiona
 3. **FE-06 (optional supporting evidence):** Implementation is complete and verified (`app/api/chat/route.ts`, `app/assistant/page.tsx`). One static screenshot (`assistant-streaming-chat.png`) is on file; an additional screenshot or GIF of the stop-mid-stream state would make the *evidence* more complete, but is not required to consider the assignment done.
 4. **Empty but Live (submission packaging only):** Resolved 2026-07-31 — explicit pointer written at `week-04/empty-but-live.md` naming the live URL (https://plinth-cyan.vercel.app/explore, verified 200) that satisfies the milestone, plus screenshot evidence (`week-04/screenshots/explore-empty-but-live.png`, `playground-components.png`).
 
-Do not rebuild any of FE-05, FE-06, FL-04's core workflow, or FL-05's MCP integration — all four are functionally complete. Do not treat items 2–4 above as reasons to reopen implementation.
+Do not rebuild any of FE-05, FE-06, FL-04's core workflow, FL-05's MCP integration, FE-07, FE-08, or Phase C — all are functionally complete. Do not treat items 2–4 above as reasons to reopen implementation.
 
 ---
 
@@ -46,14 +49,15 @@ Do not rebuild any of FE-05, FE-06, FL-04's core workflow, or FL-05's MCP integr
 - **Guidance for future assistants:** Do not recommend prematurely merging, redesigning, or "reconciling" the current implementation against an assumed future architecture. Do not conclude the future vision "does not exist" simply because it isn't represented in this repository — and do not assert specifics about it beyond what's written here or confirmed by the owner.
 - **Future milestones** (from `docs/roadmap.md`, unmodified):
   - [x] Milestone 1 — Museum Foundation (Week 3)
-  - [ ] Milestone 2 — Museum Entrance
-  - [ ] Milestone 3 — Reception
-  - [ ] Milestone 4 — AI Communication Layer *(FE-06's streaming chat is the concrete first piece of this)*
+  - [x] Milestone 2 — Museum Entrance (Week 5: home CTA + `/entrance` room)
+  - [x] Milestone 3 — Reception (Week 5: `/reception` hall + door navigation)
+  - [x] Milestone 4 — AI Communication Layer *(FE-06 streaming chat + FE-07 tool calls + FE-08 error recovery)*
   - [ ] Milestone 5 — Curator Intelligence *(FL-05's MCP research is the concrete first piece of this)*
-  - [ ] Milestone 6 — Galleries
-  - [ ] Milestone 7 — Collections
+  - [ ] Milestone 6 — Galleries *(museum exhibit rooms exist; full gallery/discovery flow pending)*
+  - [ ] Milestone 7 — Collections *(`/collection` + `?collection=` filtering exist; developer profiles pending)*
   - [ ] Milestone 8 — Discovery
   - [ ] Milestone 9 — Public Beta
+- **Long-term vision reference:** `week-05/vision-validation.md` — internal architecture & design vision (planning context only; does not change the plan or authorize refactoring). See the DECISIONS.md entry and CONTRIBUTING_AI.md § Read First.
 
 ---
 
@@ -124,9 +128,24 @@ Nothing else. No code rebuilding, no redesign, no re-implementation.
 
 ## Week 5 Starting Point
 
-Development resumes from the current state of `week-03/app/` exactly as it stands today:
+Development resumed from the current state of `week-03/app/` exactly as it stands today:
 
 - Routes, primitives, playground components, AI chat route, and AI config module are all considered stable and reusable — build on top of them, don't rewrite them.
 - Next milestone per `docs/roadmap.md` is **Milestone 2 — Museum Entrance** (landing experience, first impression, visitor context), followed by Milestone 3 (Reception).
 - No merge is pending — there is no second branch to reconcile with `main` before Week 5 begins (see Project Timelines section above).
 - Any Week 4 remaining-work items above can be closed out in parallel with Week 5 without blocking it — they are documentation/evidence tasks, not code dependencies.
+
+---
+
+## Week 5 Completion (verified 2026-08-04)
+
+Week 5 is complete and submission-ready (implementation + evidence + documentation):
+
+- **FE-07 — Tool Results & Structured Output:** `streamText` + `exhibitLookup` tool (Zod `inputSchema`, typed `Exhibit[]`), `@ai-sdk/openai-compatible` → OpenRouter. Evidence: `week-05/fe-07-tool-results.md` + `fe-07-sse-tool-call.txt` (genuine tool call capture) + 2 screenshots.
+- **FE-08 — Chat Error States & Recovery:** error classification (`chat-error-banner.tsx`), `ErrorBoundary`, SDK-native recovery (`regenerate()`/`clearError()`), friendly route 500 body. Evidence: `week-05/fe-08-error-recovery.md` + 2 screenshots.
+- **Phase C — Cohesive Museum Wiring:** home "Enter the Museum" CTA, nav Museum link, `?collection=` gallery filtering via the repository seam, exhibit ↔ long-form cross-links both directions, `/dashboard` inbound + real `/login` link. Evidence: `week-05/phase-c-cohesive-wiring.md` + 7 screenshots, T1–T12 verification.
+- **Vision document (planning only):** `week-05/vision-validation.md` records the long-term direction; it does not change the plan or authorize refactoring.
+- **Quality gates:** `npx eslint .` → 0 errors (3 pre-existing warnings); `npm run build` → green, 17 routes.
+- **Deployment:** live at [plinth-cyan.vercel.app](https://plinth-cyan.vercel.app) — home CTA, `/entrance`, `/reception`, `/gallery?collection=`, exhibit rooms, and `/assistant` all verified live.
+
+**Week 6 starting point:** build forward from the current museum (17 routes) per `docs/roadmap.md` — Milestone 5 (Curator Intelligence) is next. Do not rebuild completed Week 5 work; extend it.

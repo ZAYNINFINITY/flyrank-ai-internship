@@ -60,6 +60,10 @@ Week 5 turns the standalone Plinth rooms into a working museum with a live AI la
 - Collections: [`app/collection/page.tsx`](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-03/app/app/collection/page.tsx) + [`collection-experience.tsx`](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-03/app/app/collection/collection-experience.tsx)
 - Exhibit room: [`app/exhibit/e/[id]/page.tsx`](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-03/app/app/exhibit/e/[id]/page.tsx)
 
+### Documentation / evidence
+
+- [`week-05/task-1-museum-spatial-system.md`](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-05/task-1-museum-spatial-system.md) — architecture, how-it-works, evaluation criteria, links
+
 ### Commits
 
 - `3b295b5` — feat: add museum spatial system (entrance, reception, galleries, collections)
@@ -94,6 +98,10 @@ Week 5 turns the standalone Plinth rooms into a working museum with a live AI la
 ### Implementation files (supporting)
 
 - [`week-03/app/lib/types/exhibit.ts`](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-03/app/lib/types/exhibit.ts) — exhibit domain types shared by route + repository
+
+### Documentation / evidence
+
+- [`week-05/task-2-phase-a-ai-communication-layer.md`](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-05/task-2-phase-a-ai-communication-layer.md) — architecture, how-it-works, evaluation criteria, links
 
 ### Commits
 
@@ -230,6 +238,8 @@ This section is the **supporting documentation** for the Week 5 submission — e
 ### Documentation / evidence
 
 - [`week-05/submission-summary.md`](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-05/submission-summary.md) — this submission packet
+- [`week-05/task-1-museum-spatial-system.md`](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-05/task-1-museum-spatial-system.md) — Museum Spatial System task doc
+- [`week-05/task-2-phase-a-ai-communication-layer.md`](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-05/task-2-phase-a-ai-communication-layer.md) — Phase A task doc
 - [`week-05/fe-07-tool-results.md`](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-05/fe-07-tool-results.md) — FE-07 evidence
 - [`week-05/fe-08-error-recovery.md`](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-05/fe-08-error-recovery.md) — FE-08 evidence
 - [`week-05/phase-c-cohesive-wiring.md`](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-05/phase-c-cohesive-wiring.md) — Phase C evidence
@@ -276,6 +286,8 @@ Supporting documentation (evidence docs, screenshots, project memory, this packe
 
 | Evidence | Type | Located at |
 |---|---|---|
+| Museum Spatial System task doc | Doc | `week-05/task-1-museum-spatial-system.md` |
+| Phase A task doc | Doc | `week-05/task-2-phase-a-ai-communication-layer.md` |
 | FE-07 tool results + verification | Doc | `week-05/fe-07-tool-results.md` |
 | FE-07 raw SSE tool call | Capture | `week-05/fe-07-sse-tool-call.txt` |
 | FE-08 error states + T1–T4 | Doc | `week-05/fe-08-error-recovery.md` |

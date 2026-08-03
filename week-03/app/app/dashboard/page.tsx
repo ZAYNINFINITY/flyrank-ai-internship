@@ -1,4 +1,4 @@
-import { GhostButton } from "@/components/primitives/ghost-button";
+import Link from "next/link";
 
 export default function DashboardPage() {
   return (
@@ -16,7 +16,12 @@ export default function DashboardPage() {
           isn&apos;t wired up yet, but the exhibit pages are live.
         </p>
         <div className="mt-8">
-          <GhostButton>Sign in</GhostButton>
+          <Link
+            href="/login"
+            className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-[3px] border border-text/15 bg-transparent px-8 py-3 font-body text-sm font-medium text-text transition-colors duration-200 hover:border-text/30 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+          >
+            Sign in
+          </Link>
         </div>
       </div>
     </section>

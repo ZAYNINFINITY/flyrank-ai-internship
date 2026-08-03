@@ -4,6 +4,8 @@ import { FloorDirectory } from "@/components/primitives/floor-directory";
 import { Frame } from "@/components/primitives/frame";
 import { SpotlightButton } from "@/components/primitives/spotlight-button";
 import { exhibits } from "@/lib/mock-data/exhibits";
+import { mockExhibits } from "@/lib/repository/mock-exhibit-repository";
+import { getExhibitRoute } from "@/lib/museum/navigation-adapter";
 
 type PageProps = {
   params: Promise<{ username: string }>;
@@ -110,6 +112,14 @@ export default async function ExhibitPage({ params }: PageProps) {
                 <p className="mt-4 font-body text-[13px] text-text/40">
                   {project.stack.join(" · ")}
                 </p>
+                {mockExhibits.some((exhibit) => exhibit.id === project.id) && (
+                  <a
+                    href={getExhibitRoute(project.id)}
+                    className="mt-6 inline-block border border-text/15 px-4 py-2 text-[11px] uppercase tracking-[0.2em] text-text/50 transition-all duration-500 hover:border-text/40 hover:text-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                  >
+                    View this in the museum room →
+                  </a>
+                )}
               </div>
             </div>
           </section>

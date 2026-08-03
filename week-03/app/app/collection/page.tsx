@@ -3,6 +3,7 @@
 import { useEffect, useState, useMemo } from "react";
 import type { Visitor } from "@/lib/museum/types";
 import { createPlacementMap, populateCorridor } from "@/lib/museum/placement";
+import { createVisitor, enterRoom } from "@/lib/museum/visitor";
 import { MockExhibitRepository } from "@/lib/repository/mock-exhibit-repository";
 import { WorldRenderer } from "@/components/renderer/world-renderer";
 import { defaultEntityRegistry } from "@/components/renderer/entities/default-registry";
@@ -20,11 +21,10 @@ function LoadingSkeleton() {
 }
 
 export default function CollectionPage() {
-  const visitor: Visitor = useMemo(() => ({
-    currentRoomId: "collections",
-    cameFromDoorId: "door-collections-from-reception",
-    enteredAt: Date.now(),
-  }), []);
+  const visitor: Visitor = useMemo(
+    () => enterRoom(createVisitor("collections"), "collections", "door-collections-from-reception"),
+    []
+  );
 
   const [placements, setPlacements] = useState(createPlacementMap());
 

@@ -27,7 +27,7 @@ export const mockExhibits: Exhibit[] = [
     description:
       "Full-stack MERN collaboration platform with live chat via Socket.io, multi-user document editing, Kanban task boards, and OAuth 2.0 authentication. Built to handle concurrent users with real-time event broadcasting.",
     media: [
-      { type: "image", src: "/images/collab.png", alt: "Workspace board" },
+      { type: "image", src: "", alt: "Workspace board" },
     ],
     artifacts: [
       { id: "collab-kanban", label: "Kanban board", description: "Drag-and-drop task management" },

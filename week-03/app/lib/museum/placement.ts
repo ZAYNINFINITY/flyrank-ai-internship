@@ -1,6 +1,7 @@
 import type { Placement, AnchorId, EntityType, AnchorCapability, RoomId } from "./types";
-import { getAnchorsByCapability, getAnchors, getRoom } from "./world";
+import { getAnchorsByCapability, getRoom } from "./world";
 import type { ExhibitRepository } from "@/lib/repository/exhibit-repository";
+import type { Exhibit } from "@/lib/types/exhibit";
 
 const entityCapabilities: Record<EntityType, AnchorCapability[]> = {
   exhibit: ["display"],
@@ -45,14 +46,15 @@ export function getPlacementAtAnchor(
 export async function populateCorridor(
   map: Map<AnchorId, Placement>,
   roomId: RoomId,
-  repo: ExhibitRepository
+  repo: ExhibitRepository,
+  exhibits?: Exhibit[]
 ): Promise<Map<AnchorId, Placement>> {
-  const exhibits = await repo.getAll();
+  const items = exhibits ?? (await repo.getAll());
   const displayAnchors = getAnchorsByCapability(roomId, "display");
   let next = map;
 
-  for (let i = 0; i < Math.min(exhibits.length, displayAnchors.length); i++) {
-    next = place(next, displayAnchors[i].id, "exhibit", exhibits[i].id);
+  for (let i = 0; i < Math.min(items.length, displayAnchors.length); i++) {
+    next = place(next, displayAnchors[i].id, "exhibit", items[i].id);
   }
 
   return next;

@@ -1,8 +1,11 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { Suspense, useEffect, useState, useMemo } from "react";
+import { useSearchParams } from "next/navigation";
 import type { Visitor } from "@/lib/museum/types";
+import type { ExhibitCollection } from "@/lib/types/exhibit";
 import { createPlacementMap, populateCorridor } from "@/lib/museum/placement";
+import { createVisitor, enterRoom } from "@/lib/museum/visitor";
 import { MockExhibitRepository } from "@/lib/repository/mock-exhibit-repository";
 import { WorldRenderer } from "@/components/renderer/world-renderer";
 import { defaultEntityRegistry } from "@/components/renderer/entities/default-registry";
@@ -10,18 +13,54 @@ import { GalleryExperience } from "./gallery-experience";
 
 const repo = new MockExhibitRepository();
 
+const validCollections: ExhibitCollection[] = [
+  "infrastructure",
+  "visual-design",
+  "experiments",
+  "journey",
+];
+
+function toCollection(value: string | null): ExhibitCollection | null {
+  return validCollections.includes(value as ExhibitCollection)
+    ? (value as ExhibitCollection)
+    : null;
+}
+
 export default function GalleryPage() {
-  const visitor: Visitor = useMemo(() => ({
-    currentRoomId: "main-corridor",
-    cameFromDoorId: "door-corridor-from-reception",
-    enteredAt: Date.now(),
-  }), []);
+  return (
+    <Suspense fallback={<LoadingSkeleton />}>
+      <GalleryView />
+    </Suspense>
+  );
+}
+
+function GalleryView() {
+  const searchParams = useSearchParams();
+  const collection = toCollection(searchParams.get("collection"));
+
+  const visitor: Visitor = useMemo(
+    () => enterRoom(createVisitor("main-corridor"), "main-corridor", "door-corridor-from-reception"),
+    []
+  );
 
   const [placements, setPlacements] = useState(createPlacementMap());
 
   useEffect(() => {
-    populateCorridor(createPlacementMap(), "main-corridor", repo).then(setPlacements);
-  }, []);
+    const load = async () => {
+      setPlacements(createPlacementMap());
+      const exhibits = collection
+        ? await repo.getByCollection(collection)
+        : await repo.getAll();
+      const next = await populateCorridor(
+        createPlacementMap(),
+        "main-corridor",
+        repo,
+        exhibits
+      );
+      setPlacements(next);
+    };
+    void load();
+  }, [collection]);
 
   if (placements.size === 0) {
     return <LoadingSkeleton />;
@@ -29,7 +68,7 @@ export default function GalleryPage() {
 
   return (
     <WorldRenderer visitor={visitor} placements={placements} entityComponents={defaultEntityRegistry}>
-      <GalleryExperience />
+      <GalleryExperience collection={collection} />
     </WorldRenderer>
   );
 }

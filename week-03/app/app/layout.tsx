@@ -56,6 +56,12 @@ export default function RootLayout({
           >
             About
           </Link>
+          <Link
+            href="/dashboard"
+            className="font-body text-sm text-text/40 transition-colors duration-200 hover:text-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+          >
+            Dashboard
+          </Link>
         </footer>
       </body>
     </html>

@@ -66,6 +66,18 @@ The SDK's `DefaultChatTransport` throws `new Error(await response.text())` on no
 
 The SDK never commits an assistant message with zero content parts — `write()` fires only on content events (`text-start`, `tool-input-start`, …), so a no-content turn simply produces no message. A "No response" banner would be unreachable dead code, so it was removed during verification rather than shipped as fake logic.
 
+### Why the museum wiring (Phase C) reuses existing systems instead of adding new ones
+
+The standalone rooms already shared one world graph, route map, navigation adapter, renderer, and repository layer. Phase C's job was to connect them, so it added only two link surfaces plus one bridge function (`getPortfolioRouteForExhibitId`) and an optional `exhibits` param on `populateCorridor`. Building a second navigation/filtering system would have duplicated state and drifted from the working machine — the rooms all render from the same source of truth already.
+
+### Why collection filtering goes through the repository's `getByCollection` seam
+
+`/gallery` reads `?collection=` and asks the repository for that collection's exhibits, then hands them to the existing `populateCorridor` renderer. The gallery and the Collections Wing share one `collectionMeta` map (exported from `collection-experience.tsx`). One seam, one source of collection definitions — no third place to keep them in sync.
+
+### Why `/playground` and `/health` stay unlinked (orphan routes, by design)
+
+They exist to satisfy assignment requirements and as a component-reuse source, not as museum-facing routes. Wiring them into the museum just to remove "orphan" status would misrepresent dev/demo utilities as part of the visitor experience. `/dashboard` was different: it is a legitimate museum surface, so it got a real inbound edge (footer link) and its dead "Sign in" button became a real link.
+
 ---
 
 ## Do Not

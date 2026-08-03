@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { mockExhibits } from "@/lib/repository/mock-exhibit-repository";
 
-const collectionMeta: Record<string, { label: string; description: string; color: string }> = {
+export const collectionMeta: Record<string, { label: string; description: string; color: string }> = {
   infrastructure: {
     label: "Infrastructure",
     description: "Systems, backends, and resilient architectures",

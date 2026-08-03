@@ -65,12 +65,20 @@ export default function HomePage() {
       {/* Beat 3 — Explore CTA */}
       <section className="flex min-h-[60dvh] items-center">
         <div className="mx-auto w-full max-w-[560px] px-6 text-center sm:px-8 md:px-12">
-          <a
-            href="/explore"
-            className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-[3px] border border-text/15 bg-transparent px-8 py-3 font-body text-sm font-medium text-text transition-colors duration-200 hover:border-text/30 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-          >
-            Explore all exhibits
-          </a>
+          <div className="flex flex-col items-center gap-4">
+            <a
+              href="/entrance"
+              className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-[3px] border border-text/25 bg-transparent px-8 py-3 font-body text-sm font-medium text-text transition-colors duration-200 hover:border-text/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            >
+              Enter the Museum
+            </a>
+            <a
+              href="/explore"
+              className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-[3px] border border-text/10 bg-transparent px-8 py-3 font-body text-sm text-text/60 transition-colors duration-200 hover:border-text/30 hover:text-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            >
+              Explore all exhibits
+            </a>
+          </div>
         </div>
       </section>
     </>

@@ -16,7 +16,7 @@ Live → [plinth-cyan.vercel.app](https://plinth-cyan.vercel.app)
 | [week-02/](week-02/) | Foundations — Case Studies, Prompting, Workflow Drill | Done |
 | [week-03/](week-03/) | Plinth — Capstone Skeleton, Docs, Submission Materials | Done |
 | [week-04/](week-04/) | Accessible Components (FE-05), Streaming Chat (FE-06), Stack Rationale, Empty but Live, Automation Workflow (FL-04), Agent Concepts & MCP (FL-05) | Done |
-| [week-05/](week-05/) | Museum Spatial System, Phase A (AI Communication Layer), FE-07 (Tool Results), FE-08 (Chat Error States), Phase C (Cohesive Wiring), Documentation & Evidence — see [submission-summary.md](week-05/submission-summary.md) | Done |
+| [week-05/](week-05/) | Museum Spatial System, Phase A (AI Communication Layer), FE-07 (Tool Results), FE-08 (Chat Error States), Phase C (Cohesive Wiring) — see [submission-summary.md](week-05/submission-summary.md) | Done |
 | week-06/ | — | — |
 | week-07/ | — | — |
 | week-08/ | — | — |

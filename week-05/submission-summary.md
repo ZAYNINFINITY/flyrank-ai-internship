@@ -6,7 +6,7 @@
 **Repository:** https://github.com/ZAYNINFINITY/flyrank-ai-internship (branch `main`)
 **Live deployment:** https://plinth-cyan.vercel.app
 **Week status:** Complete & frozen
-**Submission:** 6 assignments (one Week 5 dashboard item is still TBD and is **not** part of this submission)
+**Submission:** All completed Week 5 dashboard assignments, accompanied by a comprehensive submission packet (evidence documents, screenshots, and project documentation). One Week 5 dashboard item remains TBD and is **not** part of this submission.
 
 ---
 
@@ -220,9 +220,11 @@ Week 5 turns the standalone Plinth rooms into a working museum with a live AI la
 
 ---
 
-## Assignment 6 — Week 5 Documentation & Evidence
+## Week 5 Submission Documentation (supporting, not a dashboard assignment)
 
-**Status:** Complete
+This section is the **supporting documentation** for the Week 5 submission — evidence documents, screenshots, project documentation, and this packet. It is not a FlyRank dashboard assignment; it exists to make the completed assignments verifiable and the submission copy-ready.
+
+**Status:** Complete (supporting documentation)
 **Summary:** All Week 5 evidence documents, screenshots, and project documentation synchronized for submission. Project memory (`README.md`, `docs/REPOSITORY_STATE.md`, `docs/roadmap.md`, `docs/architecture.md`, `docs/DECISIONS.md`, `docs/CONTRIBUTING_AI.md`) reflects Week 5 completion; the canonical submission packet is this document.
 
 ### Documentation / evidence
@@ -267,7 +269,8 @@ Week 5 turns the standalone Plinth rooms into a working museum with a live AI la
 | FE-07 — Tool Results & Structured Output | ✅ | `defa39e`–`8790d6b` | /assistant |
 | FE-08 — Chat Error States & Recovery | ✅ | `30959f8` | /assistant |
 | Phase C — Cohesive Museum Wiring | ✅ | `bef109e` | / |
-| Week 5 Documentation & Evidence | ✅ | `6bc76ea`, `f6fb150` | — |
+
+Supporting documentation (evidence docs, screenshots, project memory, this packet) accompanies the submission — see [Week 5 Submission Documentation](#week-5-submission-documentation-supporting-not-a-dashboard-assignment).
 
 ## Evidence Index
 
@@ -304,7 +307,7 @@ Week 5 turns the standalone Plinth rooms into a working museum with a live AI la
 
 ## Notes for Reviewer
 
-- **Week 5 dashboard structure is the source of truth** for assignment grouping; the repository is the implementation evidence. Six assignments are submitted; one additional dashboard item remains **TBD** and is intentionally not part of this submission.
+- **Week 5 dashboard structure is the source of truth** for assignment grouping; the repository is the implementation evidence. This packet maps all completed Week 5 dashboard assignments and prepares a comprehensive submission packet — it does not assert an assignment count beyond what the dashboard explicitly defines. One additional dashboard item remains **TBD** and is intentionally not part of this submission.
 - **Everything is preserved and extended, not rewritten.** Week 5 builds on the Week 3/4 foundation (routes, primitives, FE-05/FE-06, FL-04/FL-05); no completed assignment was rebuilt.
 - **AI provider:** Google Gemini (2.5 flash-lite) via OpenRouter (`createOpenAICompatible`), config in `lib/ai/config.ts`, swap point in `lib/ai/provider.ts`.
 - **Model-driven tools:** FE-07's `exhibitLookup` runs on the AI SDK's `streamText`; tool output is typed `Exhibit[]` from the `ExhibitRepository` interface (mock-backed today, swap in `lib/repository/index.ts`).

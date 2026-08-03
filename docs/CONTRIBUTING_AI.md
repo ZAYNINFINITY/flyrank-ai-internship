@@ -6,6 +6,7 @@ This file is for AI coding assistants (Claude, OpenCode, or others) working in t
 
 1. **`docs/REPOSITORY_STATE.md`** — current state of the repo: what's done, what's a gap, what's temporary vs. reusable, and the Week 5 starting point.
 2. **`docs/DECISIONS.md`** — why things are built the way they are, plus a **Do Not** section of guardrails. Read this before proposing any change that touches architecture, deployment, or completed assignments.
+3. **`week-05/vision-validation.md`** — long-term architecture & design vision (planning context only; it does not change the current plan or authorize refactoring). Reference it for direction, but follow the existing roadmap.
 
 ## Core Distinctions
 

@@ -74,6 +74,10 @@ The standalone rooms already shared one world graph, route map, navigation adapt
 
 `/gallery` reads `?collection=` and asks the repository for that collection's exhibits, then hands them to the existing `populateCorridor` renderer. The gallery and the Collections Wing share one `collectionMeta` map (exported from `collection-experience.tsx`). One seam, one source of collection definitions — no third place to keep them in sync.
 
+### Why a long-term architecture vision document was added (planning only)
+
+`week-05/vision-validation.md` captures Plinth's long-term direction (museum-as-product, `Creator → Portfolio → Projects → Exhibits → Museum Views` content model, Hybrid spatial navigation) after reviewing the current architecture and studying itomdev.com as an interaction reference. It is an **internal reference for future decisions only** — it is not an internship deliverable, does not modify the current implementation plan, and does not authorize refactoring. Nothing in it changes current priorities or the incremental development strategy.
+
 ### Why `/playground` and `/health` stay unlinked (orphan routes, by design)
 
 They exist to satisfy assignment requirements and as a component-reuse source, not as museum-facing routes. Wiring them into the museum just to remove "orphan" status would misrepresent dev/demo utilities as part of the visitor experience. `/dashboard` was different: it is a legitimate museum surface, so it got a real inbound edge (footer link) and its dead "Sign in" button became a real link.

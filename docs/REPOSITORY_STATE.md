@@ -24,9 +24,12 @@ This document is a snapshot, not a prediction — update it as work lands, don't
 | Empty but Live | Done (implementation + submission pointer `week-04/empty-but-live.md` + screenshots) |
 | FL-04 — Automation Workflow | Done (manual comparison run executed 2026-07-31 — see fl-04-automation-workflow.md § Manual Run Comparison) |
 | FL-05 — Agent Concepts & MCP | Done (screenshot filename reference fixed to the actual file on disk) |
+| Week 5 — Museum Spatial System | Done (world graph + renderer + entrance/reception/gallery/collections; commit `3b295b5`) |
+| Week 5 — Phase A AI Communication Layer | Done (Curator assistant, streaming route, repository injection seam; commits `defa39e`, `ba83c8d`) |
 | FE-07 — Tool Results & Structured Output | Done (implementation + evidence: `week-05/fe-07-tool-results.md`, raw SSE capture `week-05/fe-07-sse-tool-call.txt`, 2 screenshots) |
 | FE-08 — Chat Error States & Recovery | Done (implementation + evidence: `week-05/fe-08-error-recovery.md`, 2 screenshots) |
 | Phase C — Cohesive Museum Wiring | Done (implementation + evidence: `week-05/phase-c-cohesive-wiring.md`, 7 screenshots, T1–T12 verification) |
+| Week 5 — Documentation & Evidence | Done (evidence docs, 11 screenshots, project memory sync; packet at `week-05/submission-summary.md`) |
 
 ### Known Gaps (genuine, not documentation nitpicks)
 
@@ -139,11 +142,14 @@ Development resumed from the current state of `week-03/app/` exactly as it stand
 
 ## Week 5 Completion (verified 2026-08-04)
 
-Week 5 is complete and submission-ready (implementation + evidence + documentation):
+Week 5 is complete and submission-ready (implementation + evidence + documentation). The official Week 5 submission packet — **6 assignments** per the dashboard structure (Museum Spatial System, Phase A AI Communication Layer, FE-07, FE-08, Phase C, Documentation & Evidence) — lives at `week-05/submission-summary.md` and is the canonical submission document. The dashboard structure is the source of truth for grouping; the repository is the implementation evidence. One additional Week 5 dashboard item remains TBD and is not part of the submission.
 
+- **Museum Spatial System:** world graph + renderer + entrance/reception/gallery/collections rooms. Commit `3b295b5`.
+- **Phase A — AI Communication Layer:** Curator assistant, streaming route, repository injection seam. Commits `defa39e`, `ba83c8d`.
 - **FE-07 — Tool Results & Structured Output:** `streamText` + `exhibitLookup` tool (Zod `inputSchema`, typed `Exhibit[]`), `@ai-sdk/openai-compatible` → OpenRouter. Evidence: `week-05/fe-07-tool-results.md` + `fe-07-sse-tool-call.txt` (genuine tool call capture) + 2 screenshots.
 - **FE-08 — Chat Error States & Recovery:** error classification (`chat-error-banner.tsx`), `ErrorBoundary`, SDK-native recovery (`regenerate()`/`clearError()`), friendly route 500 body. Evidence: `week-05/fe-08-error-recovery.md` + 2 screenshots.
 - **Phase C — Cohesive Museum Wiring:** home "Enter the Museum" CTA, nav Museum link, `?collection=` gallery filtering via the repository seam, exhibit ↔ long-form cross-links both directions, `/dashboard` inbound + real `/login` link. Evidence: `week-05/phase-c-cohesive-wiring.md` + 7 screenshots, T1–T12 verification.
+- **Week 5 Documentation & Evidence:** all evidence docs, 11 screenshots, and project memory synchronized; submission packet at `week-05/submission-summary.md`.
 - **Vision document (planning only):** `week-05/vision-validation.md` records the long-term direction; it does not change the plan or authorize refactoring.
 - **Quality gates:** `npx eslint .` → 0 errors (3 pre-existing warnings); `npm run build` → green, 17 routes.
 - **Deployment:** live at [plinth-cyan.vercel.app](https://plinth-cyan.vercel.app) — home CTA, `/entrance`, `/reception`, `/gallery?collection=`, exhibit rooms, and `/assistant` all verified live.

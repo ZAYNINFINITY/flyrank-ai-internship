@@ -232,6 +232,21 @@ Week 5 turns the standalone Plinth rooms into a working museum with a live AI la
 
 ---
 
+## Assignment 6 — FL-06: Design Your Personal Agent
+
+**Status:** Complete (design)
+**Summary:** Designed **Project Guardian** — a weekly, read-only, single-file-write project-status agent for Zain's real work (personal projects dir + internship repo). The design doc locks the job definition (weekly Sunday-evening status snapshot + top blockers), the human-in-the-loop contract, the read-only tool surface (git log/status, task files → one owned `guardian-report.md`), a copy-ready first draft of the agent instructions, five evaluation cases that double as the FL-07 test suite, and hard guardrails (read-only git, no secrets, one owned file, truth over optimism). No code yet — this doc is the blueprint FL-07 builds against.
+
+### Documentation / evidence
+
+- [`week-05/fl-06-design-your-personal-agent.md`](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-05/fl-06-design-your-personal-agent.md) — full design doc (job, human, tools, instructions draft, 5 eval cases, guardrails, platform justification, FL-07 build plan)
+
+### Live deployment
+
+- N/A — design phase; FL-07 Checkpoint 1 builds and tests Project Guardian against the five evaluation cases.
+
+---
+
 ## Week 5 Submission Documentation (supporting, not a dashboard assignment)
 
 This section is the **supporting documentation** for the Week 5 submission — evidence documents, screenshots, project documentation, and this packet. It is not a FlyRank dashboard assignment; it exists to make the completed assignments verifiable and the submission copy-ready.
@@ -247,6 +262,9 @@ This section is the **supporting documentation** for the Week 5 submission — e
 - [`week-05/fe-07-tool-results.md`](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-05/fe-07-tool-results.md) — FE-07 evidence
 - [`week-05/fe-08-error-recovery.md`](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-05/fe-08-error-recovery.md) — FE-08 evidence
 - [`week-05/phase-c-cohesive-wiring.md`](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-05/phase-c-cohesive-wiring.md) — Phase C evidence
+- [`week-05/ship-the-ugly-one.md`](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-05/ship-the-ugly-one.md) — Ship the Ugly One evidence (reaction pending — user action)
+- [`week-05/pf-04-personal-website.md`](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-05/pf-04-personal-website.md) — PF-04 evidence + DNS walkthrough
+- [`week-05/fl-06-design-your-personal-agent.md`](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-05/fl-06-design-your-personal-agent.md) — FL-06 agent design doc
 - [`week-05/fe-07-sse-tool-call.txt`](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-05/fe-07-sse-tool-call.txt) — raw tool-call capture
 - [`week-05/vision-validation.md`](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-05/vision-validation.md) — long-term vision (planning context only)
 
@@ -283,6 +301,7 @@ This section is the **supporting documentation** for the Week 5 submission — e
 | FE-07 — Tool Results & Structured Output | ✅ | `defa39e`–`8790d6b` | /assistant |
 | FE-08 — Chat Error States & Recovery | ✅ | `30959f8` | /assistant |
 | Phase C — Cohesive Museum Wiring | ✅ | `bef109e` | / |
+| FL-06 — Design Your Personal Agent | ✅ (design) | design doc | N/A |
 
 Supporting documentation (evidence docs, screenshots, project memory, this packet) accompanies the submission — see [Week 5 Submission Documentation](#week-5-submission-documentation-supporting-not-a-dashboard-assignment).
 
@@ -297,6 +316,7 @@ Supporting documentation (evidence docs, screenshots, project memory, this packe
 | FE-08 error states + T1–T4 | Doc | `week-05/fe-08-error-recovery.md` |
 | Phase C wiring + T1–T12 | Doc | `week-05/phase-c-cohesive-wiring.md` |
 | Screenshots | 13 PNG | `week-05/screenshots/` |
+| FL-06 agent design doc | Doc | `week-05/fl-06-design-your-personal-agent.md` |
 | Long-term vision (planning only) | Doc | `week-05/vision-validation.md` |
 | Submission packet | Doc | `week-05/submission-summary.md` |
 

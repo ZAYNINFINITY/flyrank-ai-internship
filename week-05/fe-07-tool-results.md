@@ -66,6 +66,13 @@ return result.toUIMessageStreamResponse();
 - `exhibit-tool-result.tsx` — the actual `Exhibit[]` result: `isExhibitArray` type guard + a card grid (title, tagline, developer, year, collection) linking into the museum via `getExhibitRoute`.
 - `app/assistant/page.tsx` is now a thin wrapper around `ChatPanel` — URL and behavior preserved.
 
+### 5. Documented tool contract — `week-03/app/README.md`
+
+The dashboard brief requires documenting the tool contract in the README. The
+app README now has an **AI tool contract** section: name (`exhibitLookup`),
+Zod schema (`{ id?, collection?, query? }`), return shape (`Exhibit[]`), the
+repository seam, and the four lifecycle states.
+
 ---
 
 ## How It Works

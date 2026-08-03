@@ -30,7 +30,7 @@ This document is a snapshot, not a prediction — update it as work lands, don't
 | FE-08 — Chat Error States & Recovery | Done (implementation + evidence: `week-05/fe-08-error-recovery.md`, 2 screenshots) |
 | Phase C — Cohesive Museum Wiring | Done (implementation + evidence: `week-05/phase-c-cohesive-wiring.md`, 7 screenshots, T1–T12 verification) |
 
-Week 5 supporting documentation (evidence docs, 11 screenshots, project memory sync, submission packet) — see `week-05/submission-summary.md`. Not a dashboard assignment.
+Week 5 supporting documentation (evidence docs, 13 screenshots, project memory sync, submission packet) — see `week-05/submission-summary.md`. Not a dashboard assignment.
 
 ### Known Gaps (genuine, not documentation nitpicks)
 
@@ -150,7 +150,7 @@ Week 5 is complete and submission-ready (implementation + evidence + documentati
 - **FE-07 — Tool Results & Structured Output:** `streamText` + `exhibitLookup` tool (Zod `inputSchema`, typed `Exhibit[]`), `@ai-sdk/openai-compatible` → OpenRouter. Evidence: `week-05/fe-07-tool-results.md` + `fe-07-sse-tool-call.txt` (genuine tool call capture) + 2 screenshots.
 - **FE-08 — Chat Error States & Recovery:** error classification (`chat-error-banner.tsx`), `ErrorBoundary`, SDK-native recovery (`regenerate()`/`clearError()`), friendly route 500 body. Evidence: `week-05/fe-08-error-recovery.md` + 2 screenshots.
 - **Phase C — Cohesive Museum Wiring:** home "Enter the Museum" CTA, nav Museum link, `?collection=` gallery filtering via the repository seam, exhibit ↔ long-form cross-links both directions, `/dashboard` inbound + real `/login` link. Evidence: `week-05/phase-c-cohesive-wiring.md` + 7 screenshots, T1–T12 verification.
-- **Week 5 supporting documentation:** all evidence docs, 11 screenshots, and project memory synchronized; submission packet at `week-05/submission-summary.md`.
+- **Week 5 supporting documentation:** all evidence docs, 13 screenshots, and project memory synchronized; submission packet at `week-05/submission-summary.md`.
 - **Vision document (planning only):** `week-05/vision-validation.md` records the long-term direction; it does not change the plan or authorize refactoring.
 - **Quality gates:** `npx eslint .` → 0 errors (3 pre-existing warnings); `npm run build` → green, 17 routes.
 - **Deployment:** live at [plinth-cyan.vercel.app](https://plinth-cyan.vercel.app) — home CTA, `/entrance`, `/reception`, `/gallery?collection=`, exhibit rooms, and `/assistant` all verified live.

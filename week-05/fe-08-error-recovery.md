@@ -16,6 +16,7 @@ any failure. FE-08 turns that into a real, classified error system built on the
 
 ### Before (FE-07)
 - `chat-panel.tsx`: `{error && <div>Something went wrong. Please try again.</div>}` — no way to recover, no context for the visitor, raw message hidden.
+- Empty state was passive: `"Start a conversation."` with no next action.
 - `/api/chat` returned the raw `e.message` as the 500 body, which the transport (`DefaultChatTransport`) surfaces as `error.message` on the client — leaking internals into any naive error UI.
 
 ### After (FE-08)
@@ -108,6 +109,35 @@ Evidence:
 - Real 400 contract also verified directly: `POST /api/chat` with `{messages:[]}` → `400 {"error":"No messages provided"}`.
 - Real success path re-verified against the live backend (a genuine assistant reply renders) after the changes.
 
+### Final pass (2026-08-03) — Checkpoint 1 deliverables
+
+Re-reviewed against the dashboard Checkpoint 1 requirement: *preview URL plus a
+recording or screenshots showing the happy path and at least two handled failure
+states.*
+
+| # | Case | Evidence |
+| --- | --- | --- |
+| C1 | **Happy path** — example prompt click → genuine tool call → 3 exhibit cards render, zero console errors | `screenshots/fe-08-happy-path.png` |
+| C2 | **First-run empty state** — guides action with click-to-fill example prompts (no longer passive text) | `screenshots/fe-08-empty-state.png` |
+| C3 | Server failure (designed error + retry) | `screenshots/fe-08-server-error.png` |
+| C4 | Offline failure (designed error + retry) | `screenshots/fe-08-offline-error.png` |
+
+New in this pass:
+
+- **Designed first-run empty state** (`chat-panel.tsx`): "No conversations yet."
+  with three click-to-fill example prompts ("Show me infrastructure exhibits",
+  "What's in the visual design collection?", "List the experiments"). The empty
+  state now points the user somewhere useful instead of ending the story.
+- **Route-segment `error.tsx`** (`app/assistant/error.tsx`): the dashboard brief
+  explicitly requires *"error.tsx boundaries for route failures"* — added a
+  museum-styled route boundary with a working "Try again" reset, complementing
+  the existing client `ErrorBoundary` (render-crash safety) inside the page.
+- **Rate-limit (429) case:** the mentor sabotage list includes "return a 429".
+  In the current flow a provider 429 surfaces through the SDK and is classified
+  as the designed `server` kind banner with a working retry — the brief requires
+  a designed error with recovery, not a distinct rate-limit visual, so no
+  separate 429 state was added.
+
 ### Known limitations
 
 - **`ErrorBoundary` fallback not crash-exercised.** No natural render crash exists
@@ -126,6 +156,7 @@ Evidence:
 
 - `app/components/ai/chat-error-banner.tsx` — new: classification + banner UI.
 - `app/components/ai/error-boundary.tsx` — new: crash fallback.
-- `app/components/ai/chat-panel.tsx` — banner wiring, `regenerate`/`clearError` recovery.
+- `app/components/ai/chat-panel.tsx` — banner wiring, `regenerate`/`clearError` recovery, designed empty state.
 - `app/assistant/page.tsx` — wrapped in `ErrorBoundary`.
+- `app/assistant/error.tsx` — new: route-segment error boundary (brief requirement).
 - `app/api/chat/route.ts` — friendly 500 body + server-side log.

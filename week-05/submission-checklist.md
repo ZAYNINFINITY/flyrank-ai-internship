@@ -49,6 +49,8 @@ Copy this per assignment. No code files — just evidence, links, and proof.
 
 **Attach:** `week-05/fe-08-error-recovery.md`
 **Screenshots:**
+- https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-05/screenshots/fe-08-happy-path.png
+- https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-05/screenshots/fe-08-empty-state.png
 - https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-05/screenshots/fe-08-server-error.png
 - https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-05/screenshots/fe-08-offline-error.png
 **Live:** https://plinth-cyan.vercel.app/assistant
@@ -81,5 +83,5 @@ Copy this per assignment. No code files — just evidence, links, and proof.
 | 1 | Museum Spatial System | `task-1-museum-spatial-system.md` | — | /entrance |
 | 2 | Phase A AI Communication Layer | `task-2-phase-a-ai-communication-layer.md` | — | /assistant |
 | 3 | FE-07 Tool Results | `fe-07-tool-results.md` + `fe-07-sse-tool-call.txt` | 2 | /assistant |
-| 4 | FE-08 Error States | `fe-08-error-recovery.md` | 2 | /assistant |
+| 4 | FE-08 Error States | `fe-08-error-recovery.md` | 4 | /assistant |
 | 5 | Phase C Cohesive Wiring | `phase-c-cohesive-wiring.md` | 7 | / |

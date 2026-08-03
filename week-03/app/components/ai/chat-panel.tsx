@@ -7,6 +7,12 @@ import { ToolStateViews, type ToolViewPart } from "./tool-state-views";
 import { ExhibitToolResult, isExhibitArray } from "./exhibit-tool-result";
 import { ChatErrorBanner } from "./chat-error-banner";
 
+const EXAMPLE_PROMPTS = [
+  "Show me infrastructure exhibits",
+  "What's in the visual design collection?",
+  "List the experiments",
+] as const;
+
 function renderExhibitOutput(output: unknown) {
   if (isExhibitArray(output)) {
     return <ExhibitToolResult exhibits={output} />;
@@ -97,9 +103,28 @@ export function ChatPanel({
         <div className="mx-auto max-w-[720px] space-y-6">
           {messages.length === 0 && (
             <div className="flex min-h-[50vh] items-center justify-center">
-              <p className="font-body text-[15px] text-text/30">
-                Start a conversation.
-              </p>
+              <div className="text-center">
+                <p className="font-body text-[15px] text-text/30">
+                  No conversations yet.
+                </p>
+                <p className="mt-1 font-body text-[13px] text-text/20">
+                  Ask the curator about the museum&apos;s exhibits.
+                </p>
+                <div className="mt-5 flex flex-col items-center gap-2 sm:flex-row sm:justify-center">
+                  {EXAMPLE_PROMPTS.map((prompt) => (
+                    <button
+                      key={prompt}
+                      type="button"
+                      onClick={() => {
+                        sendMessage({ text: prompt });
+                      }}
+                      className="rounded-full border border-text/15 px-4 py-1.5 font-body text-[12px] text-text/40 transition-colors hover:border-text/30 hover:text-text/70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                    >
+                      {prompt}
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
           )}
 

@@ -137,6 +137,7 @@ Week 5 turns the standalone Plinth rooms into a working museum with a live AI la
 - [`week-05/fe-07-sse-tool-call.txt`](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-05/fe-07-sse-tool-call.txt) — raw SSE capture of a genuine tool call
 - [`week-05/screenshots/fe-07-output-available.png`](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-05/screenshots/fe-07-output-available.png) — exhibit result cards (output-available)
 - [`week-05/screenshots/fe-07-output-error.png`](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-05/screenshots/fe-07-output-error.png) — tool error card (output-error)
+- [`week-03/app/README.md`](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-03/app/README.md) — documented tool contract (name, schema, return shape) per dashboard brief
 
 ### Commits
 
@@ -161,15 +162,18 @@ Week 5 turns the standalone Plinth rooms into a working museum with a live AI la
 
 ### Implementation files (supporting)
 
-- [`week-03/app/components/ai/chat-panel.tsx`](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-03/app/components/ai/chat-panel.tsx) — `regenerate()` / `clearError()` recovery wiring
+- [`week-03/app/components/ai/chat-panel.tsx`](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-03/app/components/ai/chat-panel.tsx) — `regenerate()` / `clearError()` recovery wiring, designed first-run empty state (click-to-fill examples)
 - [`week-03/app/app/assistant/page.tsx`](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-03/app/app/assistant/page.tsx) — wrapped in `ErrorBoundary`
 - [`week-03/app/app/api/chat/route.ts`](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-03/app/app/api/chat/route.ts) — friendly 500 body + server-side log
+- [`week-03/app/app/assistant/error.tsx`](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-03/app/app/assistant/error.tsx) — route-segment error boundary (dashboard brief: "error.tsx boundaries for route failures")
 
 ### Documentation / evidence
 
-- [`week-05/fe-08-error-recovery.md`](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-05/fe-08-error-recovery.md) — full write-up + T1–T4 verification
-- [`week-05/screenshots/fe-08-server-error.png`](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-05/screenshots/fe-08-server-error.png) — server-kind banner (T1)
-- [`week-05/screenshots/fe-08-offline-error.png`](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-05/screenshots/fe-08-offline-error.png) — offline banner (T4)
+- [`week-05/fe-08-error-recovery.md`](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-05/fe-08-error-recovery.md) — full write-up + T1–T4 verification + Checkpoint 1 pass (C1–C4)
+- [`week-05/screenshots/fe-08-happy-path.png`](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-05/screenshots/fe-08-happy-path.png) — happy path: genuine tool call, 3 exhibit cards, zero console errors (C1)
+- [`week-05/screenshots/fe-08-empty-state.png`](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-05/screenshots/fe-08-empty-state.png) — designed first-run empty state with click-to-fill examples (C2)
+- [`week-05/screenshots/fe-08-server-error.png`](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-05/screenshots/fe-08-server-error.png) — server-kind banner (C3 / T1)
+- [`week-05/screenshots/fe-08-offline-error.png`](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-05/screenshots/fe-08-offline-error.png) — offline banner (C4 / T4)
 
 ### Commits
 
@@ -246,10 +250,10 @@ This section is the **supporting documentation** for the Week 5 submission — e
 - [`week-05/fe-07-sse-tool-call.txt`](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-05/fe-07-sse-tool-call.txt) — raw tool-call capture
 - [`week-05/vision-validation.md`](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-05/vision-validation.md) — long-term vision (planning context only)
 
-### Screenshots (11 total)
+### Screenshots (13 total)
 
 - FE-07: `fe-07-output-available.png`, `fe-07-output-error.png`
-- FE-08: `fe-08-server-error.png`, `fe-08-offline-error.png`
+- FE-08: `fe-08-happy-path.png`, `fe-08-empty-state.png`, `fe-08-server-error.png`, `fe-08-offline-error.png`
 - Phase C: `phase-c-home-cta.png`, `phase-c-entrance.png`, `phase-c-reception.png`, `phase-c-corridor.png`, `phase-c-collection-journey.png`, `phase-c-exhibit-room.png`, `phase-c-longform-crosslinks.png`
 
 ### Project documentation (synchronized)
@@ -292,7 +296,7 @@ Supporting documentation (evidence docs, screenshots, project memory, this packe
 | FE-07 raw SSE tool call | Capture | `week-05/fe-07-sse-tool-call.txt` |
 | FE-08 error states + T1–T4 | Doc | `week-05/fe-08-error-recovery.md` |
 | Phase C wiring + T1–T12 | Doc | `week-05/phase-c-cohesive-wiring.md` |
-| Screenshots | 11 PNG | `week-05/screenshots/` |
+| Screenshots | 13 PNG | `week-05/screenshots/` |
 | Long-term vision (planning only) | Doc | `week-05/vision-validation.md` |
 | Submission packet | Doc | `week-05/submission-summary.md` |
 

@@ -24,6 +24,16 @@ Plinth is an open-source platform where developers create gallery-style exhibit 
 - TypeScript
 - Space Grotesk + Inter (via `next/font/google`)
 
+## AI tool contract
+
+Plinth's chat route (`app/api/chat/route.ts`) exposes one server-side tool to the model via the AI SDK's `streamText`:
+
+| Name | Schema (`inputSchema`) | Return shape |
+|------|------------------------|--------------|
+| `exhibitLookup` | `{ id?: string, collection?: string, query?: string }` — all optional, validated with Zod (`lib/ai/tools/exhibit.ts`) | `Exhibit[]` — `{ id, title, tagline, developer, year, collection, media }` |
+
+The tool resolves data through the `ExhibitRepository` interface (`lib/repository/index.ts`), so swapping the mock source for real data is a one-line change. Tool lifecycle states (input-streaming / input-available / output-available / output-error) render as distinct UI in `components/ai/tool-state-views.tsx`.
+
 ## Getting started
 
 ```bash

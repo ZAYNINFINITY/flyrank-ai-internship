@@ -250,7 +250,7 @@ Week 5 turns the standalone Plinth rooms into a working museum with a live AI la
 ## Assignment 7 — FL-07: Build Your Personal Agent (Checkpoint 1)
 
 **Status:** Complete (Checkpoint 1)
-**Summary:** Built **Project Guardian** — the FL-06 design as a working, deterministic Node CLI. It scans Zain's real repos read-only (git log/status + task files + `guardian.md`), classifies each MOVED / STALLED / UNREADABLE, ranks blockers with <30min next steps, and writes exactly one owned file (`guardian-report.md`). No LLM dependency in Checkpoint 1: the five FL-06 evaluation cases are factual behaviors, so determinism beats a model call for correctness. Test suite: **16/16 assertions pass**. Live run on real repos was honest (FlyRank Internship = MOVED, Collaborative Workspace = STALLED w/ intent, ScrollStreak = UNREADABLE flagged for confirmation).
+**Summary:** Built **Project Guardian** — the FL-06 design as a working, deterministic Node CLI. It scans Zain's real repos read-only (git log/status + task files + `guardian.md`), classifies each MOVED / STALLED / UNREADABLE, ranks blockers with <30min next steps, and writes exactly one owned file (`guardian-report.md`). No LLM dependency in Checkpoint 1: the five FL-06 evaluation cases are factual behaviors, so determinism beats a model call for correctness. Test suite: **16/16 assertions pass**. Live run on real repos was honest (FlyRank Internship = MOVED, Collaborative Workspace = STALLED w/ intent, ScrollStreak = UNREADABLE flagged for confirmation). Hosted at https://github.com/ZAYNINFINITY/project-guardian.
 
 ### Implementation files
 
@@ -267,7 +267,8 @@ Week 5 turns the standalone Plinth rooms into a working museum with a live AI la
 
 ### Live deployment
 
-- N/A — local CLI agent. Run: `npm run` in `PROJECTS\project-guardian\` (own git repo, commit `27f01e7`)
+- **GitHub repo:** https://github.com/ZAYNINFINITY/project-guardian (public, commit `27f01e7`)
+- Run locally: `npm run` in `PROJECTS\project-guardian\`
 
 ---
 

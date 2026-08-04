@@ -10,9 +10,18 @@
 
 ## Repository requirement — verified
 
-The FL-07 assignment (Build Your Personal Agent) was reviewed one final time for whether it requires a **separate GitHub repository**. No explicit requirement for a separate or new repository is stated in the assignment or in any stored dashboard brief. The agent already lives in its own local git repository (`PROJECTS\project-guardian\`, commit `27f01e7`), and the design + build evidence are committed in this internship repository.
+The FL-07 assignment (Build Your Personal Agent) was reviewed for whether it requires a **separate GitHub repository**. No explicit requirement is stated in the assignment or in any stored dashboard brief, but the agent was pushed to its own GitHub repo for complete, portable evidence: **https://github.com/ZAYNINFINITY/project-guardian** (public, commit `27f01e7`).
 
-**Conclusion: the existing repository satisfies the assignment — no additional repository is needed. No new repository was created.**
+**Conclusion: the agent has its own GitHub repository; the submission evidence is complete and linkable.**
+
+**Repo:** https://github.com/ZAYNINFINITY/project-guardian
+**Code links:**
+- https://github.com/ZAYNINFINITY/project-guardian/blob/main/src/index.js
+- https://github.com/ZAYNINFINITY/project-guardian/blob/main/src/scanner.js
+- https://github.com/ZAYNINFINITY/project-guardian/blob/main/src/classifier.js
+- https://github.com/ZAYNINFINITY/project-guardian/blob/main/src/report.js
+- https://github.com/ZAYNINFINITY/project-guardian/blob/main/guardian.config.json
+- https://github.com/ZAYNINFINITY/project-guardian/blob/main/test/eval-cases.js
 
 ---
 
@@ -20,7 +29,7 @@ The FL-07 assignment (Build Your Personal Agent) was reviewed one final time for
 
 **Deliverable:** A working Project Guardian agent that runs on my real projects and produces a truthful weekly report — with the five FL-06 evaluation cases passing as its test suite.
 
-**Location:** `D:\WORK - ARCHIVE\IMPORTANT CODING DATA AND PROJECTS\PROJECTS\project-guardian\` (its own git repo, commit `27f01e7`)
+**Location:** https://github.com/ZAYNINFINITY/project-guardian (local clone at `D:\WORK - ARCHIVE\...\PROJECTS\project-guardian\`, commit `27f01e7`)
 
 **How to run:**
 ```powershell

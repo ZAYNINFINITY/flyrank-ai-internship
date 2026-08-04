@@ -100,8 +100,9 @@ Copy this per assignment. No code files — just evidence, links, and proof.
 
 **Attach:** `week-05/fl-07-build-your-personal-agent.md`
 **Screenshots:** none
-**Live:** N/A (local CLI — run `npm run` in `PROJECTS\project-guardian\`)
+**Live:** N/A (local CLI)
 **Repo links:**
+- https://github.com/ZAYNINFINITY/project-guardian
 - https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-05/fl-07-build-your-personal-agent.md
 
 ---

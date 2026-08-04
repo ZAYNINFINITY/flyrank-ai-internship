@@ -31,7 +31,7 @@ This document is a snapshot, not a prediction — update it as work lands, don't
 | Phase C — Cohesive Museum Wiring | Done (implementation + evidence: `week-05/phase-c-cohesive-wiring.md`, 7 screenshots, T1–T12 verification) |
 | Ship the Ugly One | Done (evidence: `week-05/ship-the-ugly-one.md`, live site, real reviewer 8/10) |
 | FL-06 — Design Your Personal Agent | Done (design doc: `week-05/fl-06-design-your-personal-agent.md` — Project Guardian blueprint) |
-| FL-07 — Build Your Personal Agent | Done (Checkpoint 1, 16/16 eval cases; local repo `PROJECTS\project-guardian`, commit `27f01e7`; evidence `week-05/fl-07-build-your-personal-agent.md`) |
+| FL-07 — Build Your Personal Agent | Done (Checkpoint 1, 16/16 eval cases; GitHub repo https://github.com/ZAYNINFINITY/project-guardian, commit `27f01e7`; evidence `week-05/fl-07-build-your-personal-agent.md`) |
 | PF-04 — Personal Website Live | Done (evidence: `week-05/pf-04-personal-website.md`, DNS walkthrough; site `zainportfoli0.netlify.app` live, LinkedIn/GitHub/CV/booking links complete) |
 
 Week 5 supporting documentation (evidence docs, 13 screenshots, project memory sync, submission packet) — see `week-05/submission-summary.md`. Not a dashboard assignment.
@@ -153,7 +153,7 @@ Week 5 is complete and submission-ready (implementation + evidence + documentati
 - **FE-08 — Chat Error States & Recovery:** error classification (`chat-error-banner.tsx`), `ErrorBoundary`, SDK-native recovery (`regenerate()`/`clearError()`), friendly route 500 body, designed first-run empty state, route-segment `error.tsx`. Evidence: `week-05/fe-08-error-recovery.md` + 4 screenshots (Checkpoint 1 pass).
 - **Ship the Ugly One:** live site shipped ugly with honest self-review + one real reviewer (8/10). Evidence: `week-05/ship-the-ugly-one.md`.
 - **FL-06 — Design Your Personal Agent:** Project Guardian design doc (job, human-in-the-loop, tools, instructions draft, 5 eval cases, guardrails). Evidence: `week-05/fl-06-design-your-personal-agent.md`.
-- **FL-07 — Build Your Personal Agent:** Project Guardian Checkpoint 1 built as a deterministic Node CLI (read-only git, one owned report file, no LLM dependency); 16/16 eval-case assertions pass. Local repo `PROJECTS\project-guardian` (commit `27f01e7`); no separate GitHub repo required. Evidence: `week-05/fl-07-build-your-personal-agent.md`.
+- **FL-07 — Build Your Personal Agent:** Project Guardian Checkpoint 1 built as a deterministic Node CLI (read-only git, one owned report file, no LLM dependency); 16/16 eval-case assertions pass. GitHub repo https://github.com/ZAYNINFINITY/project-guardian (commit `27f01e7`). Evidence: `week-05/fl-07-build-your-personal-agent.md`.
 - **PF-04 — Personal Website Live:** `zainportfoli0.netlify.app` live over HTTPS; LinkedIn/GitHub/CV/booking links complete; DNS walkthrough in own words. Evidence: `week-05/pf-04-personal-website.md`.
 - **Museum Spatial System (capstone milestone):** world graph + renderer + entrance/reception/gallery/collections rooms. Commit `3b295b5`.
 - **Phase A — AI Communication Layer (capstone milestone):** Curator assistant, streaming route, repository injection seam. Commits `defa39e`, `ba83c8d`.

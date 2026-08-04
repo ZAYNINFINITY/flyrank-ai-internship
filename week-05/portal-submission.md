@@ -124,6 +124,65 @@ Copy-paste ready resources for each Week 5 assignment. Attach the files / paste 
 
 ---
 
+## Assignment 6 — PF-04: Personal Website Live on the FlyRank Domain
+
+**Summary:** Personal portfolio live over HTTPS at a clean, public URL — positioning, education, experience, skills, projects, working LinkedIn / GitHub / CV / booking links, and a DNS walkthrough (in my own words) explaining how the site resolves today on Netlify and how `zain.flyrank.ai` will be pointed at it as a CNAME once the subdomain is provisioned.
+
+**Live URL:** https://zainportfoli0.netlify.app
+
+**Attach:**
+- https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-05/pf-04-personal-website.md
+
+**Note for instructors:** See below.
+
+---
+
+## Note for Instructors — PF-04
+
+Hi team, a few notes on this submission:
+
+1. **Personal website vs capstone:** My personal website (`zainportfoli0.netlify.app`, built with Hugo on Netlify) is separate from my capstone project — the Plinth museum (`plinth-cyan.vercel.app`). This submission is about the personal website going live with the required links and DNS understanding. The capstone museum is submitted under its own Week 5 FE assignments.
+2. **Links verified live:** LinkedIn, GitHub, and CV (`/files/resume.pdf`, 200 OK) are all working links on the site. Contact is available via email.
+3. **Booking link:** *(confirmed missing on live site as of submission audit — a schedule-a-call / Calendly link is the one outstanding item; if added before submission, note it here)*
+4. **DNS walkthrough:** Included in the attached doc — explains the CNAME record for `zain.flyrank.ai` → `zainportfoli0.netlify.app`, the resolver flow, and what I will do when the subdomain is provisioned.
+5. **Future `zain.flyrank.ai`:** The walkthrough documents the exact record and steps; I'll add the subdomain in Netlify's Domain management when it's available and re-verify the padlock.
+
+---
+
+## Assignment 7 — Ship the Ugly One
+
+**Summary:** Shipped the live museum (https://plinth-cyan.vercel.app) — every sitemap page reachable, real projects as exhibits, fully explainable. A real reviewer (a friend) explored the portfolio; overall impression **8/10**. A separate honest "Still Ugly" self-review lists the known visual-depth gaps (column-based rooms, border-link doors, flat atmosphere, etc.) as the roadmap for later polish.
+
+**Attach:**
+- https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-05/ship-the-ugly-one.md
+
+---
+
+## Assignment 8 — FL-06: Design Your Personal Agent
+
+**Summary:** Designed **Project Guardian** — a weekly, read-only, single-file-write project-status agent for my real work. The design doc locks the job definition (weekly Sunday-evening status snapshot + top blockers), the human-in-the-loop contract, the read-only tool surface, a copy-ready instructions draft, five evaluation cases (which became the FL-07 test suite), and hard guardrails (read-only git, no secrets, one owned file).
+
+**Attach:**
+- https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-05/fl-06-design-your-personal-agent.md
+
+---
+
+## Assignment 9 — FL-07: Build Your Personal Agent (Checkpoint 1)
+
+**Summary:** Built **Project Guardian** as a deterministic Node CLI — reads git history + task files across my projects, classifies each repo MOVED / STALLED / UNREADABLE, ranks blockers with <30min next steps, writes exactly one owned file (`guardian-report.md`). No LLM dependency in Checkpoint 1: the five eval cases are factual behaviors, so determinism beats a model call for correctness. **16/16 eval-case assertions pass**; live run on real repos was honest (internship repo = MOVED, Collaborative Workspace = STALLED w/ intent, ScrollStreak = UNREADABLE flagged for confirmation).
+
+**Repo:** https://github.com/ZAYNINFINITY/project-guardian
+
+**Attach:**
+- https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-05/fl-07-build-your-personal-agent.md
+- https://github.com/ZAYNINFINITY/project-guardian/blob/main/src/index.js
+- https://github.com/ZAYNINFINITY/project-guardian/blob/main/src/scanner.js
+- https://github.com/ZAYNINFINITY/project-guardian/blob/main/src/classifier.js
+- https://github.com/ZAYNINFINITY/project-guardian/blob/main/src/report.js
+- https://github.com/ZAYNINFINITY/project-guardian/blob/main/test/eval-cases.js
+
+---
+
 ## Supporting Documentation (not a dashboard assignment)
 
 Evidence docs, screenshots, project memory, and this packet make the completed assignments verifiable and the submission copy-ready.

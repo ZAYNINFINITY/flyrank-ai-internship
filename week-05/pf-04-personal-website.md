@@ -58,8 +58,8 @@ That is the only record type I need — I am pointing a hostname at another host
 | Site live over HTTPS on a clean, public URL | ✅ `zainportfoli0.netlify.app`, verified in private window |
 | Positioning + working LinkedIn link | ✅ present |
 | Working GitHub link | ✅ present |
-| Working CV link | ✅ `/files/resume.pdf` (200, PDF) |
-| Booking link | ✅ added by the user |
+| Working CV link | ✅ `/files/resume.pdf` (200, PDF, 401 KB — updated 2026-07-21) |
+| Booking link | ✅ `https://cal.com/zayn-oj26mm` (live "Book a Call" button on About section) |
 | DNS walkthrough (own words) | ✅ this document |
 | Understand every deployed file | ✅ Hugo build, source understood |
 | Site linked from LinkedIn + CV | ✅ completed by the user |

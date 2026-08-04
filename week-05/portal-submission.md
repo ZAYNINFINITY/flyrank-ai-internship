@@ -143,7 +143,7 @@ Hi team, a few notes on this submission:
 
 1. **Personal website vs capstone:** My personal website (`zainportfoli0.netlify.app`, built with Hugo on Netlify) is separate from my capstone project — the Plinth museum (`plinth-cyan.vercel.app`). This submission is about the personal website going live with the required links and DNS understanding. The capstone museum is submitted under its own Week 5 FE assignments.
 2. **Links verified live:** LinkedIn, GitHub, and CV (`/files/resume.pdf`, 200 OK) are all working links on the site. Contact is available via email.
-3. **Booking link:** *(confirmed missing on live site as of submission audit — a schedule-a-call / Calendly link is the one outstanding item; if added before submission, note it here)*
+3. **Booking link:** ✅ live — "Book a Call" button on the About section points to https://cal.com/zayn-oj26mm (verified live 2026-08-04, deployed from `portfolio-web` commit `dcb71eb`).
 4. **DNS walkthrough:** Included in the attached doc — explains the CNAME record for `zain.flyrank.ai` → `zainportfoli0.netlify.app`, the resolver flow, and what I will do when the subdomain is provisioned.
 5. **Future `zain.flyrank.ai`:** The walkthrough documents the exact record and steps; I'll add the subdomain in Netlify's Domain management when it's available and re-verify the padlock.
 

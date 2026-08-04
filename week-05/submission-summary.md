@@ -247,6 +247,30 @@ Week 5 turns the standalone Plinth rooms into a working museum with a live AI la
 
 ---
 
+## Assignment 7 — FL-07: Build Your Personal Agent (Checkpoint 1)
+
+**Status:** Complete (Checkpoint 1)
+**Summary:** Built **Project Guardian** — the FL-06 design as a working, deterministic Node CLI. It scans Zain's real repos read-only (git log/status + task files + `guardian.md`), classifies each MOVED / STALLED / UNREADABLE, ranks blockers with <30min next steps, and writes exactly one owned file (`guardian-report.md`). No LLM dependency in Checkpoint 1: the five FL-06 evaluation cases are factual behaviors, so determinism beats a model call for correctness. Test suite: **16/16 assertions pass**. Live run on real repos was honest (FlyRank Internship = MOVED, Collaborative Workspace = STALLED w/ intent, ScrollStreak = UNREADABLE flagged for confirmation).
+
+### Implementation files
+
+- `PROJECTS\project-guardian\src\index.js` — entry (config → scan → report)
+- `src\scanner.js` — read-only git + task-file scanning
+- `src\classifier.js` — MOVED/STALLED/UNREADABLE + blocker ranking
+- `src\report.js` — `guardian-report.md` template
+- `guardian.config.json` — the only config
+- `test\eval-cases.js` + `test\helpers.js` — FL-06 §5 evaluation suite (16 assertions)
+
+### Documentation / evidence
+
+- [`week-05/fl-07-build-your-personal-agent.md`](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-05/fl-07-build-your-personal-agent.md) — Checkpoint 1 write-up: build decision, guardrails honored, test table, live-run output
+
+### Live deployment
+
+- N/A — local CLI agent. Run: `npm run` in `PROJECTS\project-guardian\` (own git repo, commit `27f01e7`)
+
+---
+
 ## Week 5 Submission Documentation (supporting, not a dashboard assignment)
 
 This section is the **supporting documentation** for the Week 5 submission — evidence documents, screenshots, project documentation, and this packet. It is not a FlyRank dashboard assignment; it exists to make the completed assignments verifiable and the submission copy-ready.
@@ -302,6 +326,7 @@ This section is the **supporting documentation** for the Week 5 submission — e
 | FE-08 — Chat Error States & Recovery | ✅ | `30959f8` | /assistant |
 | Phase C — Cohesive Museum Wiring | ✅ | `bef109e` | / |
 | FL-06 — Design Your Personal Agent | ✅ (design) | design doc | N/A |
+| FL-07 — Build the Agent (Checkpoint 1) | ✅ | `27f01e7` | local CLI |
 
 Supporting documentation (evidence docs, screenshots, project memory, this packet) accompanies the submission — see [Week 5 Submission Documentation](#week-5-submission-documentation-supporting-not-a-dashboard-assignment).
 
@@ -317,6 +342,7 @@ Supporting documentation (evidence docs, screenshots, project memory, this packe
 | Phase C wiring + T1–T12 | Doc | `week-05/phase-c-cohesive-wiring.md` |
 | Screenshots | 13 PNG | `week-05/screenshots/` |
 | FL-06 agent design doc | Doc | `week-05/fl-06-design-your-personal-agent.md` |
+| FL-07 Checkpoint 1 build | Doc | `week-05/fl-07-build-your-personal-agent.md` |
 | Long-term vision (planning only) | Doc | `week-05/vision-validation.md` |
 | Submission packet | Doc | `week-05/submission-summary.md` |
 

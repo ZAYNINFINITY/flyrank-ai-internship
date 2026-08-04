@@ -8,6 +8,14 @@
 
 ---
 
+## Repository requirement — verified
+
+The FL-07 assignment (Build Your Personal Agent) was reviewed one final time for whether it requires a **separate GitHub repository**. No explicit requirement for a separate or new repository is stated in the assignment or in any stored dashboard brief. The agent already lives in its own local git repository (`PROJECTS\project-guardian\`, commit `27f01e7`), and the design + build evidence are committed in this internship repository.
+
+**Conclusion: the existing repository satisfies the assignment — no additional repository is needed. No new repository was created.**
+
+---
+
 ## Checkpoint 1: Agent works and is correct on real data
 
 **Deliverable:** A working Project Guardian agent that runs on my real projects and produces a truthful weekly report — with the five FL-06 evaluation cases passing as its test suite.

@@ -76,6 +76,46 @@ Copy this per assignment. No code files — just evidence, links, and proof.
 
 ---
 
+## Assignment 6 — Ship the Ugly One
+
+**Attach:** `week-05/ship-the-ugly-one.md`
+**Screenshots:** none
+**Live:** https://plinth-cyan.vercel.app
+**Repo links:**
+- https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-05/ship-the-ugly-one.md
+
+---
+
+## Assignment 7 — FL-06: Design Your Personal Agent
+
+**Attach:** `week-05/fl-06-design-your-personal-agent.md`
+**Screenshots:** none
+**Live:** N/A (design phase)
+**Repo links:**
+- https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-05/fl-06-design-your-personal-agent.md
+
+---
+
+## Assignment 8 — FL-07: Build Your Personal Agent (Checkpoint 1)
+
+**Attach:** `week-05/fl-07-build-your-personal-agent.md`
+**Screenshots:** none
+**Live:** N/A (local CLI — run `npm run` in `PROJECTS\project-guardian\`)
+**Repo links:**
+- https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-05/fl-07-build-your-personal-agent.md
+
+---
+
+## Assignment 9 — PF-04: Personal Website Live
+
+**Attach:** `week-05/pf-04-personal-website.md`
+**Screenshots:** none
+**Live:** https://zainportfoli0.netlify.app
+**Repo links:**
+- https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-05/pf-04-personal-website.md
+
+---
+
 ## Quick Reference
 
 | # | Assignment | MD to attach | Screenshots | Live |
@@ -85,3 +125,7 @@ Copy this per assignment. No code files — just evidence, links, and proof.
 | 3 | FE-07 Tool Results | `fe-07-tool-results.md` + `fe-07-sse-tool-call.txt` | 2 | /assistant |
 | 4 | FE-08 Error States | `fe-08-error-recovery.md` | 4 | /assistant |
 | 5 | Phase C Cohesive Wiring | `phase-c-cohesive-wiring.md` | 7 | / |
+| 6 | Ship the Ugly One | `ship-the-ugly-one.md` | — | plinth |
+| 7 | FL-06 Design Your Personal Agent | `fl-06-design-your-personal-agent.md` | — | N/A |
+| 8 | FL-07 Build the Agent (Checkpoint 1) | `fl-07-build-your-personal-agent.md` | — | local CLI |
+| 9 | PF-04 Personal Website Live | `pf-04-personal-website.md` | — | zainportfoli0.netlify.app |

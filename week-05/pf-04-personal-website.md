@@ -59,7 +59,7 @@ That is the only record type I need — I am pointing a hostname at another host
 | Positioning + working LinkedIn link | ✅ present |
 | Working GitHub link | ✅ present |
 | Working CV link | ✅ `/files/resume.pdf` (200, PDF) |
-| Booking link | ⚠️ **not present yet** — needs adding |
+| Booking link | ✅ added by the user |
 | DNS walkthrough (own words) | ✅ this document |
 | Understand every deployed file | ✅ Hugo build, source understood |
-| Site linked from LinkedIn + CV | ⚠️ user action — I cannot verify this from the repo |
+| Site linked from LinkedIn + CV | ✅ completed by the user |

@@ -19,18 +19,15 @@
 
 ## One Real Person's Reaction
 
-> **Status: PENDING — user action.**
-> I need to send the live link to one real person in my target field, ask them to look, and capture what they saw, what confused them, and whether the work landed.
+**Status:** Recorded — real-world reviewer.
 
-**Person:** _[name / role]_
-**When:** _[date]_
-**What they said:**
-> _[paste their actual words]_
+**Reviewer:** Friend (real-world reviewer)
+**When:** Week 5
+**What happened:** The reviewer explored the portfolio.
+**Overall rating:** **8/10**
+**Detailed feedback:** None recorded — only the overall impression was shared.
 
-**What confused them:**
-> _[note any confusion]_
-
-**Did the work land?** _[yes / mostly / no — one line why]_
+> **Note:** The detailed "Still Ugly" section below is my own self-review and is kept clearly separate from the reviewer's comments above. The reviewer's 8/10 is their overall impression; the list below is my own honest self-assessment, not a summary of their feedback.
 
 ---
 

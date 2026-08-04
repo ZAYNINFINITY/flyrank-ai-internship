@@ -29,6 +29,10 @@ This document is a snapshot, not a prediction — update it as work lands, don't
 | FE-07 — Tool Results & Structured Output | Done (implementation + evidence: `week-05/fe-07-tool-results.md`, raw SSE capture `week-05/fe-07-sse-tool-call.txt`, 2 screenshots) |
 | FE-08 — Chat Error States & Recovery | Done (implementation + evidence: `week-05/fe-08-error-recovery.md`, 2 screenshots) |
 | Phase C — Cohesive Museum Wiring | Done (implementation + evidence: `week-05/phase-c-cohesive-wiring.md`, 7 screenshots, T1–T12 verification) |
+| Ship the Ugly One | Done (evidence: `week-05/ship-the-ugly-one.md`, live site, real reviewer 8/10) |
+| FL-06 — Design Your Personal Agent | Done (design doc: `week-05/fl-06-design-your-personal-agent.md` — Project Guardian blueprint) |
+| FL-07 — Build Your Personal Agent | Done (Checkpoint 1, 16/16 eval cases; local repo `PROJECTS\project-guardian`, commit `27f01e7`; evidence `week-05/fl-07-build-your-personal-agent.md`) |
+| PF-04 — Personal Website Live | Done (evidence: `week-05/pf-04-personal-website.md`, DNS walkthrough; site `zainportfoli0.netlify.app` live, LinkedIn/GitHub/CV/booking links complete) |
 
 Week 5 supporting documentation (evidence docs, 13 screenshots, project memory sync, submission packet) — see `week-05/submission-summary.md`. Not a dashboard assignment.
 
@@ -143,13 +147,17 @@ Development resumed from the current state of `week-03/app/` exactly as it stand
 
 ## Week 5 Completion (verified 2026-08-04)
 
-Week 5 is complete and submission-ready (implementation + evidence + documentation). The Week 5 submission packet — `week-05/submission-summary.md` — is the canonical submission document: it maps all completed Week 5 dashboard assignments (Museum Spatial System, Phase A AI Communication Layer, FE-07, FE-08, Phase C) to their implementation, evidence, and commits, and prepares a comprehensive submission packet. The dashboard structure is the source of truth for grouping; the repository is the implementation evidence. One additional Week 5 dashboard item remains TBD and is not part of the submission. Evidence documents, screenshots, and project memory are supporting documentation, not a separate dashboard assignment.
+Week 5 is complete and submission-ready (implementation + evidence + documentation). The Week 5 submission packet — `week-05/submission-summary.md` — is the canonical submission document: it maps all completed Week 5 dashboard assignments to their implementation, evidence, and commits. Dashboard assignments are FE-07, FE-08, Ship the Ugly One, FL-06, FL-07, and PF-04; the Museum Spatial System, Phase A, and Phase C entries below are the capstone (Plinth) milestones that carry the FE-07/FE-08 code, not separate dashboard items. Evidence documents, screenshots, and project memory are supporting documentation, not a separate dashboard assignment.
 
-- **Museum Spatial System:** world graph + renderer + entrance/reception/gallery/collections rooms. Commit `3b295b5`.
-- **Phase A — AI Communication Layer:** Curator assistant, streaming route, repository injection seam. Commits `defa39e`, `ba83c8d`.
-- **FE-07 — Tool Results & Structured Output:** `streamText` + `exhibitLookup` tool (Zod `inputSchema`, typed `Exhibit[]`), `@ai-sdk/openai-compatible` → OpenRouter. Evidence: `week-05/fe-07-tool-results.md` + `fe-07-sse-tool-call.txt` (genuine tool call capture) + 2 screenshots.
-- **FE-08 — Chat Error States & Recovery:** error classification (`chat-error-banner.tsx`), `ErrorBoundary`, SDK-native recovery (`regenerate()`/`clearError()`), friendly route 500 body. Evidence: `week-05/fe-08-error-recovery.md` + 2 screenshots.
-- **Phase C — Cohesive Museum Wiring:** home "Enter the Museum" CTA, nav Museum link, `?collection=` gallery filtering via the repository seam, exhibit ↔ long-form cross-links both directions, `/dashboard` inbound + real `/login` link. Evidence: `week-05/phase-c-cohesive-wiring.md` + 7 screenshots, T1–T12 verification.
+- **FE-07 — Tool Results & Structured Output:** `streamText` + `exhibitLookup` tool (Zod `inputSchema`, typed `Exhibit[]`), `@ai-sdk/openai-compatible` → OpenRouter; tool contract documented in `week-03/app/README.md`. Evidence: `week-05/fe-07-tool-results.md` + `fe-07-sse-tool-call.txt` (genuine tool call capture) + 2 screenshots.
+- **FE-08 — Chat Error States & Recovery:** error classification (`chat-error-banner.tsx`), `ErrorBoundary`, SDK-native recovery (`regenerate()`/`clearError()`), friendly route 500 body, designed first-run empty state, route-segment `error.tsx`. Evidence: `week-05/fe-08-error-recovery.md` + 4 screenshots (Checkpoint 1 pass).
+- **Ship the Ugly One:** live site shipped ugly with honest self-review + one real reviewer (8/10). Evidence: `week-05/ship-the-ugly-one.md`.
+- **FL-06 — Design Your Personal Agent:** Project Guardian design doc (job, human-in-the-loop, tools, instructions draft, 5 eval cases, guardrails). Evidence: `week-05/fl-06-design-your-personal-agent.md`.
+- **FL-07 — Build Your Personal Agent:** Project Guardian Checkpoint 1 built as a deterministic Node CLI (read-only git, one owned report file, no LLM dependency); 16/16 eval-case assertions pass. Local repo `PROJECTS\project-guardian` (commit `27f01e7`); no separate GitHub repo required. Evidence: `week-05/fl-07-build-your-personal-agent.md`.
+- **PF-04 — Personal Website Live:** `zainportfoli0.netlify.app` live over HTTPS; LinkedIn/GitHub/CV/booking links complete; DNS walkthrough in own words. Evidence: `week-05/pf-04-personal-website.md`.
+- **Museum Spatial System (capstone milestone):** world graph + renderer + entrance/reception/gallery/collections rooms. Commit `3b295b5`.
+- **Phase A — AI Communication Layer (capstone milestone):** Curator assistant, streaming route, repository injection seam. Commits `defa39e`, `ba83c8d`.
+- **Phase C — Cohesive Museum Wiring (capstone milestone):** home "Enter the Museum" CTA, nav Museum link, `?collection=` gallery filtering via the repository seam, exhibit ↔ long-form cross-links both directions, `/dashboard` inbound + real `/login` link. Evidence: `week-05/phase-c-cohesive-wiring.md` + 7 screenshots, T1–T12 verification.
 - **Week 5 supporting documentation:** all evidence docs, 13 screenshots, and project memory synchronized; submission packet at `week-05/submission-summary.md`.
 - **Vision document (planning only):** `week-05/vision-validation.md` records the long-term direction; it does not change the plan or authorize refactoring.
 - **Quality gates:** `npx eslint .` → 0 errors (3 pre-existing warnings); `npm run build` → green, 17 routes.

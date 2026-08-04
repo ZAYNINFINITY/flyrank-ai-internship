@@ -369,7 +369,7 @@ Supporting documentation (evidence docs, screenshots, project memory, this packe
 
 ## Notes for Reviewer
 
-- **Week 5 dashboard structure is the source of truth** for assignment grouping; the repository is the implementation evidence. This packet maps all completed Week 5 dashboard assignments and prepares a comprehensive submission packet — it does not assert an assignment count beyond what the dashboard explicitly defines. One additional dashboard item remains **TBD** and is intentionally not part of this submission.
+- **Week 5 dashboard structure is the source of truth** for assignment grouping; the repository is the implementation evidence. All six Week 5 dashboard assignments (FE-07, FE-08, Ship the Ugly One, FL-06, FL-07, PF-04) are complete and submission-ready. One additional dashboard item is marked **TBD** by the dashboard itself and is intentionally not part of this submission.
 - **Everything is preserved and extended, not rewritten.** Week 5 builds on the Week 3/4 foundation (routes, primitives, FE-05/FE-06, FL-04/FL-05); no completed assignment was rebuilt.
 - **AI provider:** Google Gemini (2.5 flash-lite) via OpenRouter (`createOpenAICompatible`), config in `lib/ai/config.ts`, swap point in `lib/ai/provider.ts`.
 - **Model-driven tools:** FE-07's `exhibitLookup` runs on the AI SDK's `streamText`; tool output is typed `Exhibit[]` from the `ExhibitRepository` interface (mock-backed today, swap in `lib/repository/index.ts`).

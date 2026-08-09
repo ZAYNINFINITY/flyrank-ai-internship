@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { ToolStateViews, type ToolViewPart } from "./tool-state-views";
 import { ExhibitToolResult, isExhibitArray } from "./exhibit-tool-result";
 import { ChatErrorBanner } from "./chat-error-banner";
+import { MotionButton } from "@/components/primitives/motion-button";
 
 const EXAMPLE_PROMPTS = [
   "Show me infrastructure exhibits",
@@ -52,6 +53,8 @@ export function ChatPanel({
   const [showJumpToLatest, setShowJumpToLatest] = useState(false);
 
   const isLoading = status === "streaming" || status === "submitted";
+  const motionState =
+    error !== undefined ? "error" : isLoading ? "loading" : "idle";
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -228,6 +231,7 @@ export function ChatPanel({
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Type a message..."
+            aria-label="Type a message"
             className="flex-1 rounded-lg border border-text/10 bg-transparent px-4 py-3 font-body text-[14px] text-text placeholder:text-text/30 focus:outline-2 focus:outline-offset-2 focus:outline-accent"
             disabled={isLoading}
           />
@@ -243,25 +247,37 @@ export function ChatPanel({
               </svg>
             </button>
           ) : (
-            <button
-              type="submit"
+            <MotionButton
+              variant="solid"
+              state={motionState}
+              label=""
+              loadingLabel=""
+              successLabel=""
+              errorLabel=""
+              icon={
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M3 13V8h4M13 3L6 10l4 4 3-11z" />
+                </svg>
+              }
+              onClick={() => {
+                if (input.trim()) {
+                  sendMessage({ text: input });
+                  setInput("");
+                }
+              }}
               disabled={!input.trim()}
-              className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent text-white transition-opacity disabled:opacity-30 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+              className="h-10 w-10 px-0"
               aria-label="Send message"
-            >
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 16 16"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M3 13V8h4M13 3L6 10l4 4 3-11z" />
-              </svg>
-            </button>
+            />
           )}
         </div>
       </form>

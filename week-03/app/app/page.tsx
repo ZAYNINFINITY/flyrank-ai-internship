@@ -1,4 +1,4 @@
-import { SpotlightButton } from "@/components/primitives/spotlight-button";
+import { MotionButton } from "@/components/primitives/motion-button";
 import { Frame } from "@/components/primitives/frame";
 import { MuseumTagLabel } from "@/components/primitives/museum-tag-label";
 
@@ -23,7 +23,7 @@ export default function HomePage() {
             competing for attention.
           </p>
           <div className="mt-8">
-            <SpotlightButton>Create your exhibit</SpotlightButton>
+            <MotionButton variant="solid" label="Create your exhibit" />
           </div>
         </div>
       </section>

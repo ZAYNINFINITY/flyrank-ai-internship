@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MotionButton } from "./motion-button";
 
@@ -41,9 +41,13 @@ describe("MotionButton", () => {
 
   it("drives the full async cycle on click", async () => {
     const user = userEvent.setup();
-    const onAsyncClick = vi.fn(async () => {
-      await new Promise((resolve) => setTimeout(resolve, 100));
-    });
+    let resolveAsync: (() => void) | undefined;
+    const onAsyncClick = vi.fn(
+      () =>
+        new Promise<void>((resolve) => {
+          resolveAsync = resolve;
+        }),
+    );
     render(
       <MotionButton
         label="Deploy"
@@ -58,14 +62,21 @@ describe("MotionButton", () => {
     await user.click(button);
 
     expect(onAsyncClick).toHaveBeenCalledTimes(1);
-    expect(await screen.findByRole("button", { name: "Deploying…" })).toHaveAttribute(
+    // The loading state persists until the promise is manually resolved, so
+    // this assertion is deterministic — no transient 100 ms window to race.
+    const loading = screen.getByRole("button", { name: "Deploying…" });
+    expect(loading).toHaveAttribute("data-state", "loading");
+    expect(loading).toHaveAttribute("aria-busy", "true");
+
+    resolveAsync?.();
+    await act(async () => {});
+    expect(screen.getByRole("button", { name: "Deployed" })).toHaveAttribute(
       "data-state",
-      "loading",
+      "success",
     );
 
-    const deployed = await screen.findByRole("button", { name: "Deployed" });
-    expect(deployed).toHaveAttribute("data-state", "success");
-
+    // Reset to idle fires on the real feedbackDuration timer; findByRole waits
+    // for it, and idle persists so there is no race.
     await screen.findByRole("button", { name: "Deploy" });
     expect(screen.getByRole("button", { name: "Deploy" })).toHaveAttribute(
       "data-state",

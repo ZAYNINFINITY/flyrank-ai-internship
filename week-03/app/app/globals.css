@@ -34,6 +34,14 @@ h1, h2, h3, h4, h5, h6 {
 
 /* ─── Motion language ─────────────────────────────────────── */
 
+/* Easing tokens for the motion language — referenced by motion-button.tsx
+   via var(--motion-ease-*). Kept in sync with lib/motion/tokens.ts. */
+:root {
+  --motion-ease-standard: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --motion-ease-enter: cubic-bezier(0.05, 0.7, 0.1, 1);
+  --motion-ease-shake: cubic-bezier(0.36, 0.07, 0.19, 0.97);
+}
+
 @keyframes plinth-spin {
   to { transform: rotate(360deg); }
 }

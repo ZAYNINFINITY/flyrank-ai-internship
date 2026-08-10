@@ -14,22 +14,22 @@
 
 Week 6 hardens the Plinth capstone. FE-AA1 gives the app a real interaction language: a `MotionButton` primitive whose state machine (idle → loading → success/error → idle) is choreographed entirely with compositor-friendly `transform`/`opacity` transitions, with an interruptible async cycle, `aria-busy`, and reduced-motion support. FE-09 locks the regression baseline: 29 component tests across 5 files, one real Playwright e2e walk of the museum, and a GitHub Actions CI workflow that verifies lint, types, tests, build, and the browser flow on every push. Explain It Like You Built It documents the museum world graph and spatial navigation in plain language.
 
-**Quality gates (verified locally and in CI):** ESLint → 0 errors (3 pre-existing warnings); `npm run typecheck` → clean; `npm test` → 29/29 on CI (28/29 locally — one timing-fragile test, see audit findings); `npm run build` → green; `npm run test:e2e` → 1/1 passed locally and in CI.
+**Quality gates (verified locally and in CI):** ESLint → 0 errors (3 pre-existing warnings); `npm run typecheck` → clean; `npm test` → 29/29 locally (3 consecutive runs) and 29/29 in CI; `npm run build` → green; `npm run test:e2e` → 1/1 passed locally and in CI.
 
 ---
 
 ## Assignment 1 — FE-AA1: Buttons with a Brain
 
-**Status:** Complete — one genuine motion bug documented (see note below)
+**Status:** Complete (post-fix, verified live)
 **Summary:** A button primitive that communicates its full lifecycle — idle, hover/focus, loading, success, error — instead of a silent `<button>`. "With a brain" = the button owns its async state machine: it disables itself and sets `aria-busy` while loading, swaps to success/error labels, shakes on error, resets after a configurable feedback window, and is interruptible (spam-clicks never double-fire). Everything animates via `transform` + `opacity` only (no layout thrash), and reduced-motion collapses the movement while keeping the feedback. The primitive is intentionally not tied to the current website's look — the variant system plus shared motion tokens are designed to survive the future museum presentation pass unchanged.
 
-> **Known issue (verified in live browser):** the success "pop" and error "shake" keyframe animations reference `var(--motion-ease-enter)` / `var(--motion-ease-shake)`, but those custom properties are not defined in `app/globals.css`, so the `animation` shorthand is dropped (computed `animation-name: none`). The state feedback itself works (labels, icons, tints swap); the choreography is inert until the variables are defined. Full detail + fix: [`week-6-audit-findings.md`](week-6-audit-findings.md) §2.
+> **Post-audit fix (`c6def02`, verified live):** the success "pop" and error "shake" keyframe animations reference `var(--motion-ease-enter)` / `var(--motion-ease-shake)`, which were not defined in `app/globals.css` — so the `animation` shorthand was dropped (computed `animation-name: none`) and the choreography was inert. The three `--motion-ease-*` custom properties are now defined in `:root` (synced with `lib/motion/tokens.ts`); computed styles on the live site now show `plinth-pop 0.32s cubic-bezier(0.05,0.7,0.1,1)` and `plinth-shake 0.5s cubic-bezier(0.36,0.07,0.19,0.97)`. Full detail: [`week-6-audit-findings.md`](week-6-audit-findings.md) §2.
 
 ### Implementation files (main)
 
 - [`week-03/app/components/primitives/motion-button.tsx`](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-03/app/components/primitives/motion-button.tsx) — the state-machine button primitive (controlled + uncontrolled modes, `aria-busy`, interruptible guard, spinner/check/alert icons)
 - [`week-03/app/lib/motion/tokens.ts`](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-03/app/lib/motion/tokens.ts) — shared motion tokens: `MotionState`, `MOTION_FEEDBACK_DURATION_MS`, easing & duration constants
-- [`week-03/app/app/globals.css`](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-03/app/app/globals.css) — `plinth-pop`, `plinth-spin`, `plinth-shake` keyframes + reduced-motion collapse (note: the `--motion-ease-*` vars referenced by `motion-button.tsx` are **not** defined here — see known issue above)
+- [`week-03/app/app/globals.css`](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-03/app/app/globals.css) — `plinth-pop`, `plinth-spin`, `plinth-shake` keyframes + the `--motion-ease-*` custom properties (defined in `:root`, synced with `lib/motion/tokens.ts`) + reduced-motion collapse
 
 ### Where it's used in production
 
@@ -45,12 +45,13 @@ Week 6 hardens the Plinth capstone. FE-AA1 gives the app a real interaction lang
 
 - [`week-03/docs/screenshots/fe-aa1-motion-idle.png`](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-03/docs/screenshots/fe-aa1-motion-idle.png) — controlled idle
 - [`week-03/docs/screenshots/fe-aa1-motion-loading.png`](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-03/docs/screenshots/fe-aa1-motion-loading.png) — forced loading (spinner + busy)
-- [`week-03/docs/screenshots/fe-aa1-motion-success.png`](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-03/docs/screenshots/fe-aa1-motion-success.png) — forced success (check + tint; pop animation inert — see note above)
-- [`week-03/docs/screenshots/fe-aa1-motion-error.png`](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-03/docs/screenshots/fe-aa1-motion-error.png) — forced error (retry + red tint; shake animation inert — see note above)
+- [`week-03/docs/screenshots/fe-aa1-motion-success.png`](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-03/docs/screenshots/fe-aa1-motion-success.png) — forced success (check + tint; pop verified live post-fix)
+- [`week-03/docs/screenshots/fe-aa1-motion-error.png`](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-03/docs/screenshots/fe-aa1-motion-error.png) — forced error (retry + red tint; shake verified live post-fix)
 
 ### Commits
 
 - `e77f609` — `feat(week6): motion language, 29 component tests, Playwright e2e, GitHub Actions CI`
+- `c6def02` — `fix(week6): define motion easing tokens (FE-AA1 pop/shake animate) + make async-cycle test deterministic`
 
 ### Live deployment
 
@@ -90,11 +91,13 @@ Week 6 hardens the Plinth capstone. FE-AA1 gives the app a real interaction lang
 | `e77f609` (motion language + tests + CI) | [31317092875](https://github.com/ZAYNINFINITY/flyrank-ai-internship/actions/runs/31317092875) | ✅ passed |
 | `34a5f94` (FE-09 evidence) | [31320432472](https://github.com/ZAYNINFINITY/flyrank-ai-internship/actions/runs/31320432472) | ✅ passed |
 | `c2905c6` (Phase 8 doc) | [31328347815](https://github.com/ZAYNINFINITY/flyrank-ai-internship/actions/runs/31328347815) | ✅ passed |
+| `c6def02` (motion tokens fix + deterministic test) | [31426007202](https://github.com/ZAYNINFINITY/flyrank-ai-internship/actions/runs/31426007202) | ✅ passed |
 
 ### Commits
 
 - `e77f609` — `feat(week6): motion language, 29 component tests, Playwright e2e, GitHub Actions CI`
 - `34a5f94` — `docs(week6): record FE-09 green CI evidence (run 31317092875, screenshot)`
+- `c6def02` — `fix(week6): define motion easing tokens (FE-AA1 pop/shake animate) + make async-cycle test deterministic`
 
 ---
 
@@ -116,7 +119,7 @@ Week 6 hardens the Plinth capstone. FE-AA1 gives the app a real interaction lang
 ## Remaining items
 
 - **None blocking.** One Week 5 dashboard item remains TBD (as before) and is not part of this submission.
-- **Owner decision required (see audit):** the `--motion-ease-*` definitions fix (FE-AA1 pop/shake) and the timing-fragile test — both are small, safe fixes; neither blocks CI.
+- Both audit findings (FE-AA1 motion bug, timing-fragile test) were **fixed and verified** at `c6def02`.
 - See [`week-03/docs/week-6-audit-findings.md`](week-6-audit-findings.md) for the full audit against repo state.
 
 ---

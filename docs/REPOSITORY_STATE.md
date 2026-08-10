@@ -1,6 +1,6 @@
 # Repository State
 
-Last verified against repository contents: 2026-08-04.
+Last verified against repository contents: 2026-08-09.
 This document is a snapshot, not a prediction — update it as work lands, don't rewrite history in it.
 
 ---
@@ -9,7 +9,7 @@ This document is a snapshot, not a prediction — update it as work lands, don't
 
 - **Branch:** `main` (only branch present in `.git/refs/heads` at time of writing)
 - **Purpose:** Tracks weekly FlyRank AI Frontend Engineering internship deliverables (`week-01/` – `week-08/`) plus the in-progress Plinth capstone build living in `week-03/app/`
-- **Current deployment:** [plinth-cyan.vercel.app](https://plinth-cyan.vercel.app) — Next.js 16 / React 19 / Tailwind v4 app, 17 routes (entrance, explore, gallery, collection, exhibit/e/[id], exhibit/[username], assistant, dashboard, login, about, health, playground, api/chat, home, reception, icon, 404), deployed via Vercel from `week-03/app/`
+- **Current deployment:** [plinth-cyan.vercel.app](https://plinth-cyan.vercel.app) — Next.js 16 / React 19 / Tailwind v4 app, 18 routes (entrance, explore, gallery, collection, exhibit/e/[id], exhibit/[username], assistant, dashboard, login, about, health, playground, playground/motion-lab, api/chat, home, reception, icon, 404), deployed via Vercel from `week-03/app/`
 
 ### Assignments Completed (repository-verified)
 
@@ -164,3 +164,18 @@ Week 5 is complete and submission-ready (implementation + evidence + documentati
 - **Deployment:** live at [plinth-cyan.vercel.app](https://plinth-cyan.vercel.app) — home CTA, `/entrance`, `/reception`, `/gallery?collection=`, exhibit rooms, and `/assistant` all verified live.
 
 **Week 6 starting point:** build forward from the current museum (17 routes) per `docs/roadmap.md` — Milestone 5 (Curator Intelligence) is next. Do not rebuild completed Week 5 work; extend it.
+
+---
+
+## Week 6 Completion (verified 2026-08-10)
+
+Week 6 is complete and submission-ready (implementation + tests + evidence + documentation). The Week 6 submission packet — `week-03/docs/week-6-submission-summary.md` — is the canonical submission document: it maps all three Week 6 dashboard assignments to their implementation, evidence, screenshots, live URLs, and commits.
+
+- **FE-AA1 — Buttons with a Brain:** `MotionButton` state-machine primitive (`components/primitives/motion-button.tsx`), shared motion tokens (`lib/motion/tokens.ts`), `plinth-*` keyframes in `app/globals.css`, used in the home CTA and the Curator Send button; demo/force page at `/playground/motion-lab`. 8 dedicated tests. Evidence: 4 live screenshots (`week-03/docs/screenshots/fe-aa1-motion-{idle,loading,success,error}.png`). Commit `e77f609`.
+- **FE-09 — Testing Pass:** 29 component tests across 5 files (motion-button, chat-panel, tool-state-views, login, exhibit-tool-result), real Playwright e2e (`e2e/museum-flow.spec.ts`, AI stubbed via SSE), and GitHub Actions CI (`.github/workflows/ci.yml`) covering lint, typecheck, unit, build, e2e. All three Week 6 CI runs green (31317092875, 31320432472, 31328347815). Evidence: `week-03/docs/fe-09-ci-evidence.md` + screenshot. Commits `e77f609`, `34a5f94`.
+- **Explain It Like You Built It:** plain-language walkthrough of the museum world graph & spatial navigation. Evidence: `week-03/docs/phase-8-explain-it-like-you-built-it.md`. Commit `c2905c6`.
+- **Quality gates (local + CI):** ESLint 0 errors (3 pre-existing warnings), typecheck clean, build green, e2e 1/1 passed locally and in CI. Unit tests: 29/29 on CI; 28/29 locally with one timing-fragile test (see audit findings).
+- **Audit journal:** `week-03/docs/week-6-audit-findings.md` — full per-assignment audit, including one genuine bug finding (`--motion-ease-*` custom properties never defined → FE-AA1 pop/shake animations inert), one timing-fragile unit test, and the owner-confirmation items before Week 7.
+- **Deployment:** live at [plinth-cyan.vercel.app](https://plinth-cyan.vercel.app) — `/playground/motion-lab` verified live.
+
+**Week 7 starting point:** build forward per `docs/roadmap.md` — Milestone 5 (Curator Intelligence) is next. Do not rebuild completed Week 5/6 work; extend it.

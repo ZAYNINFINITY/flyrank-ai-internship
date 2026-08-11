@@ -43,10 +43,10 @@ Week 6 hardens the Plinth capstone. FE-AA1 gives the app a real interaction lang
 
 ### Evidence / screenshots
 
-- [`week-03/docs/screenshots/fe-aa1-motion-idle.png`](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-03/docs/screenshots/fe-aa1-motion-idle.png) — controlled idle
-- [`week-03/docs/screenshots/fe-aa1-motion-loading.png`](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-03/docs/screenshots/fe-aa1-motion-loading.png) — forced loading (spinner + busy)
-- [`week-03/docs/screenshots/fe-aa1-motion-success.png`](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-03/docs/screenshots/fe-aa1-motion-success.png) — forced success (check + tint; pop verified live post-fix)
-- [`week-03/docs/screenshots/fe-aa1-motion-error.png`](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-03/docs/screenshots/fe-aa1-motion-error.png) — forced error (retry + red tint; shake verified live post-fix)
+- [`week-06/screenshots/fe-aa1-motion-idle.png`](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-06/screenshots/fe-aa1-motion-idle.png) — controlled idle
+- [`week-06/screenshots/fe-aa1-motion-loading.png`](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-06/screenshots/fe-aa1-motion-loading.png) — forced loading (spinner + busy)
+- [`week-06/screenshots/fe-aa1-motion-success.png`](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-06/screenshots/fe-aa1-motion-success.png) — forced success (check + tint; pop verified live post-fix)
+- [`week-06/screenshots/fe-aa1-motion-error.png`](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-06/screenshots/fe-aa1-motion-error.png) — forced error (retry + red tint; shake verified live post-fix)
 
 ### Commits
 
@@ -81,8 +81,8 @@ Week 6 hardens the Plinth capstone. FE-AA1 gives the app a real interaction lang
 
 ### Evidence / screenshots
 
-- [`week-03/docs/fe-09-ci-evidence.md`](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-03/docs/fe-09-ci-evidence.md) — evidence doc (what the workflow runs, safety guarantees, how to re-run)
-- [`week-03/docs/screenshots/week6-fe-09-ci-green.png`](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-03/docs/screenshots/week6-fe-09-ci-green.png) — green CI run screenshot
+- [`week-06/fe-09-ci-evidence.md`](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-06/fe-09-ci-evidence.md) — evidence doc (what the workflow runs, safety guarantees, how to re-run)
+- [`week-06/screenshots/week6-fe-09-ci-green.png`](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-06/screenshots/week6-fe-09-ci-green.png) — green CI run screenshot
 
 ### GitHub (CI runs)
 
@@ -108,7 +108,7 @@ Week 6 hardens the Plinth capstone. FE-AA1 gives the app a real interaction lang
 
 ### Documentation
 
-- [`week-03/docs/phase-8-explain-it-like-you-built-it.md`](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-03/docs/phase-8-explain-it-like-you-built-it.md)
+- [`week-06/phase-8-explain-it-like-you-built-it.md`](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-06/phase-8-explain-it-like-you-built-it.md)
 
 ### Commits
 
@@ -120,7 +120,7 @@ Week 6 hardens the Plinth capstone. FE-AA1 gives the app a real interaction lang
 
 - **None blocking.** One Week 5 dashboard item remains TBD (as before) and is not part of this submission.
 - Both audit findings (FE-AA1 motion bug, timing-fragile test) were **fixed and verified** at `c6def02`.
-- See [`week-03/docs/week-6-audit-findings.md`](week-6-audit-findings.md) for the full audit against repo state.
+- See [`week-06/week-6-audit-findings.md`](week-6-audit-findings.md) for the full audit against repo state.
 
 ---
 
@@ -128,4 +128,4 @@ Week 6 hardens the Plinth capstone. FE-AA1 gives the app a real interaction lang
 
 - Working tree clean at time of submission.
 - Branch `main`, all Week 6 work committed and pushed, all CI runs green.
-- Week 6 documentation lives in `week-03/docs/` per the existing evidence convention.
+- Week 6 documentation lives in `week-06/` per the existing evidence convention.

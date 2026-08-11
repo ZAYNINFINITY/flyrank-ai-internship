@@ -59,7 +59,7 @@ Why it was broken: `var()` with no fallback referencing an undefined custom prop
 - 29 tests across 5 files (8 motion-button, 6 chat-panel, 6 tool-state-views, 5 login, 4 exhibit-tool-result) — file list verified on disk.
 - Real Playwright e2e (`e2e/museum-flow.spec.ts`) stubs `/api/chat` with a canned SSE stream; no AI API, no secrets. Passed locally (1.6m) and in CI.
 - GitHub Actions CI green on all Week 6 commits (`e77f609` → run 31317092875, `34a5f94` → run 31320432472, `c2905c6` → run 31328347815, `c6def02` → run 31426007202).
-- Evidence doc `week-03/docs/fe-09-ci-evidence.md` + screenshot exist and are referenced correctly.
+- Evidence doc `week-06/fe-09-ci-evidence.md` + screenshot exist and are referenced correctly.
 
 ### ⚠ Finding: one timing-fragile test (**RESOLVED**)
 
@@ -87,7 +87,7 @@ Why it was broken: `var()` with no fallback referencing an undefined custom prop
 
 - **README** `week-06/` row was empty → now points to the Week 6 submission packet.
 - **`docs/REPOSITORY_STATE.md`** had no Week 6 section (stale at 2026-08-04) → Week 6 completion section added.
-- **FE-AA1 evidence** was missing → packet + 4 live screenshots added (`week-03/docs/screenshots/fe-aa1-motion-{idle,loading,success,error}.png`); re-captured post-fix at commit `c6def02`.
+- **FE-AA1 evidence** was missing → packet + 4 live screenshots added (`week-06/screenshots/fe-aa1-motion-{idle,loading,success,error}.png`); re-captured post-fix at commit `c6def02`.
 - **ESLint:** 3 pre-existing warnings (unused imports: `EntityComponentProps` in `world-renderer.tsx`, `worldIndex` in `lib/museum/queries.ts`, `Wing` in `lib/museum/world.ts`). Pre-existing, non-fatal, identical to Week 5's noted warnings — left untouched.
 - Working tree clean after the Week 6 fix + docs commits.
 

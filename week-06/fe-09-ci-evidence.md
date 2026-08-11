@@ -13,8 +13,8 @@ the browser flow without ever touching a production secret or the live AI API.
 | Commit | `e77f609` — `feat(week6): motion language, 29 component tests, Playwright e2e, GitHub Actions CI` |
 | GitHub Actions run | [31317092875](https://github.com/ZAYNINFINITY/flyrank-ai-internship/actions/runs/31317092875) |
 | Result | ✅ **passed** — job `Lint, typecheck, tests, build, e2e` in 1m38s |
-| Screenshot | `week-03/docs/screenshots/week6-fe-09-ci-green.png` |
-| Repo screenshot | https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-03/docs/screenshots/week6-fe-09-ci-green.png |
+| Screenshot | `week-06/screenshots/week6-fe-09-ci-green.png` |
+| Repo screenshot | https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-06/screenshots/week6-fe-09-ci-green.png |
 
 ## What the workflow runs on every push (all required)
 

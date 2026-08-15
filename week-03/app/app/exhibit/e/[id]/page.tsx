@@ -1,23 +1,26 @@
 "use client";
 
-import { use, useMemo } from "react";
+import { Suspense, use, useMemo } from "react";
 import type { Visitor } from "@/lib/museum/types";
 import { createPlacementMap, populateExhibitRoom } from "@/lib/museum/placement";
 import { createVisitor, enterRoom } from "@/lib/museum/visitor";
+import { getDoor } from "@/lib/museum/world";
+import { useDoorEntry } from "@/lib/museum/use-door-entry";
 import { WorldRenderer } from "@/components/renderer/world-renderer";
+import { ExhibitWalls } from "@/components/renderer/exhibit-walls";
 import { defaultEntityRegistry } from "@/components/renderer/entities/default-registry";
 import { getPortfolioRouteForExhibitId } from "@/lib/museum/navigation-adapter";
 
-export default function ExhibitRoomPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const { id } = use(params);
+function ExhibitRoomContent({ id }: { id: string }) {
+  const via = useDoorEntry();
+  const doorId =
+    via && getDoor(via)?.toRoom === "exhibit-room"
+      ? via
+      : "door-exhibit-from-corridor";
 
   const visitor: Visitor = useMemo(
-    () => enterRoom(createVisitor("exhibit-room"), "exhibit-room", "door-exhibit-from-corridor"),
-    []
+    () => enterRoom(createVisitor("exhibit-room"), "exhibit-room", doorId),
+    [doorId]
   );
 
   const placements = useMemo(
@@ -28,7 +31,19 @@ export default function ExhibitRoomPage({
   const portfolioRoute = getPortfolioRouteForExhibitId(id);
 
   return (
-    <WorldRenderer visitor={visitor} placements={placements} entityComponents={defaultEntityRegistry}>
+    <WorldRenderer
+      visitor={visitor}
+      placements={placements}
+      entityComponents={defaultEntityRegistry}
+      wallsOverride={(props) => (
+        <ExhibitWalls
+          {...props}
+          exhibitId={id}
+          portfolioRoute={portfolioRoute}
+          arrivedVia={via}
+        />
+      )}
+    >
       {portfolioRoute && (
         <a
           href={portfolioRoute}
@@ -38,5 +53,19 @@ export default function ExhibitRoomPage({
         </a>
       )}
     </WorldRenderer>
+  );
+}
+
+export default function ExhibitRoomPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = use(params);
+
+  return (
+    <Suspense fallback={null}>
+      <ExhibitRoomContent id={id} />
+    </Suspense>
   );
 }

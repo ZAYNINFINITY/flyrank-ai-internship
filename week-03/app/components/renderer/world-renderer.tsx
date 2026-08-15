@@ -1,26 +1,35 @@
 import type { ReactNode } from "react";
-import type { Visitor, Placement } from "@/lib/museum/types";
+import type { Visitor, Placement, Door, SurfaceDirection } from "@/lib/museum/types";
 import type { Direction } from "@/lib/navigation/museum-layout";
-import { getCurrentRoom, getVisibleDoors, getSurfaceLayout } from "@/lib/museum/queries";
+import { getCurrentRoom, getVisibleDoors, getSurfaceLayout, type SurfaceLayout } from "@/lib/museum/queries";
 import { RoomShell } from "./room-shell";
 import { DoorRenderer } from "./door-renderer";
 import { SurfaceRenderer } from "./surface-renderer";
 import { SpatialBreadcrumb } from "@/components/spatial-breadcrumb";
 import { getRoute } from "@/lib/museum/navigation-adapter";
 import { getEntrySurface, getRelativeDirection } from "./direction-utils";
-import type { EntityComponentProps, EntityRegistry } from "./entity-view";
+import type { EntityRegistry } from "./entity-view";
 
 export type { EntityComponentProps, EntityRegistry } from "./entity-view";
+
+export type WallsOverrideProps = {
+  layout: SurfaceLayout[];
+  entityComponents: EntityRegistry;
+  doors: Door[];
+  entrySurface: SurfaceDirection | null;
+};
 
 export function WorldRenderer({
   visitor,
   placements,
   entityComponents = {},
+  wallsOverride,
   children,
 }: {
   visitor: Visitor;
   placements: Map<string, Placement>;
   entityComponents?: EntityRegistry;
+  wallsOverride?: (props: WallsOverrideProps) => ReactNode;
   children?: ReactNode;
 }) {
   const room = getCurrentRoom(visitor);
@@ -45,7 +54,9 @@ export function WorldRenderer({
 
       <DoorRenderer doors={doors} visitor={visitor} />
 
-      <SurfaceRenderer layout={layout} entityComponents={entityComponents} />
+      {wallsOverride
+        ? wallsOverride({ layout, entityComponents, doors, entrySurface })
+        : <SurfaceRenderer layout={layout} entityComponents={entityComponents} />}
 
       <SpatialBreadcrumb currentRoom={room.name} exits={exits} />
     </RoomShell>

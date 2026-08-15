@@ -11,6 +11,7 @@ Plinth is an open-source platform where developers create gallery-style exhibit 
 - **Landing page** — three-beat entrance with the platform's claim and exhibit previews
 - **Explore page** — grid of live and upcoming exhibits
 - **Exhibit page** — room-by-room layout for a single developer's projects (Zayn's real projects are the demo content)
+- **Exhibit room in 3D (Week 7)** — the exhibit room renders as a live 3D space on capable devices (procedural room, raycast-inspectable plaques, door portals), with a flat text-walls renderer as the fallback for reduced-motion, low-memory, and non-WebGL devices
 - **Dashboard / Login** — honest placeholders showing what's coming
 - **Health check** — renders mock data, proving the data-fetching pattern works
 - **About** — what Plinth is and why it exists
@@ -33,6 +34,16 @@ Plinth's chat route (`app/api/chat/route.ts`) exposes one server-side tool to th
 | `exhibitLookup` | `{ id?: string, collection?: string, query?: string }` — all optional, validated with Zod (`lib/ai/tools/exhibit.ts`) | `Exhibit[]` — `{ id, title, tagline, developer, year, collection, media }` |
 
 The tool resolves data through the `ExhibitRepository` interface (`lib/repository/index.ts`), so swapping the mock source for real data is a one-line change. Tool lifecycle states (input-streaming / input-available / output-available / output-error) render as distinct UI in `components/ai/tool-state-views.tsx`.
+
+## Renderer (2D | 3D)
+
+The exhibit room renders through a switchable renderer. `lib/renderer/capability.ts`
+decides the mode from WebGL2 support, `prefers-reduced-motion`, memory and
+pointer type; `lib/renderer/use-capable-renderer.ts` upgrades the mode
+after mount (no SSR flash). The 3D scene (`components/three/room-scene-3d.tsx`)
+is built procedurally from the same `SurfaceLayout` the flat renderer uses,
+lazy-loaded only when needed. The flat renderer remains the accessible
+fallback and can be forced with the "View as text walls" toggle.
 
 ## Getting started
 

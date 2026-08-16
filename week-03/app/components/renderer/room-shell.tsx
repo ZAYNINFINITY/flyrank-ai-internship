@@ -20,7 +20,7 @@ export function RoomShell({
   return (
     <MuseumSpace preset={room.lighting}>
       <main
-        className="flex flex-col min-h-screen px-6 py-20 pb-32"
+        className="flex flex-col min-h-[100dvh] px-6 py-20 pb-32"
         data-museum-transition={transitionMap[room.kind]}
       >
         <div className="max-w-4xl mx-auto w-full flex-1 flex flex-col gap-16">

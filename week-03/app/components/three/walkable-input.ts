@@ -1,190 +1,96 @@
 "use client";
 
-// Module-level input state shared between DOM event handlers (outside the
-// canvas) and the frame loop (inside it). Mutating a module object avoids
-// re-rendering the whole scene for every input tick.
+// Scroll-driven navigation input, itom-style: the wheel (or a vertical
+// touch drag) glides the camera forward/back along the museum's single
+// through-line — reception, into the corridor, into the exhibit room.
+// Mouse position gently offsets the camera for a "looking around" parallax
+// effect. There's no pointer lock and no WASD; scrolling further into the
+// space IS the walking.
 
 export const inputState = {
-  move: { x: 0, z: 0 },
-  look: { dx: 0, dy: 0 },
-  locked: false,
+  // Accumulated wheel/drag delta since the last frame; the player consumes
+  // and resets this every tick so input isn't tied to event frequency.
+  scrollDelta: 0,
+  // Normalized -1..1 mouse position, used for the parallax look-around.
+  mouse: { x: 0, y: 0 },
+  // E key / tap-the-prompt-button to inspect whatever's nearest.
   activate: false,
-  sprint: false,
-  joystick: { active: false, x: 0, y: 0, originX: 0, originY: 0 },
 };
-
-const MOVE_KEYS: Record<string, "forward" | "back" | "left" | "right"> = {
-  w: "forward",
-  W: "forward",
-  arrowup: "forward",
-  s: "back",
-  S: "back",
-  arrowdown: "back",
-  a: "left",
-  A: "left",
-  arrowleft: "left",
-  d: "right",
-  D: "right",
-  arrowright: "right",
-};
-
-const pressed = new Set<string>();
 
 export function resetWalkableInput() {
-  pressed.clear();
-  inputState.move = { x: 0, z: 0 };
-  inputState.look = { dx: 0, dy: 0 };
-  inputState.locked = false;
+  inputState.scrollDelta = 0;
+  inputState.mouse = { x: 0, y: 0 };
   inputState.activate = false;
-  inputState.joystick = { active: false, x: 0, y: 0, originX: 0, originY: 0 };
 }
 
-function computeMove() {
-  let forward = 0;
-  let right = 0;
-  for (const key of pressed) {
-    const dir = MOVE_KEYS[key];
-    if (dir === "forward") forward += 1;
-    else if (dir === "back") forward -= 1;
-    else if (dir === "left") right -= 1;
-    else if (dir === "right") right += 1;
-  }
-  const joystick = inputState.joystick;
-  if (joystick.active) {
-    const dx = joystick.x / 60;
-    const dy = joystick.y / 60;
-    right += Math.max(-1, Math.min(1, dx));
-    forward += Math.max(-1, Math.min(1, -dy));
-  }
-  const len = Math.hypot(right, forward);
-  if (len > 1) {
-    right /= len;
-    forward /= len;
-  }
-  inputState.move.x = right;
-  inputState.move.z = forward;
+function onWheel(event: WheelEvent) {
+  event.preventDefault();
+  inputState.scrollDelta += event.deltaY;
 }
 
-export function attachWalkableKeyboard() {
-  window.addEventListener("keydown", onKeyDown);
-  window.addEventListener("keyup", onKeyUp);
-}
-
-export function detachWalkableKeyboard() {
-  window.removeEventListener("keydown", onKeyDown);
-  window.removeEventListener("keyup", onKeyUp);
+function onMouseMove(event: MouseEvent) {
+  inputState.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+  inputState.mouse.y = -((event.clientY / window.innerHeight) * 2 - 1);
 }
 
 function onKeyDown(event: KeyboardEvent) {
   if (event.repeat) return;
-  if (event.key === "e" || event.key === "E") {
+  if (event.key === "e" || event.key === "E" || event.key === " ") {
     inputState.activate = true;
-    return;
-  }
-  if (event.key === "Shift") {
-    inputState.sprint = true;
-    return;
-  }
-  const dir = MOVE_KEYS[event.key.toLowerCase()] ?? MOVE_KEYS[event.key];
-  if (dir) {
-    pressed.add(event.key.toLowerCase());
-    computeMove();
-    event.preventDefault();
   }
 }
 
-function onKeyUp(event: KeyboardEvent) {
-  if (event.key === "Shift") {
-    inputState.sprint = false;
-    return;
-  }
-  pressed.delete(event.key.toLowerCase());
-  computeMove();
+export function attachWalkableKeyboard() {
+  window.addEventListener("keydown", onKeyDown);
 }
 
-export function attachWalkablePointer(lockTarget: HTMLElement) {
-  const target = lockTarget;
-  document.addEventListener("pointerlockchange", onLockChange);
+export function detachWalkableKeyboard() {
+  window.removeEventListener("keydown", onKeyDown);
+}
+
+export function attachWalkablePointer(target: HTMLElement) {
+  void target;
+  window.addEventListener("wheel", onWheel, { passive: false });
   window.addEventListener("mousemove", onMouseMove);
-  target.addEventListener("click", onLockClick);
   return () => {
-    document.removeEventListener("pointerlockchange", onLockChange);
+    window.removeEventListener("wheel", onWheel);
     window.removeEventListener("mousemove", onMouseMove);
-    target.removeEventListener("click", onLockClick);
   };
-}
-
-function onLockChange() {
-  inputState.locked = document.pointerLockElement !== null;
-}
-
-function onMouseMove(event: MouseEvent) {
-  if (inputState.locked) {
-    inputState.look.dx += event.movementX;
-    inputState.look.dy += event.movementY;
-  }
-}
-
-function onLockClick() {
-  const el = document.pointerLockElement;
-  if (el) {
-    document.exitPointerLock();
-  } else {
-    const canvas = document.querySelector("canvas");
-    canvas?.requestPointerLock?.();
-  }
 }
 
 export type WalkableTouchHandlers = {
   onPointerDown: (event: globalThis.PointerEvent) => void;
   onPointerMove: (event: globalThis.PointerEvent) => void;
-  onPointerUp: () => void;
-  isJoystickActive: () => boolean;
+  onPointerUp: (event: globalThis.PointerEvent) => void;
 };
 
-export function createWalkableTouch(
-  container: () => HTMLElement | null
-): WalkableTouchHandlers {
-  let lastClientX = 0;
-  let lastClientY = 0;
+// Touch: a vertical drag glides the camera the same way the wheel does
+// (drag up = move forward, matching scroll-down-to-advance convention). A
+// slight horizontal drag nudges the parallax look. Tapping to inspect is
+// handled by the on-screen prompt button, not by gesture detection here.
+export function createWalkableTouch(): WalkableTouchHandlers {
+  let dragging = false;
+  let lastY = 0;
+  let lastX = 0;
+
   return {
-    onPointerDown(event: globalThis.PointerEvent) {
+    onPointerDown(event) {
       if (event.pointerType !== "touch") return;
-      const el = container();
-      if (!el) return;
-      const rect = el.getBoundingClientRect();
-      const x = event.clientX - rect.left;
-      if (x < rect.width * 0.4) {
-        inputState.joystick = {
-          active: true,
-          x: 0,
-          y: 0,
-          originX: event.clientX,
-          originY: event.clientY,
-        };
-      }
-      lastClientX = event.clientX;
-      lastClientY = event.clientY;
+      dragging = true;
+      lastY = event.clientY;
+      lastX = event.clientX;
     },
-    onPointerMove(event: globalThis.PointerEvent) {
-      const js = inputState.joystick;
-      if (js.active) {
-        js.x = event.clientX - js.originX;
-        js.y = event.clientY - js.originY;
-        computeMove();
-      } else if (event.pointerType === "touch") {
-        inputState.look.dx += event.clientX - lastClientX;
-        inputState.look.dy += event.clientY - lastClientY;
-      }
-      lastClientX = event.clientX;
-      lastClientY = event.clientY;
+    onPointerMove(event) {
+      if (event.pointerType !== "touch" || !dragging) return;
+      const dy = event.clientY - lastY;
+      const dx = event.clientX - lastX;
+      inputState.scrollDelta += -dy * 2.6;
+      inputState.mouse.x = Math.max(-1, Math.min(1, inputState.mouse.x + dx / 300));
+      lastY = event.clientY;
+      lastX = event.clientX;
     },
     onPointerUp() {
-      inputState.joystick = { active: false, x: 0, y: 0, originX: 0, originY: 0 };
-      computeMove();
-    },
-    isJoystickActive() {
-      return inputState.joystick.active;
+      dragging = false;
     },
   };
 }

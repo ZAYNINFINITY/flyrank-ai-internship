@@ -1,16 +1,49 @@
-# Week 07 · FE-AA2 — Walkable 3D Corridor: Handoff (very detailed)
+# Week 07 · FE-AA2 — Walkable 3D Museum: Handoff (very detailed)
 
-> **READ FIRST — USER FEEDBACK (critical context):**
-> The current prototype is functionally verified (14/14 Playwright checks) but the
-> user rejected it visually: *"well i said i want like this itomdev what u gave is
-> totally rubbish and not even close to what i said"*. The mechanics work; the
-> **aesthetic is wrong**. The deliverable currently looks like flat navy-blue 3D
-> boxes with generic white text — it does NOT evoke itomdev.com's sketchy,
-> hand-drawn, atmospheric corridor. The next session's TOP priority is making it
-> actually look and feel like itomdev. Do NOT defer the visual identity again.
->
-> App repo root: `D:\WORK - ARCHIVE\IMPORTANT CODING DATA AND PROJECTS\INTERNSHIP\flyrank ai\week-03\app`
-> Everything below is accurate as of the last verified run.
+> **READ FIRST — DECIDED DIRECTION (supersedes everything below this box).**
+> This brief was settled in a Claude working session with the user. The previous
+> prototype feedback ("not itomdev-like") is superseded by a much bigger vision.
+> Read §A (vision) and §B (decided week-7 scope) before touching any code.
+
+## §A — The vision (long-term direction)
+
+The exhibit route should become an **arrival sequence**, not a landing page:
+
+- Someone visits the link and they are **standing outside a building** — a gate,
+  a path leading up to it, and the building itself reads **unmistakably as a
+  museum** (architecture that says "tech museum for developers" the way a stone
+  facade with columns says "history museum").
+- They **walk the path, through the gate, into the museum** — and that is the
+  actual homepage. **No header nav, no hero text, no button first.**
+- The **curator is not a chatbot in a box anymore** — it is a character, a
+  presence physically in the space: a 3D figure or sprite that greets you at the
+  entrance and guides you room to room. **The AI chat work already built
+  (`/assistant`, @ai-sdk/google pipeline) becomes that character's brain** — not
+  a floating chat widget.
+
+This is a genuinely bigger and better framing: the difference between a *demo*
+and a *place*. The itomdev-style sketch/paper aesthetic (§2 below) is still the
+visual language, but it now serves this arrival concept rather than being an
+end in itself.
+
+## §B — Decided week-7 scope (the honest ask for right now)
+
+Fully modeling a museum exterior + walkable approach path + rigged animated
+curator is a lot of new 3D asset work — that is **week-9/10 polish**, not
+today's goal. The agreed scope for week 7 is:
+
+1. **Make the existing corridor actually work** — full-screen, visible, correct
+   text. (Fix the real defects first; see §6 for known ones.)
+2. **Add the simplest possible arrival beat** — even a single exterior shot, or
+   a short walk-up to a doorway before you are inside, so the shell of "you're
+   arriving at a building" exists.
+3. **Add a curator figure** — even a simple placeholder shape/sprite standing in
+   the reception room **instead of the chat box**, so the concept is proven.
+4. **Build up fidelity in week 9/10** — full exterior, walkable approach path,
+   rigged animated curator character.
+
+> Goal of the week: prove the *shell* of arrival + curator-in-space. Fidelity
+> comes later.
 
 ---
 

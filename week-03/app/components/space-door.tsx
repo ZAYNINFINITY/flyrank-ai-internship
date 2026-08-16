@@ -30,7 +30,7 @@ export function SpaceDoor({
   return (
     <Link
       href={href}
-      className="group block border border-[var(--color-text)]/15 rounded-none px-8 py-6 hover:border-[var(--color-text)]/40 transition-all duration-500"
+      className="group block border border-[var(--color-text)]/15 rounded-none px-8 py-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.04),0_6px_20px_-10px_rgba(0,0,0,0.35)] hover:border-[var(--color-text)]/40 transition-all duration-500"
     >
       {direction && (
         <p className="text-xs uppercase tracking-[0.25em] opacity-30 mb-2">

@@ -19,27 +19,50 @@ import {
   type WalkableWorld,
   type WorldDoor,
 } from "@/lib/museum/walkable-model";
+import { getPaperTexture } from "@/lib/three/paper-texture";
 import { WalkablePlayer } from "./walkable-player";
 
 const HEIGHT = 4.2;
 
+// Near-monochrome ink palette — paper sketch mood without cloning ITom colors.
+// Lightened from the first pass: the walls were nearly the same value as the
+// fog/background, which (combined with a close fog start) crushed the whole
+// room to black past a few units. Keep the muted, desaturated mood, but with
+// enough separation between wall/floor/ceiling/background to actually read.
 const PALETTE = {
-  corridorWall: "#2b3160",
-  corridorFloor: "#1b1e3c",
-  corridorCeiling: "#141730",
-  roomWall: "#262147",
-  roomFloor: "#1d1936",
-  roomCeiling: "#141228",
-  receptionWall: "#1e3242",
-  receptionFloor: "#172531",
-  receptionCeiling: "#101c26",
-  ivory: "#eceaf4",
-  dim: "#a9a6c0",
-  accent: "#3555ff",
-  gold: "#c9a227",
-  frame: "#14182e",
-  door: "#1f2447",
+  corridorWall: "#5c5c68",
+  corridorFloor: "#46464f",
+  corridorCeiling: "#3a3a42",
+  roomWall: "#585468",
+  roomFloor: "#44404e",
+  roomCeiling: "#38343f",
+  receptionWall: "#525c5c",
+  receptionFloor: "#404a4a",
+  receptionCeiling: "#343c3d",
+  approachWall: "#40404a",
+  approachFloor: "#302f38",
+  approachPath: "#48484f",
+  ivory: "#f0eee8",
+  dim: "#b8b4c8",
+  accent: "#7f92e0",
+  gold: "#c8ac70",
+  frame: "#26262e",
+  door: "#3a3a46",
+  ink: "#121218",
 };
+
+function paperMaterial(color: string, roughness = 0.94) {
+  const tex = getPaperTexture();
+  return (
+    <meshStandardMaterial
+      color={color}
+      map={tex}
+      roughness={roughness}
+      metalness={0}
+      side={THREE.DoubleSide}
+    />
+  );
+}
 
 // ─── Room shell (walls minus door gaps + floor + ceiling) ─────
 function RoomBox({
@@ -67,7 +90,7 @@ function RoomBox({
   }) => (
     <mesh position={[ (fromX + toX) / 2, HEIGHT / 2, x ]} rotation-y={ry}>
       <planeGeometry args={[toX - fromX, HEIGHT]} />
-      <meshStandardMaterial color={palette.wall} roughness={0.92} metalness={0} side={THREE.DoubleSide} />
+      {paperMaterial(palette.wall)}
     </mesh>
   );
 
@@ -84,7 +107,7 @@ function RoomBox({
   }) => (
     <mesh position={[z, HEIGHT / 2, (fromZ + toZ) / 2]} rotation-y={ry}>
       <planeGeometry args={[footprint.maxX - footprint.minX, HEIGHT]} />
-      <meshStandardMaterial color={palette.wall} roughness={0.92} metalness={0} side={THREE.DoubleSide} />
+      {paperMaterial(palette.wall)}
     </mesh>
   );
 
@@ -97,11 +120,11 @@ function RoomBox({
     <group>
       <mesh rotation-x={-Math.PI / 2}>
         <planeGeometry args={[widthX, widthZ]} />
-        <meshStandardMaterial color={palette.floor} roughness={0.95} metalness={0} />
+        {paperMaterial(palette.floor, 0.98)}
       </mesh>
       <mesh rotation-x={Math.PI / 2} position={[0, HEIGHT, 0]}>
         <planeGeometry args={[widthX, widthZ]} />
-        <meshStandardMaterial color={palette.ceiling} roughness={1} />
+        {paperMaterial(palette.ceiling, 1)}
       </mesh>
 
       {north ? (
@@ -159,9 +182,21 @@ function Frame({
         <boxGeometry args={[0.14, 2.5, 1.7]} />
         <meshStandardMaterial color={PALETTE.frame} roughness={0.6} metalness={0.1} />
       </mesh>
+      {/* Sketched frame corners */}
+      {[
+        [-0.72, 1.15, 0.14],
+        [0.72, 1.15, 0.14],
+        [-0.72, -1.15, 0.14],
+        [0.72, -1.15, 0.14],
+      ].map((p, i) => (
+        <mesh key={i} position={p as [number, number, number]}>
+          <boxGeometry args={[0.08, 0.08, 0.04]} />
+          <meshStandardMaterial color={PALETTE.ivory} roughness={0.9} />
+        </mesh>
+      ))}
       <mesh position={[0, 0, 0.12]}>
         <planeGeometry args={[1.5, 2.3]} />
-        <meshStandardMaterial color="#20264a" roughness={0.9} />
+        <meshStandardMaterial color={PALETTE.ink} roughness={0.95} />
       </mesh>
       <Text
         position={[0, 0.45, 0.26]}
@@ -332,23 +367,104 @@ function DoorPanel({
   });
 
   return (
-    <group ref={group} position={[door.hingeX, 0, door.hingeZ]}>
-      <mesh position={[panelOffset, 1.3, 0]}>
-        <boxGeometry args={[1.6, 2.6, 0.08]} />
-        <meshStandardMaterial color={PALETTE.door} roughness={0.7} metalness={0.2} side={THREE.DoubleSide} />
-      </mesh>
-      <mesh position={[panelOffset + (panelOffset > 0 ? 0.62 : -0.62), 1.3, 0]}>
-        <boxGeometry args={[0.08, 0.3, 0.08]} />
-        <meshStandardMaterial color={PALETTE.gold} roughness={0.3} metalness={0.8} />
-      </mesh>
+    <>
+      {/* Swinging panel + handle — this group's rotation animates open/closed */}
+      <group ref={group} position={[door.hingeX, 0, door.hingeZ]}>
+        <mesh position={[panelOffset, 1.3, 0]}>
+          <boxGeometry args={[1.6, 2.6, 0.08]} />
+          <meshStandardMaterial color={PALETTE.door} roughness={0.7} metalness={0.2} side={THREE.DoubleSide} />
+        </mesh>
+        <mesh position={[panelOffset + (panelOffset > 0 ? 0.62 : -0.62), 1.3, 0]}>
+          <boxGeometry args={[0.08, 0.3, 0.08]} />
+          <meshStandardMaterial color={PALETTE.gold} roughness={0.3} metalness={0.8} />
+        </mesh>
+      </group>
+      {/* Label — fixed above the door FRAME (not the panel), so it stays
+          legible regardless of open/closed state instead of swinging with
+          the panel and ending up skewed once the door is open. */}
       <Text
-        position={[0, 2.95, 0]}
+        position={[door.position[0], 2.95, door.position[2]]}
         fontSize={0.13}
         color={PALETTE.ivory}
         anchorX="center"
         anchorY="middle"
       >
         {door.toLabel}
+      </Text>
+    </>
+  );
+}
+
+function ApproachExterior() {
+  const approach = FOOTPRINTS.approach;
+  const widthX = approach.maxX - approach.minX;
+  const widthZ = approach.maxZ - approach.minZ;
+  const midZ = (approach.minZ + approach.maxZ) / 2;
+
+  return (
+    <group>
+      <mesh rotation-x={-Math.PI / 2} position={[0, 0.01, midZ]}>
+        <planeGeometry args={[2.4, widthZ]} />
+        {paperMaterial(PALETTE.approachPath, 0.9)}
+      </mesh>
+      <mesh position={[0, HEIGHT / 2, approach.minZ]}>
+        <planeGeometry args={[widthX, HEIGHT * 1.05]} />
+        {paperMaterial(PALETTE.approachWall)}
+      </mesh>
+      <mesh position={[-1.6, 1.2, approach.minZ + 1.2]}>
+        <boxGeometry args={[0.18, 2.4, 0.18]} />
+        <meshStandardMaterial color={PALETTE.frame} roughness={0.85} />
+      </mesh>
+      <mesh position={[1.6, 1.2, approach.minZ + 1.2]}>
+        <boxGeometry args={[0.18, 2.4, 0.18]} />
+        <meshStandardMaterial color={PALETTE.frame} roughness={0.85} />
+      </mesh>
+      <Text
+        position={[0, 3.1, approach.minZ + 0.4]}
+        fontSize={0.32}
+        color={PALETTE.ivory}
+        anchorX="center"
+        anchorY="middle"
+      >
+        PLINTH MUSEUM
+      </Text>
+      <Text
+        position={[0, 2.5, approach.minZ + 0.4]}
+        fontSize={0.11}
+        color={PALETTE.dim}
+        anchorX="center"
+        anchorY="middle"
+      >
+        Digital archive of shipped work
+      </Text>
+    </group>
+  );
+}
+
+function CuratorFigure({ position }: { position: [number, number, number] }) {
+  const group = useRef<THREE.Group>(null);
+  useFrame(() => {
+    if (group.current) {
+      group.current.position.set(
+        position[0],
+        position[1] + Math.sin(Date.now() * 0.002) * 0.04,
+        position[2]
+      );
+    }
+  });
+
+  return (
+    <group ref={group}>
+      <mesh position={[0, 0.5, 0]}>
+        <capsuleGeometry args={[0.22, 0.7, 4, 8]} />
+        <meshStandardMaterial color={PALETTE.dim} roughness={0.65} metalness={0.1} />
+      </mesh>
+      <mesh position={[0, 1.15, 0]}>
+        <sphereGeometry args={[0.2, 12, 12]} />
+        <meshStandardMaterial color={PALETTE.ivory} roughness={0.5} />
+      </mesh>
+      <Text position={[0, 1.65, 0]} fontSize={0.09} color={PALETTE.dim} anchorX="center" anchorY="middle">
+        Curator
       </Text>
     </group>
   );
@@ -388,11 +504,15 @@ function WalkableWorldScene({
 
   return (
     <>
-      <ambientLight intensity={0.55} />
-      <directionalLight position={[4, 8, 3]} intensity={1.2} color="#fff4e6" />
-      <pointLight position={[0, 3.2, 0]} intensity={14} distance={16} decay={2} color={PALETTE.accent} />
-      <pointLight position={[0, 3.2, -16]} intensity={14} distance={12} decay={2} color="#8a6bff" />
-      <pointLight position={[0, 3.2, 16.5]} intensity={12} distance={12} decay={2} color="#2aa9a9" />
+      <fog attach="fog" args={[PALETTE.ink, 20, 60]} />
+      <ambientLight intensity={1.15} />
+      <hemisphereLight args={["#c8ccd8", PALETTE.ink, 0.75]} />
+      <directionalLight position={[4, 8, 3]} intensity={1.5} color="#f0ebe0" />
+      <pointLight position={[0, 3.2, 0]} intensity={24} distance={20} decay={2} color={PALETTE.accent} />
+      <pointLight position={[0, 3.2, -16]} intensity={22} distance={16} decay={2} color="#7a6a9a" />
+      <pointLight position={[0, 3.2, 16.5]} intensity={20} distance={16} decay={2} color="#4a8a8a" />
+
+      <ApproachExterior />
 
       <RoomBox
         footprint={FOOTPRINTS.corridor}
@@ -474,11 +594,13 @@ function WalkableWorldScene({
 
       <Plaque
         position={[0, 2.25, 13.3]}
-        ry={Math.PI}
+        ry={0}
         title="Plinth Museum"
-        body="Collections Wing & Curator Studio open later this week."
+        body="Scroll forward to tour the corridor. Reception and curator are ahead."
         size={[3.2, 1.5]}
       />
+
+      <CuratorFigure position={[1.8, 0, 16.2]} />
 
       <WalkablePlayer
         world={world}
@@ -529,8 +651,10 @@ export function WalkableWorldCanvas({
       dpr={[1, quality.maxDpr]}
       gl={{ antialias: true, powerPreference: "high-performance", alpha: false }}
       camera={{ fov: 72, near: 0.1, far: 60, position: spawn }}
-      onCreated={({ gl }) => {
-        gl.setClearColor("#0b0d1c", 1);
+      onCreated={({ gl, camera }) => {
+        gl.setClearColor(PALETTE.ink, 1);
+        camera.up.set(0, 1, 0);
+        camera.rotation.order = "YXZ";
       }}
     >
       <Suspense fallback={null}>

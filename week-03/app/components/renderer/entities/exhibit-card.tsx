@@ -16,7 +16,7 @@ export function ExhibitCard({ entityId, anchor }: EntityComponentProps) {
   return (
     <Link
       href={getExhibitRoute(entityId)}
-      className={`group block h-full border border-[var(--color-text)]/10 p-6 hover:border-[var(--color-text)]/30 transition-all duration-500 ${positionStyles[anchor.position]}`}
+      className={`group block h-full border border-[var(--color-text)]/10 p-6 shadow-[0_8px_24px_-12px_rgba(0,0,0,0.35)] hover:border-[var(--color-text)]/30 hover:shadow-[0_12px_28px_-10px_rgba(0,0,0,0.4)] transition-all duration-500 ${positionStyles[anchor.position]}`}
     >
       <p className="text-xs uppercase tracking-[0.2em] opacity-30 mb-2">
         {exhibit.collection}

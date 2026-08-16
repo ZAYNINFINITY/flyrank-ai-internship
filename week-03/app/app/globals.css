@@ -1,5 +1,19 @@
 @import "tailwindcss";
 
+@keyframes fade-out {
+  0% { opacity: 1; }
+  70% { opacity: 1; }
+  100% { opacity: 0; visibility: hidden; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .motion-safe\:animate-\[fade-out_2\.8s_ease_forwards\] {
+    animation: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+  }
+}
+
 @theme inline {
   --color-text: oklch(0.208 0.040 265.8);
   --color-background: oklch(0.985 0.000 89.9);

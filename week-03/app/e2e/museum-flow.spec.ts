@@ -57,14 +57,17 @@ test.describe("primary museum flow", () => {
       });
     });
 
-    // ── Home ──────────────────────────────────────────────
+    // ── Home (3D museum-as-homepage or flat fallback) ─────
     await page.goto("/");
-    await expect(
-      page.getByRole("heading", {
-        name: /room for every project/i,
-      }),
-    ).toBeVisible();
-    await page.getByRole("link", { name: "Enter the Museum" }).click();
+    const flatEnter = page.getByRole("link", { name: "Enter the Museum" });
+    const textWalls = page.getByRole("button", { name: "Text walls" });
+    await expect(flatEnter.or(textWalls)).toBeVisible({ timeout: 45000 });
+
+    if (await flatEnter.isVisible()) {
+      await flatEnter.click();
+    } else {
+      await page.goto("/entrance");
+    }
 
     // ── Entrance ──────────────────────────────────────────
     await expect(page).toHaveURL(/\/entrance$/);

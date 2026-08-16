@@ -4,8 +4,8 @@ import { Suspense, use, useMemo } from "react";
 import type { Visitor } from "@/lib/museum/types";
 import { createPlacementMap, populateExhibitRoom } from "@/lib/museum/placement";
 import { createVisitor, enterRoom } from "@/lib/museum/visitor";
-import { getDoor } from "@/lib/museum/world";
 import { useDoorEntry } from "@/lib/museum/use-door-entry";
+import { resolveEntryDoor, viaForRoom } from "@/lib/museum/via-entry";
 import { WorldRenderer } from "@/components/renderer/world-renderer";
 import { ExhibitWalls } from "@/components/renderer/exhibit-walls";
 import { defaultEntityRegistry } from "@/components/renderer/entities/default-registry";
@@ -13,10 +13,8 @@ import { getPortfolioRouteForExhibitId } from "@/lib/museum/navigation-adapter";
 
 function ExhibitRoomContent({ id }: { id: string }) {
   const via = useDoorEntry();
-  const doorId =
-    via && getDoor(via)?.toRoom === "exhibit-room"
-      ? via
-      : "door-exhibit-from-corridor";
+  const doorId = resolveEntryDoor(via, "exhibit-room");
+  const validatedVia = viaForRoom(via, "exhibit-room");
 
   const visitor: Visitor = useMemo(
     () => enterRoom(createVisitor("exhibit-room"), "exhibit-room", doorId),
@@ -40,7 +38,7 @@ function ExhibitRoomContent({ id }: { id: string }) {
           {...props}
           exhibitId={id}
           portfolioRoute={portfolioRoute}
-          arrivedVia={via}
+          arrivedVia={validatedVia}
         />
       )}
     >

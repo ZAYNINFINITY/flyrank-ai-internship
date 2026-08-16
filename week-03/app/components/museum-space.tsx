@@ -37,7 +37,7 @@ export function MuseumSpace({
   }, [space]);
 
   return (
-    <div data-museum-transition={transition} className="relative min-h-screen">
+    <div data-museum-transition={transition} className="relative min-h-[100dvh]">
       <div className="space-glow" aria-hidden="true" />
       <div className="space-content relative z-1">{children}</div>
     </div>

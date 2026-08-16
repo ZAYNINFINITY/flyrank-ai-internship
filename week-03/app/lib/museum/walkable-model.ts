@@ -1,10 +1,24 @@
 import type { SurfaceLayout } from "@/lib/museum/queries";
 import type { Exhibit } from "@/lib/types/exhibit";
+import { getDoor } from "./world";
 
 export type Rect = { minX: number; maxX: number; minZ: number; maxZ: number };
 
-export type InspectSource = "frame" | "title" | "notes" | "artifact" | "projection" | "signage";
-export type InspectInfo = { title: string; body: string; source: InspectSource };
+export type InspectSource =
+  | "frame"
+  | "title"
+  | "notes"
+  | "artifact"
+  | "projection"
+  | "signage"
+  | "curator";
+export type InspectInfo = {
+  title: string;
+  body: string;
+  source: InspectSource;
+  href?: string;
+  hrefLabel?: string;
+};
 
 export type WorldDoor = {
   id: string;
@@ -33,10 +47,16 @@ export type WalkableWorld = {
 
 // ─── Room footprints (north = -Z) ──────────────────────────────
 export const FOOTPRINTS = {
+  approach: { minX: -4, maxX: 4, minZ: 20, maxZ: 28 },
   reception: { minX: -5, maxX: 5, minZ: 13, maxZ: 20 },
   corridor: { minX: -3, maxX: 3, minZ: -13, maxZ: 13 },
   exhibit: { minX: -5, maxX: 5, minZ: -20, maxZ: -13 },
 };
+
+/** Scroll rail extents (north = smaller Z). Includes the exterior approach path. */
+export const RAIL_START = 26;
+export const RAIL_END = -18;
+export const DEFAULT_SPAWN_Z = 24;
 
 const DOOR_GAP: Rect = { minX: -0.8, maxX: 0.8, minZ: 0, maxZ: 0 };
 const WALL_THICKNESS = 0.1;
@@ -111,11 +131,15 @@ export function buildDoors(): WorldDoor[] {
   ];
 }
 
+// ry follows the same convention as the room walls: the frame's front face
+// (text side) must point AWAY from its wall, back into the corridor toward
+// the player. East-wall frames (x=2.85) face -X; west-wall frames (x=-2.85)
+// face +X. These were previously swapped, which rendered the text mirrored.
 const CORRIDOR_FRAMES: Record<string, { position: [number, number, number]; ry: number }> = {
-  "corridor-exhibit-1": { position: [2.85, 2.25, 4], ry: Math.PI / 2 },
-  "corridor-exhibit-2": { position: [2.85, 2.25, 8], ry: Math.PI / 2 },
-  "corridor-exhibit-3": { position: [-2.85, 2.25, -4], ry: -Math.PI / 2 },
-  "corridor-exhibit-4": { position: [-2.85, 2.25, -8], ry: -Math.PI / 2 },
+  "corridor-exhibit-1": { position: [2.85, 2.25, 4], ry: -Math.PI / 2 },
+  "corridor-exhibit-2": { position: [2.85, 2.25, 8], ry: -Math.PI / 2 },
+  "corridor-exhibit-3": { position: [-2.85, 2.25, -4], ry: Math.PI / 2 },
+  "corridor-exhibit-4": { position: [-2.85, 2.25, -8], ry: Math.PI / 2 },
 };
 
 export const ROOM_SPOTS: Record<
@@ -217,12 +241,36 @@ export function buildInteractives(
     prompt: "Read signage",
     inspect: {
       title: "Museum signage",
-      body: "Plinth Museum — Collections Wing and Curator Studio are still being hung. They open later this week.",
+      body: "Plinth Museum — walk the corridor to tour shipped projects. Collections and Curator Studio are through reception.",
       source: "signage",
     },
   });
 
+  items.push({
+    id: "curator-presence",
+    position: [1.8, 1.0, 16.2],
+    range: 2.8,
+    prompt: "Talk to curator",
+    inspect: {
+      title: "The Curator",
+      body: "A guide for this archive — ask about exhibits, collections, or where to go next.",
+      source: "curator",
+      href: "/assistant",
+      hrefLabel: "Open Curator Studio",
+    },
+  });
+
   return items;
+}
+
+/** Map a validated door id (or default) to a first-person spawn on the museum rail. */
+export function resolveSpawnFromVia(via: string | null): [number, number, number] {
+  const door = via ? getDoor(via) : undefined;
+  if (door?.id === "door-exhibit-from-corridor") return [0, 1.7, -9.5];
+  if (door?.id === "door-corridor-from-reception") return [0, 1.7, 9];
+  if (door?.id === "door-reception-from-entrance") return [0, 1.7, 16];
+  if (door?.id === "door-entrance-from-hall") return [0, 1.7, 22];
+  return [0, 1.7, DEFAULT_SPAWN_Z];
 }
 
 export function resolveCollision(

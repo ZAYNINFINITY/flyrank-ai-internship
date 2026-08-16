@@ -13,7 +13,7 @@ const repo = new MockExhibitRepository();
 
 function LoadingSkeleton() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen gap-4 px-6" aria-hidden="true">
+    <div className="flex flex-col items-center justify-center min-h-[100dvh] gap-4 px-6" aria-hidden="true">
       <p className="text-xs uppercase tracking-[0.25em] opacity-20">Loading collection...</p>
       <div className="w-8 h-px bg-[var(--color-text)]/10" />
     </div>

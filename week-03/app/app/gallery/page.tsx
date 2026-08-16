@@ -6,6 +6,8 @@ import type { Visitor } from "@/lib/museum/types";
 import type { ExhibitCollection } from "@/lib/types/exhibit";
 import { createPlacementMap, populateCorridor } from "@/lib/museum/placement";
 import { createVisitor, enterRoom } from "@/lib/museum/visitor";
+import { useDoorEntry } from "@/lib/museum/use-door-entry";
+import { resolveEntryDoor } from "@/lib/museum/via-entry";
 import { MockExhibitRepository } from "@/lib/repository/mock-exhibit-repository";
 import { WorldRenderer } from "@/components/renderer/world-renderer";
 import { defaultEntityRegistry } from "@/components/renderer/entities/default-registry";
@@ -37,10 +39,16 @@ export default function GalleryPage() {
 function GalleryView() {
   const searchParams = useSearchParams();
   const collection = toCollection(searchParams.get("collection"));
+  const via = useDoorEntry();
 
   const visitor: Visitor = useMemo(
-    () => enterRoom(createVisitor("main-corridor"), "main-corridor", "door-corridor-from-reception"),
-    []
+    () =>
+      enterRoom(
+        createVisitor("main-corridor"),
+        "main-corridor",
+        resolveEntryDoor(via, "main-corridor")
+      ),
+    [via]
   );
 
   const [placements, setPlacements] = useState(createPlacementMap());
@@ -75,7 +83,7 @@ function GalleryView() {
 
 function LoadingSkeleton() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen gap-4 px-6" aria-hidden="true">
+    <div className="flex flex-col items-center justify-center min-h-[100dvh] gap-4 px-6" aria-hidden="true">
       <p className="text-xs uppercase tracking-[0.25em] opacity-20">Loading exhibits...</p>
       <div className="w-8 h-px bg-[var(--color-text)]/10" />
     </div>

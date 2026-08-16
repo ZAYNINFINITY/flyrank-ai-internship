@@ -23,9 +23,6 @@ export function SurfaceRenderer({
 
         return (
           <div key={surface.direction} className="border-t border-[var(--color-text)]/8 pt-6">
-            <p className="text-xs uppercase tracking-[0.25em] opacity-20 mb-4">
-              {surface.direction} wall
-            </p>
             <div className="grid gap-4 sm:grid-cols-3">
               {surface.anchors.map(({ anchor, placement }) => {
                 if (!placement) {

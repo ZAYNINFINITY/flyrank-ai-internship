@@ -2,7 +2,11 @@ import * as THREE from "three";
 
 let cached: THREE.CanvasTexture | null = null;
 
-/** Procedural paper grain — shared across wall materials in the walkable scene. */
+/**
+ * Procedural warm paper grain — the sketchbook base for every wall in the
+ * walkable scene. Kept fully procedural (no bundled image assets) and cached
+ * once across materials.
+ */
 export function getPaperTexture(): THREE.CanvasTexture {
   if (cached) return cached;
 
@@ -16,24 +20,39 @@ export function getPaperTexture(): THREE.CanvasTexture {
     return cached;
   }
 
-  ctx.fillStyle = "#2a2e48";
+  // Warm cream paper base with a soft vertical tonal drift.
+  const gradient = ctx.createLinearGradient(0, 0, 0, size);
+  gradient.addColorStop(0, "#f2ecdd");
+  gradient.addColorStop(1, "#eae3cf");
+  ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, size, size);
 
-  for (let i = 0; i < 12000; i++) {
-    const v = Math.random();
-    ctx.fillStyle = `rgba(255,255,255,${v * 0.055})`;
+  // Fine mottled grain — darker fiber specks and lighter brights.
+  for (let i = 0; i < 14000; i++) {
+    const dark = Math.random() < 0.5;
+    const alpha = dark ? 0.035 * Math.random() : 0.028 * Math.random();
+    ctx.fillStyle = dark ? `rgba(90,80,60,${alpha})` : `rgba(255,252,240,${alpha})`;
     ctx.fillRect(Math.random() * size, Math.random() * size, 1, 1);
   }
 
-  for (let y = 0; y < size; y += 4) {
-    ctx.fillStyle = `rgba(0,0,0,${0.02 + Math.random() * 0.02})`;
-    ctx.fillRect(0, y, size, 1);
+  // Sparse paper fibers — short faint strokes.
+  ctx.strokeStyle = "rgba(120,108,80,0.05)";
+  ctx.lineWidth = 1;
+  for (let i = 0; i < 260; i++) {
+    const x = Math.random() * size;
+    const y = Math.random() * size;
+    const len = 6 + Math.random() * 18;
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.lineTo(x + len, y + (Math.random() - 0.5) * 2);
+    ctx.stroke();
   }
 
   const tex = new THREE.CanvasTexture(canvas);
   tex.wrapS = THREE.RepeatWrapping;
   tex.wrapT = THREE.RepeatWrapping;
   tex.repeat.set(4, 4);
+  tex.colorSpace = THREE.SRGBColorSpace;
   cached = tex;
   return tex;
 }

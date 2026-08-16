@@ -45,6 +45,87 @@ today's goal. The agreed scope for week 7 is:
 > Goal of the week: prove the *shell* of arrival + curator-in-space. Fidelity
 > comes later.
 
+## §C — Latest state: v2 scroll-rail + itom design pass (supersedes stale bits below)
+
+Since §B was written, Claude + Cursor built **v2 (scroll-rail player)** and I
+applied an **itom design pass** on top. All of it is verified and committed.
+
+**v2 player (built by Claude/Cursor, verified 10/10):** the WASD/pointer-lock
+controller was replaced by a **scroll-rail**: scroll/touch-drag glides the camera
+along the corridor spine with mouse parallax and doors that auto-open on
+approach. Arrival beat: fullscreen "Approaching / Plinth Museum" intro overlay
+that fades only once the scene is ready, then an exterior gate shot as you walk
+back toward the approach. Curator figure stands in reception (inspect → prompt →
+`/assistant`). `?via=door-exhibit-from-corridor` validated via
+`lib/museum/via-entry.ts` → spawn `z≈-9.5`. `window.__plinth` and
+`room-scene-3d.tsx` were removed. 54/54 tests, AUDIT.md + fe-aa2-3d-room.md +
+submission docs written.
+
+**itom design pass (I did this):** root cause of "design is horrible" —
+Claude/Cursor's v2 was **dark ink** (`#121218` walls, heavy vignette 0.55,
+fog-to-ink), but itomdev.com is **bright warm paper** (`#fafafa/#f5f5f5`
+sketchbook, faint notebook grid, vignette ~0.03, RevealMaterial sketch→paint
+shader). Reference source confirmed via **MIT-licensed repo
+`github.com/ITomPoland/portfolio-itom`** (code reusable; its personal art assets
+are NOT — keep Plinth procedural). Applied:
+
+- `walkable-world.tsx`: PALETTE flipped to paper (`corridorWall #efe9da`,
+  ink text `#2a2a30`, accent `#c96a3a`), fog `[paper,26,85]`, clear color paper,
+  lights rebalanced. **GridFloor** (faint notebook grid, x -3.5..3.5, z -13..20,
+  opacity 0.07). **Frame** redesigned: thin ink sketch border (4 strokes, no
+  slab) + paper mat + ink title/tagline + **SketchCard** reveal below each frame
+  (wobbly pencil doodle that paints in as you approach, via new
+  `lib/three/reveal-material.ts`). Plaque/ProjectionScreen/ArtifactPlinth/
+  CuratorFigure recolored. Curator = ink humanoid silhouette (legs/torso/arms/
+  head/eye) bobbing gently. Exterior got a **lintel** so the two gate posts read
+  as a real doorway.
+- `lib/three/paper-texture.ts`: rewritten warm-paper grain texture.
+- `exhibit-room-3d.tsx`: overlays restyled black-glass → **ink-on-paper**
+  ("Text walls", prompt pill, inspect dialog, "Leave the room"); scene bg paper;
+  vignette lightened to `rgba(70,58,34,0.18)`; arrival overlay paper. **Fade now
+  gated on scene readiness** (`onReady` from Canvas → `sceneReady` → 2.8s fade),
+  fixing the cold-start race where the intro vanished before the scene mounted.
+- **Gibberish fix:** prompt pill rendered `{prompt}` + "E" hint with no
+  whitespace → screen-readers/innerText read "TALK TO CURATORE", "INSPECT
+  EXHIBITE", "READE". Hint now `\u00A0E` + `aria-hidden`.
+
+**itom structure + smoothness port (this session, user directive):** "use those
+from existing repo so museum structure and everything is smooth" → read the
+local copy of the MIT repo (`INTERNSHIP\portfolio-itom-main`) and ported three
+things:
+
+1. **CRITICAL wall bug fixed** — `RoomBox.wallAlongZ` sized every east/west wall
+   with `footprint.maxX - footprint.minX` (the room's X width) instead of the
+   actual Z span. The corridor is 6 wide × 26 long, so its side walls were only
+   6 units long (z∈[-3,3]) — the frames at z=4/8/-4/-8 **floated in open space**.
+   Now every side wall spans its real length (`toZ - fromZ`).
+2. **Architecture** (itom museum grammar): thin ink **baseboards** on every wall
+   segment (`BASEBOARD_H 0.14`, `BASEBOARD_D 0.08`, `PALETTE.frame`); each door
+   gap got a **Doorway** — two vertical posts (`DOOR_POST 0.14`) + lintel
+   (`DOOR_LINTEL_Y 2.72`) + floor threshold, inset 0.02 toward each room's own
+   interior so the corridor and its neighbour don't z-fight at the shared wall
+   line.
+3. **Door auto-glance** (ported from `useInfiniteCamera.js` glance math) — as
+   you walk the corridor the camera eases toward each wall-hung frame and
+   releases after passing it. Same ramp (`GLANCE_START 15 / PEAK 8 / END -2`),
+   eased `strength*(2-strength)`, **slow to look (0.03) / fast to release (0.08)**
+   so the motion never drags behind you. `MAX_GLANCE_YAW 0.15` rad (~9°), added
+   to the parallax yaw in `walkable-player.tsx`. Targets computed in the scene
+   from `corridorLayout` → `corridorFrameSpot` (east frames → dir -1 = look
+   right, west → +1 = look left). Only side-wall frames glance (the doors are
+   straight ahead at z=±13).
+
+**Verification (all green):** typecheck clean · lint 0 errors (2 pre-existing
+warnings) · tests **54/54** · build clean · live Playwright **10/10**
+(verify-v2.cjs) · fresh screenshots of every route + every museum state in
+`week-07/screenshots/` (36 files — `museum-01..20` + `route-*`; the stale
+`fe-aa2-*` set was removed). Corridor shots now show real walls/doors
+(stdev jumped 9.0 → 27–53 once the side walls rendered). All committed on
+`main`. The `404` console line during the all-page run is the
+`/exhibit/placeholder-1` route itself (intended not-found test), not a broken
+asset. Screen brightness checks: corridor ~199 mean (bright paper),
+arrival-intro uniform paper (expected).
+
 ---
 
 ## 1. Mission
@@ -135,11 +216,10 @@ Script: `C:\Users\user\AppData\Local\Temp\opencode\verify-walkable.cjs`
 13. Mobile (coarse pointer) shows the touch hint; canvas renders.
 14. `prefers-reduced-motion` → 2D flat fallback (0 canvases).
 
-Screenshots (fresh, from the walkable prototype):
-`week-07/screenshots/fe-aa2-walk-corridor.png`,
-`fe-aa2-walk-door-open.png`, `fe-aa2-walk-inspect.png`, `fe-aa2-walk-mobile.png`.
-Older v1 diorama shots (`fe-aa2-desktop-room.png`, `fe-aa2-desktop-inspect-dialog.png`,
-`fe-aa2-mobile-room.png`) are the REJECTED orbit view — ignore them.
+Screenshots: current set is `week-07/screenshots/museum-01..20` + `route-*`
+(36 files, final build). Older v1 diorama shots (`fe-aa2-desktop-room.png`,
+`fe-aa2-desktop-inspect-dialog.png`, `fe-aa2-mobile-room.png`) are the REJECTED
+orbit view — removed from the folder, ignore them.
 
 ### Static checks (all green)
 - `npm run typecheck` — clean.
@@ -282,7 +362,7 @@ Wall heights 4.2, wall thickness 0.1.
 | `lib/renderer/capability.ts`, `use-capable-renderer.ts`, `capability.test.ts` | Capability detection + 12 unit tests (41/41 total green). |
 | `week-07/fe-aa2-perf-note.md` | Performance note (see §8). |
 | `week-07/handoff.md` | This document. |
-| `week-07/screenshots/fe-aa2-walk-*.png` | Fresh prototype screenshots. |
+| `week-07/screenshots/museum-*.png`, `route-*.png` | Final-build screenshots (36 files): every app route + every museum state incl. corridor mid/center/deep, north door approach/open, exhibit deep, reception doorway. |
 
 ### Modified
 

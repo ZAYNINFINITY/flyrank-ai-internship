@@ -20,35 +20,40 @@ import {
   type WorldDoor,
 } from "@/lib/museum/walkable-model";
 import { getPaperTexture } from "@/lib/three/paper-texture";
-import { WalkablePlayer } from "./walkable-player";
+import { RevealMaterial } from "@/lib/three/reveal-material";
+import { WalkablePlayer, type GlanceTarget } from "./walkable-player";
 
 const HEIGHT = 4.2;
+const BASEBOARD_H = 0.14;
+const BASEBOARD_D = 0.08;
+const DOOR_POST = 0.14;
+const DOOR_LINTEL_Y = 2.72;
 
-// Near-monochrome ink palette — paper sketch mood without cloning ITom colors.
-// Lightened from the first pass: the walls were nearly the same value as the
-// fog/background, which (combined with a close fog start) crushed the whole
-// room to black past a few units. Keep the muted, desaturated mood, but with
-// enough separation between wall/floor/ceiling/background to actually read.
+// ITOM-INSPIRED SKETCHBOOK PALETTE — bright warm paper, not dark ink.
+// Mirrors itomdev.com's mood: cream paper walls, faint floor grid, ink text,
+// thin sketch frames. "Wall" reads slightly warmer/cooler per room so each
+// space still has its own paper tone without breaking the sketchbook feel.
 const PALETTE = {
-  corridorWall: "#5c5c68",
-  corridorFloor: "#46464f",
-  corridorCeiling: "#3a3a42",
-  roomWall: "#585468",
-  roomFloor: "#44404e",
-  roomCeiling: "#38343f",
-  receptionWall: "#525c5c",
-  receptionFloor: "#404a4a",
-  receptionCeiling: "#343c3d",
-  approachWall: "#40404a",
-  approachFloor: "#302f38",
-  approachPath: "#48484f",
-  ivory: "#f0eee8",
-  dim: "#b8b4c8",
-  accent: "#7f92e0",
-  gold: "#c8ac70",
-  frame: "#26262e",
-  door: "#3a3a46",
-  ink: "#121218",
+  corridorWall: "#efe9da",
+  corridorFloor: "#e4ddca",
+  corridorCeiling: "#e9e3d2",
+  roomWall: "#eae6df",
+  roomFloor: "#ded8c8",
+  roomCeiling: "#e4dfd3",
+  receptionWall: "#e8e4d5",
+  receptionFloor: "#dcd5c2",
+  receptionCeiling: "#e2dccb",
+  approachWall: "#ddd6c4",
+  approachFloor: "#d3ccb8",
+  approachPath: "#e6dfcd",
+  ivory: "#2a2a30",
+  dim: "#6f6c62",
+  accent: "#c96a3a",
+  gold: "#b09048",
+  frame: "#3c3a33",
+  door: "#e2dbc8",
+  ink: "#2a2a30",
+  paper: "#efe9da",
 };
 
 function paperMaterial(color: string, roughness = 0.94) {
@@ -61,6 +66,143 @@ function paperMaterial(color: string, roughness = 0.94) {
       metalness={0}
       side={THREE.DoubleSide}
     />
+  );
+}
+
+// ─── Sketch→paint reveal card (the signature itom moment) ─────
+// A pencil doodle under each frame that "paints itself in" as you approach.
+const REVEAL_W = 1.1;
+const REVEAL_H = 0.55;
+const REVEAL_TEXTURE_CACHE = new Map<string, { sketch: THREE.CanvasTexture; painted: THREE.CanvasTexture }>();
+
+function wobblyLine(ctx: CanvasRenderingContext2D, fromX: number, fromY: number, toX: number, toY: number, wobble: number) {
+  const steps = 12;
+  ctx.beginPath();
+  ctx.moveTo(fromX, fromY);
+  for (let i = 1; i <= steps; i++) {
+    const t = i / steps;
+    const x = fromX + (toX - fromX) * t;
+    const y = fromY + (toY - fromY) * t + Math.sin(t * Math.PI * 3 + wobble) * 2.2;
+    ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+}
+
+function drawRevealCanvas(seed: string, painted: boolean) {
+  const size = 256;
+  const canvas = document.createElement("canvas");
+  canvas.width = size * 2;
+  canvas.height = size;
+  const ctx = canvas.getContext("2d");
+  if (ctx) {
+    drawRevealArt(ctx, size, seed, painted);
+  }
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
+function drawRevealArt(ctx: CanvasRenderingContext2D, size: number, seed: string, painted: boolean) {
+  ctx.lineCap = "round";
+  ctx.lineJoin = "round";
+
+  const ink = "#3c3a33";
+  const color = painted ? "#c96a3a" : ink;
+  const wobble = seed.length;
+
+  // Wavy underline the length of the card.
+  ctx.strokeStyle = painted ? "#b09048" : ink;
+  ctx.lineWidth = painted ? 6 : 3;
+  wobblyLine(ctx, 28, size - 46, size * 2 - 28, size - 46, wobble);
+
+  // Small geometric motif: triangle + dot, center-left.
+  const cx = size - 46;
+  const cy = size / 2 + 8;
+  ctx.strokeStyle = color;
+  ctx.lineWidth = painted ? 6 : 3;
+  if (painted) {
+    ctx.fillStyle = "rgba(201,106,58,0.22)";
+    ctx.beginPath();
+    ctx.moveTo(cx, cy - 52);
+    ctx.lineTo(cx + 58, cy + 24);
+    ctx.lineTo(cx - 58, cy + 24);
+    ctx.closePath();
+    ctx.fill();
+  }
+  wobblyLine(ctx, cx - 58, cy + 24, cx + 58, cy + 24, wobble + 1);
+  wobblyLine(ctx, cx, cy - 52, cx + 58, cy + 24, wobble + 2);
+  wobblyLine(ctx, cx, cy - 52, cx - 58, cy + 24, wobble + 3);
+  ctx.beginPath();
+  ctx.arc(cx + 74, cy - 20, painted ? 7 : 4, 0, Math.PI * 2);
+  ctx.stroke();
+}
+
+function revealTextures(seed: string) {
+  const cached = REVEAL_TEXTURE_CACHE.get(seed);
+  if (cached) return cached;
+  const pair = {
+    sketch: drawRevealCanvas(seed, false),
+    painted: drawRevealCanvas(seed, true),
+  };
+  REVEAL_TEXTURE_CACHE.set(seed, pair);
+  return pair;
+}
+
+function SketchCard({ position, seed }: { position: [number, number, number]; seed: string }) {
+  const { sketch, painted } = useMemo(() => revealTextures(seed), [seed]);
+  const sketchMat = useMemo(() => new RevealMaterial({ map: sketch, transparent: true, alphaTest: 0.45 }), [sketch]);
+  const sketchMatRef = useRef<RevealMaterial | null>(null);
+  useEffect(() => {
+    sketchMatRef.current = sketchMat;
+  }, [sketchMat]);
+  const frameZ = position[2];
+
+  useFrame(({ camera }) => {
+    const mat = sketchMatRef.current;
+    if (!mat) return;
+    const dist = Math.abs(camera.position.z - frameZ);
+    const target = THREE.MathUtils.clamp((7.5 - dist) / 5, 0, 1);
+    mat.uProgress = THREE.MathUtils.lerp(mat.uProgress, target, 0.06);
+  });
+
+  return (
+    <group position={position}>
+      <mesh position={[0, 0, -0.015]}>
+        <planeGeometry args={[REVEAL_W, REVEAL_H]} />
+        <meshBasicMaterial map={painted} transparent />
+      </mesh>
+      <mesh position={[0, 0, 0.005]}>
+        <planeGeometry args={[REVEAL_W, REVEAL_H]} />
+        <primitive object={sketchMat} attach="material" />
+      </mesh>
+    </group>
+  );
+}
+
+// ─── Notebook grid floor (faint sketch lines, one LineSegments) ───
+const GRID_X_RANGE = [-3.5, 3.5] as const;
+const GRID_Z_RANGE = [-13, 20] as const;
+
+function GridFloor() {
+  const geometry = useMemo(() => {
+    const positions: number[] = [];
+    const [xMin, xMax] = GRID_X_RANGE;
+    const [zMin, zMax] = GRID_Z_RANGE;
+    for (let z = zMin; z <= zMax; z += 1) {
+      positions.push(xMin, 0.02, z, xMax, 0.02, z);
+    }
+    for (let x = xMin; x <= xMax; x += 1) {
+      positions.push(x, 0.02, zMin, x, 0.02, zMax);
+    }
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
+    return geo;
+  }, []);
+
+  return (
+    <lineSegments geometry={geometry}>
+      <lineBasicMaterial color="#5a554a" transparent opacity={0.07} />
+    </lineSegments>
   );
 }
 
@@ -87,12 +229,22 @@ function RoomBox({
     fromX: number;
     toX: number;
     ry: number;
-  }) => (
-    <mesh position={[ (fromX + toX) / 2, HEIGHT / 2, x ]} rotation-y={ry}>
-      <planeGeometry args={[toX - fromX, HEIGHT]} />
-      {paperMaterial(palette.wall)}
-    </mesh>
-  );
+  }) => {
+    const midX = (fromX + toX) / 2;
+    const width = toX - fromX;
+    return (
+      <group>
+        <mesh position={[midX, HEIGHT / 2, x]} rotation-y={ry}>
+          <planeGeometry args={[width, HEIGHT]} />
+          {paperMaterial(palette.wall)}
+        </mesh>
+        <mesh position={[midX, BASEBOARD_H / 2, x]}>
+          <boxGeometry args={[width, BASEBOARD_H, BASEBOARD_D]} />
+          <meshStandardMaterial color={PALETTE.frame} roughness={0.85} />
+        </mesh>
+      </group>
+    );
+  };
 
   const wallAlongZ = ({
     z,
@@ -104,12 +256,22 @@ function RoomBox({
     fromZ: number;
     toZ: number;
     ry: number;
-  }) => (
-    <mesh position={[z, HEIGHT / 2, (fromZ + toZ) / 2]} rotation-y={ry}>
-      <planeGeometry args={[footprint.maxX - footprint.minX, HEIGHT]} />
-      {paperMaterial(palette.wall)}
-    </mesh>
-  );
+  }) => {
+    const midZ = (fromZ + toZ) / 2;
+    const width = toZ - fromZ;
+    return (
+      <group>
+        <mesh position={[z, HEIGHT / 2, midZ]} rotation-y={ry}>
+          <planeGeometry args={[width, HEIGHT]} />
+          {paperMaterial(palette.wall)}
+        </mesh>
+        <mesh position={[z, BASEBOARD_H / 2, midZ]}>
+          <boxGeometry args={[BASEBOARD_D, BASEBOARD_H, width]} />
+          <meshStandardMaterial color={PALETTE.frame} roughness={0.85} />
+        </mesh>
+      </group>
+    );
+  };
 
   const north = gaps.north;
   const south = gaps.south;
@@ -160,6 +322,54 @@ function RoomBox({
       ) : (
         wallAlongZ({ z: footprint.minX, fromZ: footprint.minZ, toZ: footprint.maxZ, ry: Math.PI / 2 })
       )}
+
+      {/* Doorway frames inset slightly toward each room's own interior so
+          the corridor and its neighbouring room don't z-fight at the shared
+          wall line (each room renders the opening from its own side). */}
+      {north && <Doorway axis="x" at={footprint.minZ + 0.02} gap={north} />}
+      {south && <Doorway axis="x" at={footprint.maxZ - 0.02} gap={south} />}
+      {east && <Doorway axis="z" at={footprint.maxX - 0.02} gap={east} />}
+      {west && <Doorway axis="z" at={footprint.minX + 0.02} gap={west} />}
+    </group>
+  );
+}
+
+// ─── Doorway architecture — frame posts, lintel, and a floor threshold
+// so openings read as real museum doors, not just holes cut in the paper.
+function Doorway({
+  axis,
+  at,
+  gap,
+}: {
+  axis: "x" | "z";
+  at: number;
+  gap: Rect;
+}) {
+  const span: [number, number] = axis === "x" ? [gap.minX, gap.maxX] : [gap.minZ, gap.maxZ];
+  const mid = (span[0] + span[1]) / 2;
+  const length = span[1] - span[0];
+  const postA = axis === "x" ? [span[0], at] : [at, span[0]];
+  const postB = axis === "x" ? [span[1], at] : [at, span[1]];
+  const alongX = axis === "x";
+
+  return (
+    <group>
+      <mesh position={[postA[0], DOOR_LINTEL_Y / 2, postA[1]]}>
+        <boxGeometry args={alongX ? [DOOR_POST, DOOR_LINTEL_Y, 0.16] : [0.16, DOOR_LINTEL_Y, DOOR_POST]} />
+        <meshStandardMaterial color={PALETTE.frame} roughness={0.85} />
+      </mesh>
+      <mesh position={[postB[0], DOOR_LINTEL_Y / 2, postB[1]]}>
+        <boxGeometry args={alongX ? [DOOR_POST, DOOR_LINTEL_Y, 0.16] : [0.16, DOOR_LINTEL_Y, DOOR_POST]} />
+        <meshStandardMaterial color={PALETTE.frame} roughness={0.85} />
+      </mesh>
+      <mesh position={alongX ? [mid, DOOR_LINTEL_Y, at] : [at, DOOR_LINTEL_Y, mid]}>
+        <boxGeometry args={alongX ? [length + DOOR_POST, 0.16, 0.16] : [0.16, 0.16, length + DOOR_POST]} />
+        <meshStandardMaterial color={PALETTE.frame} roughness={0.85} />
+      </mesh>
+      <mesh position={alongX ? [mid, 0.012, at] : [at, 0.012, mid]}>
+        <boxGeometry args={alongX ? [length + 0.5, 0.02, 0.1] : [0.1, 0.02, length + 0.5]} />
+        <meshStandardMaterial color={PALETTE.frame} roughness={0.9} />
+      </mesh>
     </group>
   );
 }
@@ -178,28 +388,30 @@ function Frame({
 }) {
   return (
     <group position={position} rotation-y={ry}>
-      <mesh position={[0, 0, 0]}>
-        <boxGeometry args={[0.14, 2.5, 1.7]} />
-        <meshStandardMaterial color={PALETTE.frame} roughness={0.6} metalness={0.1} />
+      {/* Thin ink sketch frame — four strokes around the mat, no slab */}
+      <mesh position={[0, 1.175, 0.1]}>
+        <boxGeometry args={[1.58, 0.05, 0.05]} />
+        <meshStandardMaterial color={PALETTE.ivory} roughness={0.6} metalness={0} />
       </mesh>
-      {/* Sketched frame corners */}
-      {[
-        [-0.72, 1.15, 0.14],
-        [0.72, 1.15, 0.14],
-        [-0.72, -1.15, 0.14],
-        [0.72, -1.15, 0.14],
-      ].map((p, i) => (
-        <mesh key={i} position={p as [number, number, number]}>
-          <boxGeometry args={[0.08, 0.08, 0.04]} />
-          <meshStandardMaterial color={PALETTE.ivory} roughness={0.9} />
-        </mesh>
-      ))}
-      <mesh position={[0, 0, 0.12]}>
+      <mesh position={[0, -1.175, 0.1]}>
+        <boxGeometry args={[1.58, 0.05, 0.05]} />
+        <meshStandardMaterial color={PALETTE.ivory} roughness={0.6} metalness={0} />
+      </mesh>
+      <mesh position={[0.79, 0, 0.1]}>
+        <boxGeometry args={[0.05, 2.4, 0.05]} />
+        <meshStandardMaterial color={PALETTE.ivory} roughness={0.6} metalness={0} />
+      </mesh>
+      <mesh position={[-0.79, 0, 0.1]}>
+        <boxGeometry args={[0.05, 2.4, 0.05]} />
+        <meshStandardMaterial color={PALETTE.ivory} roughness={0.6} metalness={0} />
+      </mesh>
+      {/* Paper mat */}
+      <mesh position={[0, 0, 0.11]}>
         <planeGeometry args={[1.5, 2.3]} />
-        <meshStandardMaterial color={PALETTE.ink} roughness={0.95} />
+        {paperMaterial(PALETTE.paper, 0.95)}
       </mesh>
       <Text
-        position={[0, 0.45, 0.26]}
+        position={[0, 0.45, 0.27]}
         fontSize={0.16}
         color={PALETTE.ivory}
         anchorX="center"
@@ -210,7 +422,7 @@ function Frame({
         {title}
       </Text>
       <Text
-        position={[0, -0.5, 0.26]}
+        position={[0, -0.5, 0.27]}
         fontSize={0.1}
         color={PALETTE.dim}
         anchorX="center"
@@ -220,6 +432,7 @@ function Frame({
       >
         {tagline ?? ""}
       </Text>
+      <SketchCard position={[0, -0.95, 0.2]} seed={title} />
     </group>
   );
 }
@@ -240,8 +453,8 @@ function Plaque({
   return (
     <group position={position} rotation-y={ry}>
       <mesh position={[0, 0, 0]}>
-        <boxGeometry args={[0.1, size[1], size[0]]} />
-        <meshStandardMaterial color={PALETTE.frame} roughness={0.6} metalness={0.1} />
+        <boxGeometry args={[0.08, size[1], size[0]]} />
+        {paperMaterial(PALETTE.paper, 0.95)}
       </mesh>
       <Text
         position={[0, size[1] / 4, 0.12]}
@@ -302,7 +515,7 @@ function ProjectionScreen({
         {texture ? (
           <meshStandardMaterial map={texture} color="#ffffff" roughness={0.85} />
         ) : (
-          <meshStandardMaterial color="#232a52" roughness={0.9} />
+          <meshStandardMaterial color={PALETTE.paper} roughness={0.9} />
         )}
       </mesh>
       <Text
@@ -329,11 +542,11 @@ function ArtifactPlinth({
     <group position={position} rotation-y={ry}>
       <mesh position={[0, 0, 0]}>
         <boxGeometry args={[0.9, 1.1, 0.9]} />
-        <meshStandardMaterial color="#262a4e" roughness={0.5} metalness={0.3} />
+        {paperMaterial(PALETTE.paper, 0.95)}
       </mesh>
       <mesh position={[0, 1.35, 0]}>
         <octahedronGeometry args={[0.32]} />
-        <meshStandardMaterial color={PALETTE.accent} roughness={0.25} metalness={0.5} />
+        <meshStandardMaterial color={PALETTE.accent} roughness={0.35} metalness={0.1} />
       </mesh>
       <Text
         position={[0, -0.95, 0.5]}
@@ -419,6 +632,11 @@ function ApproachExterior() {
         <boxGeometry args={[0.18, 2.4, 0.18]} />
         <meshStandardMaterial color={PALETTE.frame} roughness={0.85} />
       </mesh>
+      {/* Lintel — turns the two posts into a real doorway */}
+      <mesh position={[0, 2.5, approach.minZ + 1.2]}>
+        <boxGeometry args={[3.4, 0.22, 0.18]} />
+        <meshStandardMaterial color={PALETTE.frame} roughness={0.85} />
+      </mesh>
       <Text
         position={[0, 3.1, approach.minZ + 0.4]}
         fontSize={0.32}
@@ -455,15 +673,39 @@ function CuratorFigure({ position }: { position: [number, number, number] }) {
 
   return (
     <group ref={group}>
-      <mesh position={[0, 0.5, 0]}>
-        <capsuleGeometry args={[0.22, 0.7, 4, 8]} />
-        <meshStandardMaterial color={PALETTE.dim} roughness={0.65} metalness={0.1} />
+      {/* Legs */}
+      <mesh position={[-0.09, 0.32, 0]}>
+        <capsuleGeometry args={[0.08, 0.42, 4, 8]} />
+        <meshStandardMaterial color={PALETTE.ivory} roughness={0.8} metalness={0} />
       </mesh>
-      <mesh position={[0, 1.15, 0]}>
-        <sphereGeometry args={[0.2, 12, 12]} />
-        <meshStandardMaterial color={PALETTE.ivory} roughness={0.5} />
+      <mesh position={[0.09, 0.32, 0]}>
+        <capsuleGeometry args={[0.08, 0.42, 4, 8]} />
+        <meshStandardMaterial color={PALETTE.ivory} roughness={0.8} metalness={0} />
       </mesh>
-      <Text position={[0, 1.65, 0]} fontSize={0.09} color={PALETTE.dim} anchorX="center" anchorY="middle">
+      {/* Torso — a slightly fuller "coat" shape */}
+      <mesh position={[0, 0.82, 0]}>
+        <capsuleGeometry args={[0.17, 0.5, 4, 8]} />
+        <meshStandardMaterial color={PALETTE.ivory} roughness={0.8} metalness={0} />
+      </mesh>
+      {/* Arms */}
+      <mesh position={[-0.26, 0.78, 0]} rotation-z={0.12}>
+        <capsuleGeometry args={[0.05, 0.42, 4, 8]} />
+        <meshStandardMaterial color={PALETTE.ivory} roughness={0.8} metalness={0} />
+      </mesh>
+      <mesh position={[0.26, 0.78, 0]} rotation-z={-0.12}>
+        <capsuleGeometry args={[0.05, 0.42, 4, 8]} />
+        <meshStandardMaterial color={PALETTE.ivory} roughness={0.8} metalness={0} />
+      </mesh>
+      {/* Head + a sketch-ink eye */}
+      <mesh position={[0, 1.3, 0]}>
+        <sphereGeometry args={[0.17, 12, 12]} />
+        <meshStandardMaterial color={PALETTE.ivory} roughness={0.7} />
+      </mesh>
+      <mesh position={[0, 1.32, 0.15]}>
+        <sphereGeometry args={[0.04, 8, 8]} />
+        <meshStandardMaterial color={PALETTE.paper} roughness={0.5} />
+      </mesh>
+      <Text position={[0, 1.78, 0]} fontSize={0.09} color={PALETTE.dim} anchorX="center" anchorY="middle">
         Curator
       </Text>
     </group>
@@ -483,6 +725,7 @@ export type WalkableSceneProps = {
   onPrompt: (prompt: string | null) => void;
   onInspect: (info: InspectInfo) => void;
   onDoorOpened: (door: WorldDoor) => void;
+  onReady?: () => void;
   enabled: boolean;
 };
 
@@ -502,17 +745,33 @@ function WalkableWorldScene({
   const byId = useMemo(() => new Map(exhibits.map((e) => [e.id, e])), [exhibits]);
   const roomOrigin = { x: 0, z: (FOOTPRINTS.exhibit.minZ + FOOTPRINTS.exhibit.maxZ) / 2 };
 
+  // Wall-hung frames the camera should glance toward as you walk past.
+  // East-wall frames (x > 0, ry = -PI/2) sit to the right → dir -1 (negative
+  // yaw looks right); west-wall frames sit to the left → dir +1.
+  const glanceTargets = useMemo<GlanceTarget[]>(() => {
+    const targets: GlanceTarget[] = [];
+    for (const surface of corridorLayout) {
+      for (const { anchor } of surface.anchors) {
+        const spot = corridorFrameSpot(anchor.id);
+        if (!spot) continue;
+        targets.push({ z: spot.position[2], dir: spot.position[0] > 0 ? -1 : 1 });
+      }
+    }
+    return targets;
+  }, [corridorLayout]);
+
   return (
     <>
-      <fog attach="fog" args={[PALETTE.ink, 20, 60]} />
-      <ambientLight intensity={1.15} />
-      <hemisphereLight args={["#c8ccd8", PALETTE.ink, 0.75]} />
-      <directionalLight position={[4, 8, 3]} intensity={1.5} color="#f0ebe0" />
-      <pointLight position={[0, 3.2, 0]} intensity={24} distance={20} decay={2} color={PALETTE.accent} />
-      <pointLight position={[0, 3.2, -16]} intensity={22} distance={16} decay={2} color="#7a6a9a" />
-      <pointLight position={[0, 3.2, 16.5]} intensity={20} distance={16} decay={2} color="#4a8a8a" />
+      <fog attach="fog" args={[PALETTE.paper, 26, 85]} />
+      <ambientLight intensity={0.9} />
+      <hemisphereLight args={["#fff7e6", "#9a9384", 0.9]} />
+      <directionalLight position={[4, 8, 3]} intensity={1.15} color="#fff4dd" />
+      <pointLight position={[0, 3.2, 0]} intensity={14} distance={22} decay={2} color={PALETTE.accent} />
+      <pointLight position={[0, 3.2, -16]} intensity={12} distance={18} decay={2} color="#8a7a5a" />
+      <pointLight position={[0, 3.2, 16.5]} intensity={12} distance={18} decay={2} color="#7a8a6a" />
 
       <ApproachExterior />
+      <GridFloor />
 
       <RoomBox
         footprint={FOOTPRINTS.corridor}
@@ -610,6 +869,7 @@ function WalkableWorldScene({
         onInspect={onInspect}
         onDoorOpened={onDoorOpened}
         enabled={enabled}
+        glanceTargets={glanceTargets}
       />
     </>
   );
@@ -629,6 +889,7 @@ export function WalkableWorldCanvas({
   onPrompt,
   onInspect,
   onDoorOpened,
+  onReady,
   enabled,
 }: WalkableWorldCanvasProps) {
   const world = useMemo<WalkableWorld>(
@@ -652,9 +913,10 @@ export function WalkableWorldCanvas({
       gl={{ antialias: true, powerPreference: "high-performance", alpha: false }}
       camera={{ fov: 72, near: 0.1, far: 60, position: spawn }}
       onCreated={({ gl, camera }) => {
-        gl.setClearColor(PALETTE.ink, 1);
+        gl.setClearColor(PALETTE.paper, 1);
         camera.up.set(0, 1, 0);
         camera.rotation.order = "YXZ";
+        onReady?.();
       }}
     >
       <Suspense fallback={null}>

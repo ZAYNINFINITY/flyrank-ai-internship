@@ -8,6 +8,8 @@ import { extend } from "@react-three/fiber";
  * Only the DISCARD logic is customized: color/lighting stay 100% standard
  * MeshBasicMaterial. As `uProgress` (0..1) grows, pixels are discarded from
  * bottom to top with a noisy brush edge, revealing the painted plane behind.
+ * The noise is squared (`res*res`) exactly like the source so the edge reads
+ * as a brush stroke: blotchy where the "paint" catches, clean where it skips.
  *
  * Usage:
  *   const mat = new RevealMaterial({ map: sketchTex, transparent: true, alphaTest: 0.5 });
@@ -19,7 +21,7 @@ export class RevealMaterial extends THREE.MeshBasicMaterial {
 
   constructor(params: THREE.MeshBasicMaterialParameters = {}) {
     super(params);
-    this.customProgramCacheKey = () => "RevealMaterial_p1";
+    this.customProgramCacheKey = () => "RevealMaterial_p2";
     this.onBeforeCompile = this.onBeforeCompileImpl.bind(this);
   }
 
@@ -47,11 +49,12 @@ export class RevealMaterial extends THREE.MeshBasicMaterial {
           vec2 ip = floor(p);
           vec2 u = fract(p);
           u = u * u * (3.0 - 2.0 * u);
-          return mix(
+          float res = mix(
             mix(revealRand(ip), revealRand(ip + vec2(1.0, 0.0)), u.x),
             mix(revealRand(ip + vec2(0.0, 1.0)), revealRand(ip + vec2(1.0, 1.0)), u.x),
             u.y
           );
+          return res * res;
         }
       `
     );
@@ -60,7 +63,7 @@ export class RevealMaterial extends THREE.MeshBasicMaterial {
       "#include <alphatest_fragment>",
       /* glsl */ `#include <alphatest_fragment>
         if (uProgress > 0.001) {
-          float rn = revealNoise(vMapUv * 18.0) * 0.16;
+          float rn = revealNoise(vMapUv * 15.0) * 0.15;
           float maskValue = (1.0 - vMapUv.y) + rn;
           if (maskValue < uProgress * 1.5) discard;
         }

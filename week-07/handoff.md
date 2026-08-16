@@ -128,6 +128,56 @@ arrival-intro uniform paper (expected).
 
 ---
 
+## §C2 — Sawtooth corridor port (user: "use itom assets, but don't let it feel copied")
+
+The itom corridor's signature is its **sawtooth walls**: straight filler runs at
+the outer wall line interrupted by 4-unit recessed bays, each with one **angled
+wall** that holds the door and **leans toward the camera as you walk past**.
+Ported faithfully (MIT) and adapted to Plinth so it reads inspired, not copied:
+
+- **Geometry** (`SawtoothSide` in `walkable-world.tsx`) — direct port of
+  `CorridorWalls.jsx` segment walk (high Z → low Z): `filler → angled bay →
+  connector`, per bay. `baseRotation = -atan2(dz, dx)` with
+  `dx = innerX - outerX`, `dz = -4`; `finalRotation = isLeft ? baseRotation :
+  baseRotation + PI`. Plinth dims: `BAY_OUTER_X 3.0`, `BAY_INNER_X 1.6`,
+  `BAY_HALF_SPAN 2`, corridor run `fromZ 13 → toZ -13`.
+- **Bays follow the exhibits, not hardcoded** — each corridor frame is a bay
+  center (`corridorBays` memo built from `corridorLayout` →
+  `corridorFrameSpot`, split east/west by position sign). East bays at z=8/4,
+  west bays at z=-4/-8 → alternating sides as you walk south, matching itom's
+  left/right door rhythm.
+- **Frames hang on the angled walls** — `CORRIDOR_FRAMES` moved from the flat
+  wall line (x=±2.85, ry=±π/2) onto the bay wall (x=±2.3,
+  `ry = ∓atan2(-4,∓1.4) ± π`). Interactive prompts, glance targets and the
+  SketchCard reveal all re-derived automatically (SketchCard takes an explicit
+  `revealZ` = bay center so the paint-in still fires on approach, not at local z).
+- **DoorWallSegment tilt** — each `BayWall` ramps `rotation.y` toward the camera
+  over `BAY_TILT {base 0.02 → max 0.2, start 12 → peak 2}`, eased `t*(2-t)`,
+  lerp 0.06 (exact itom constants). The frame is a child of the tilting wall, so
+  both lean together and stay flush. Only the 4 bay walls animate — the filler
+  straight walls and connectors are static.
+- **Baseboards** on the straight filler runs only (matches itom — they skip the
+  zigzag); the angled bays deliberately have none so the recess reads clean.
+- **RevealMaterial brush edge** — adopted itom's squared noise (`res*res`) and
+  scale 15 (was 18/unsquared) for a blotchier paint edge; shader cache key
+  bumped `p1 → p2` so the new GLSL actually compiles.
+- **Procedural doodles** (`CorridorDoodles`) — the itom *technique* of floating
+  sketchbook marks around the avatar, regenerated as pure geometry/canvas so no
+  art asset is copied: a spinning 4-stroke `DoodleStar`, a dotted `DoodleSquiggle`
+  line, a pulsing `DoodleCircle`, and a bobbing `FloatNote` paper card carrying a
+  canvas-drawn wobbly star (own drawing via existing `wobblyLine`). Placed around
+  the curator in reception.
+
+`RoomBox` gained `omitSides` so the corridor renders floor/ceiling + end walls
+only; `SawtoothSide` east+west supply the full side walls. Collision solids are
+unchanged (camera max parallax |x|≈1.1 never reaches the recessed 1.6 line).
+
+**Verification (all green):** typecheck clean · lint 0 errors (2 pre-existing
+warnings) · tests **54/54** · build clean · live Playwright **10/10** · new
+sawtooth screenshot series in `week-07/screenshots/`
+(`museum-13-sawtooth-south-mouth` … `museum-26-sawtooth-west-bay-close`, stdev
+22–57, no console errors). Committed + pushed on `main`.
+
 ## 1. Mission
 
 Build the Week-07 capstone for **Plinth** ("a room for every project you've
@@ -362,7 +412,7 @@ Wall heights 4.2, wall thickness 0.1.
 | `lib/renderer/capability.ts`, `use-capable-renderer.ts`, `capability.test.ts` | Capability detection + 12 unit tests (41/41 total green). |
 | `week-07/fe-aa2-perf-note.md` | Performance note (see §8). |
 | `week-07/handoff.md` | This document. |
-| `week-07/screenshots/museum-*.png`, `route-*.png` | Final-build screenshots (36 files): every app route + every museum state incl. corridor mid/center/deep, north door approach/open, exhibit deep, reception doorway. |
+| `week-07/screenshots/museum-*.png`, `route-*.png` | Final-build screenshots (40 files — 25 `museum-*` + 15 `route-*`): every app route + every museum state incl. the sawtooth bay series (`museum-13..26`) + doors + exhibit deep + reception doorway. |
 
 ### Modified
 

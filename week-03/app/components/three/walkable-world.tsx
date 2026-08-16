@@ -29,6 +29,18 @@ const BASEBOARD_D = 0.08;
 const DOOR_POST = 0.14;
 const DOOR_LINTEL_Y = 2.72;
 
+// ITOM-INSPIRED SAWTOOTH CORRIDOR — recessed angled wall bays, ported from
+// the MIT itom corridor (github.com/ITomPoland/portfolio-itom) to Plinth's
+// dimensions. Each bay: a straight filler at the outer wall line, one angled
+// wall across a 4-unit span (outer→inner as Z decreases), and a small
+// connector closing the low-Z end. Frames hang on the angled walls exactly
+// like itom's doors — and the angled walls lean toward the camera as you
+// approach (DoorWallSegment tilt), reimplemented with static bay geometry.
+const BAY_OUTER_X = 3.0; // corridor half-width (outer wall line)
+const BAY_INNER_X = 1.6; // recessed bay face toward the corridor center
+const BAY_HALF_SPAN = 2; // half the bay length along Z (DOOR_Z_SPAN = 4)
+const BAY_TILT = { base: 0.02, max: 0.2, start: 12, peak: 2, lerp: 0.06 };
+
 // ITOM-INSPIRED SKETCHBOOK PALETTE — bright warm paper, not dark ink.
 // Mirrors itomdev.com's mood: cream paper walls, faint floor grid, ink text,
 // thin sketch frames. "Wall" reads slightly warmer/cooler per room so each
@@ -148,19 +160,19 @@ function revealTextures(seed: string) {
   return pair;
 }
 
-function SketchCard({ position, seed }: { position: [number, number, number]; seed: string }) {
+function SketchCard({ position, seed, frameZ }: { position: [number, number, number]; seed: string; frameZ?: number }) {
   const { sketch, painted } = useMemo(() => revealTextures(seed), [seed]);
   const sketchMat = useMemo(() => new RevealMaterial({ map: sketch, transparent: true, alphaTest: 0.45 }), [sketch]);
   const sketchMatRef = useRef<RevealMaterial | null>(null);
   useEffect(() => {
     sketchMatRef.current = sketchMat;
   }, [sketchMat]);
-  const frameZ = position[2];
+  const revealZ = frameZ ?? position[2];
 
   useFrame(({ camera }) => {
     const mat = sketchMatRef.current;
     if (!mat) return;
-    const dist = Math.abs(camera.position.z - frameZ);
+    const dist = Math.abs(camera.position.z - revealZ);
     const target = THREE.MathUtils.clamp((7.5 - dist) / 5, 0, 1);
     mat.uProgress = THREE.MathUtils.lerp(mat.uProgress, target, 0.06);
   });
@@ -211,10 +223,12 @@ function RoomBox({
   footprint,
   gaps,
   palette,
+  omitSides = false,
 }: {
   footprint: Rect;
   gaps: Partial<Record<"north" | "south" | "east" | "west", Rect>>;
   palette: { wall: string; floor: string; ceiling: string };
+  omitSides?: boolean;
 }) {
   const widthX = footprint.maxX - footprint.minX;
   const widthZ = footprint.maxZ - footprint.minZ;
@@ -306,30 +320,32 @@ function RoomBox({
         wallAlongX({ x: footprint.maxZ, fromX: footprint.minX, toX: footprint.maxX, ry: Math.PI })
       )}
 
-      {east ? (
-        <>
-          {wallAlongZ({ z: footprint.maxX, fromZ: footprint.minZ, toZ: east.minZ, ry: -Math.PI / 2 })}
-          {wallAlongZ({ z: footprint.maxX, fromZ: east.maxZ, toZ: footprint.maxZ, ry: -Math.PI / 2 })}
-        </>
-      ) : (
-        wallAlongZ({ z: footprint.maxX, fromZ: footprint.minZ, toZ: footprint.maxZ, ry: -Math.PI / 2 })
-      )}
-      {west ? (
-        <>
-          {wallAlongZ({ z: footprint.minX, fromZ: footprint.minZ, toZ: west.minZ, ry: Math.PI / 2 })}
-          {wallAlongZ({ z: footprint.minX, fromZ: west.maxZ, toZ: footprint.maxZ, ry: Math.PI / 2 })}
-        </>
-      ) : (
-        wallAlongZ({ z: footprint.minX, fromZ: footprint.minZ, toZ: footprint.maxZ, ry: Math.PI / 2 })
-      )}
+      {!omitSides &&
+        (east ? (
+          <>
+            {wallAlongZ({ z: footprint.maxX, fromZ: footprint.minZ, toZ: east.minZ, ry: -Math.PI / 2 })}
+            {wallAlongZ({ z: footprint.maxX, fromZ: east.maxZ, toZ: footprint.maxZ, ry: -Math.PI / 2 })}
+          </>
+        ) : (
+          wallAlongZ({ z: footprint.maxX, fromZ: footprint.minZ, toZ: footprint.maxZ, ry: -Math.PI / 2 })
+        ))}
+      {!omitSides &&
+        (west ? (
+          <>
+            {wallAlongZ({ z: footprint.minX, fromZ: footprint.minZ, toZ: west.minZ, ry: Math.PI / 2 })}
+            {wallAlongZ({ z: footprint.minX, fromZ: west.maxZ, toZ: footprint.maxZ, ry: Math.PI / 2 })}
+          </>
+        ) : (
+          wallAlongZ({ z: footprint.minX, fromZ: footprint.minZ, toZ: footprint.maxZ, ry: Math.PI / 2 })
+        ))}
 
       {/* Doorway frames inset slightly toward each room's own interior so
           the corridor and its neighbouring room don't z-fight at the shared
           wall line (each room renders the opening from its own side). */}
       {north && <Doorway axis="x" at={footprint.minZ + 0.02} gap={north} />}
       {south && <Doorway axis="x" at={footprint.maxZ - 0.02} gap={south} />}
-      {east && <Doorway axis="z" at={footprint.maxX - 0.02} gap={east} />}
-      {west && <Doorway axis="z" at={footprint.minX + 0.02} gap={west} />}
+      {!omitSides && east && <Doorway axis="z" at={footprint.maxX - 0.02} gap={east} />}
+      {!omitSides && west && <Doorway axis="z" at={footprint.minX + 0.02} gap={west} />}
     </group>
   );
 }
@@ -374,17 +390,194 @@ function Doorway({
   );
 }
 
+// ─── Sawtooth corridor walls (itom-inspired bay geometry) ─────
+// One side of the corridor rebuilt as recessed bays. The angled "bay" walls
+// lean toward the camera as it walks past (DoorWallSegment tilt), carrying
+// their frame with them so frames stay flush with the moving wall.
+
+type BayFrameData = { centerZ: number; exhibit: Exhibit };
+
+function BayWall({
+  position,
+  baseRy,
+  width,
+  tiltDir,
+  bayZ,
+  children,
+}: {
+  position: [number, number, number];
+  baseRy: number;
+  width: number;
+  tiltDir: 1 | -1;
+  bayZ: number;
+  children?: React.ReactNode;
+}) {
+  const group = useRef<THREE.Group>(null);
+  const currentTilt = useRef(0);
+
+  useFrame(({ camera }) => {
+    if (!group.current) return;
+    const distance = Math.abs(camera.position.z - bayZ);
+    let target = BAY_TILT.base;
+    if (distance < BAY_TILT.start && distance > BAY_TILT.peak) {
+      const t = (BAY_TILT.start - distance) / (BAY_TILT.start - BAY_TILT.peak);
+      target = BAY_TILT.base + (BAY_TILT.max - BAY_TILT.base) * t * (2 - t);
+    } else if (distance <= BAY_TILT.peak) {
+      target = BAY_TILT.max;
+    }
+    currentTilt.current = THREE.MathUtils.lerp(currentTilt.current, target, BAY_TILT.lerp);
+    group.current.rotation.y = baseRy + currentTilt.current * tiltDir;
+  });
+
+  return (
+    <group ref={group} position={position}>
+      <mesh position={[0, HEIGHT / 2, 0]}>
+        <planeGeometry args={[width, HEIGHT]} />
+        {paperMaterial(PALETTE.corridorWall)}
+      </mesh>
+      {children}
+    </group>
+  );
+}
+
+function SawtoothSide({
+  side,
+  fromZ,
+  toZ,
+  bayFrames,
+}: {
+  side: "east" | "west";
+  fromZ: number;
+  toZ: number;
+  bayFrames: BayFrameData[];
+}) {
+  // Faithful port of itom's CorridorWalls segment walk (high Z → low Z):
+  // filler → angled bay → connector, repeated for each door (here: frame).
+  const segments = useMemo(() => {
+    const isLeft = side === "west";
+    const baseX = isLeft ? -BAY_OUTER_X : BAY_OUTER_X;
+    const innerX = isLeft ? -BAY_INNER_X : BAY_INNER_X;
+    const frameByZ = new Map(bayFrames.map((f) => [f.centerZ, f]));
+    const out: Array<
+      | { kind: "filler"; position: [number, number, number]; ry: number; width: number }
+      | { kind: "connector"; position: [number, number, number]; ry: number; width: number }
+      | { kind: "bay"; position: [number, number, number]; ry: number; width: number; frame?: BayFrameData }
+    > = [];
+
+    let currentZ = fromZ;
+    const centers = [...frameByZ.keys()].sort((a, b) => b - a);
+
+    for (const bayZ of centers) {
+      const doorStartZ = bayZ + BAY_HALF_SPAN;
+      const doorEndZ = bayZ - BAY_HALF_SPAN;
+      if (doorStartZ > currentZ || doorEndZ < toZ) continue;
+
+      if (currentZ > doorStartZ) {
+        const length = currentZ - doorStartZ;
+        out.push({
+          kind: "filler",
+          position: [baseX, 0, currentZ - length / 2],
+          ry: isLeft ? Math.PI / 2 : -Math.PI / 2,
+          width: length,
+        });
+      }
+
+      const dx = innerX - baseX;
+      const dz = doorEndZ - doorStartZ;
+      const baseRotation = -Math.atan2(dz, dx);
+      out.push({
+        kind: "bay",
+        position: [(baseX + innerX) / 2, 0, (doorStartZ + doorEndZ) / 2],
+        ry: isLeft ? baseRotation : baseRotation + Math.PI,
+        width: Math.hypot(dx, dz),
+        frame: frameByZ.get(bayZ),
+      });
+
+      out.push({
+        kind: "connector",
+        position: [(innerX + baseX) / 2, 0, doorEndZ],
+        ry: Math.PI,
+        width: Math.abs(baseX - innerX),
+      });
+
+      currentZ = doorEndZ;
+    }
+
+    if (currentZ > toZ) {
+      const length = currentZ - toZ;
+      out.push({
+        kind: "filler",
+        position: [baseX, 0, currentZ - length / 2],
+        ry: isLeft ? Math.PI / 2 : -Math.PI / 2,
+        width: length,
+      });
+    }
+    return out;
+  }, [side, fromZ, toZ, bayFrames]);
+
+  return (
+    <group>
+      {segments.map((seg, i) => {
+        if (seg.kind === "filler") {
+          return (
+            <group key={i} position={seg.position} rotation-y={seg.ry}>
+              <mesh position={[0, HEIGHT / 2, 0]}>
+                <planeGeometry args={[seg.width, HEIGHT]} />
+                {paperMaterial(PALETTE.corridorWall)}
+              </mesh>
+              <mesh position={[0, BASEBOARD_H / 2, 0]}>
+                <boxGeometry args={[seg.width, BASEBOARD_H, BASEBOARD_D]} />
+                <meshStandardMaterial color={PALETTE.frame} roughness={0.85} />
+              </mesh>
+            </group>
+          );
+        }
+        if (seg.kind === "connector") {
+          return (
+            <mesh key={i} position={seg.position} rotation-y={seg.ry}>
+              <planeGeometry args={[seg.width, HEIGHT]} />
+              {paperMaterial(PALETTE.corridorWall)}
+            </mesh>
+          );
+        }
+        return (
+          <BayWall
+            key={i}
+            position={seg.position}
+            baseRy={seg.ry}
+            width={seg.width}
+            tiltDir={side === "west" ? -1 : 1}
+            bayZ={seg.position[2]}
+          >
+            {seg.frame && (
+              <Frame
+                position={[0, 2.25, 0]}
+                ry={0}
+                revealZ={seg.frame.centerZ}
+                title={seg.frame.exhibit.title}
+                tagline={seg.frame.exhibit.tagline}
+              />
+            )}
+          </BayWall>
+        );
+      })}
+    </group>
+  );
+}
+
 // ─── Wall-hung content ─────────────────────────────────────────
 function Frame({
   position,
   ry,
   title,
   tagline,
+  revealZ,
 }: {
   position: [number, number, number];
   ry: number;
   title: string;
   tagline?: string;
+  revealZ?: number;
 }) {
   return (
     <group position={position} rotation-y={ry}>
@@ -432,7 +625,7 @@ function Frame({
       >
         {tagline ?? ""}
       </Text>
-      <SketchCard position={[0, -0.95, 0.2]} seed={title} />
+      <SketchCard position={[0, -0.95, 0.2]} seed={title} frameZ={revealZ} />
     </group>
   );
 }
@@ -659,6 +852,145 @@ function ApproachExterior() {
   );
 }
 
+// ─── Floating sketch doodles (procedural, drawn in code) ──────
+// Loose sketchbook marks that hover around the curator like itom's paper
+// doodles — but built from pure geometry + our own canvas scribbles instead
+// of their painted art assets, so the mood survives without copying.
+
+const NOTE_TEXTURE_CACHE = new Map<string, THREE.CanvasTexture>();
+
+function getFloatNoteTexture() {
+  const cached = NOTE_TEXTURE_CACHE.get("float-note");
+  if (cached) return cached;
+  const canvas = document.createElement("canvas");
+  canvas.width = 256;
+  canvas.height = 224;
+  const ctx = canvas.getContext("2d");
+  if (ctx) {
+    ctx.clearRect(0, 0, 256, 224);
+    ctx.strokeStyle = "#3c3a33";
+    ctx.lineWidth = 5;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+
+    // Wobbly five-point star (straight strokes nudged slightly off-grid).
+    const cx = 128;
+    const cy = 98;
+    const R = 48;
+    const r = 22;
+    ctx.beginPath();
+    for (let i = 0; i < 10; i++) {
+      const radius = i % 2 === 0 ? R : r;
+      const a = (i * Math.PI) / 5 - Math.PI / 2;
+      const x = cx + Math.cos(a) * radius + (i % 3) * 1.6;
+      const y = cy + Math.sin(a) * radius + (i % 2) * 1.6;
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ctx.closePath();
+    ctx.stroke();
+
+    // Squiggle underline + two accent dots.
+    wobblyLine(ctx, cx - 42, cy + 66, cx + 42, cy + 66, 3);
+    ctx.beginPath();
+    ctx.arc(cx - 64, cy + 6, 4, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(cx + 64, cy - 4, 4, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  NOTE_TEXTURE_CACHE.set("float-note", tex);
+  return tex;
+}
+
+function DoodleStar({ position, color, speed }: { position: [number, number, number]; color: string; speed: number }) {
+  const group = useRef<THREE.Group>(null);
+  useFrame((_, delta) => {
+    if (group.current) group.current.rotation.z += delta * speed;
+  });
+  return (
+    <group ref={group} position={position}>
+      {[0, Math.PI / 4, Math.PI / 2, (3 * Math.PI) / 4].map((a) => (
+        <mesh key={a} rotation-z={a}>
+          <planeGeometry args={[0.3, 0.055]} />
+          <meshBasicMaterial color={color} transparent opacity={0.75} side={THREE.DoubleSide} />
+        </mesh>
+      ))}
+    </group>
+  );
+}
+
+function DoodleSquiggle({ position, color }: { position: [number, number, number]; color: string }) {
+  const group = useRef<THREE.Group>(null);
+  useFrame((state) => {
+    if (group.current) {
+      group.current.position.x = position[0] + Math.sin(state.clock.elapsedTime * 1.2) * 0.05;
+      group.current.position.y = position[1] + Math.cos(state.clock.elapsedTime * 0.9) * 0.03;
+    }
+  });
+  return (
+    <group ref={group} position={position}>
+      {[-3, -2, -1, 0, 1, 2, 3].map((i) => (
+        <mesh key={i} position={[i * 0.055, Math.sin(i * 0.9) * 0.05, 0]}>
+          <sphereGeometry args={[0.022, 6, 6]} />
+          <meshBasicMaterial color={color} transparent opacity={0.8} />
+        </mesh>
+      ))}
+    </group>
+  );
+}
+
+function DoodleCircle({ position, color }: { position: [number, number, number]; color: string }) {
+  const mesh = useRef<THREE.Mesh>(null);
+  useFrame((state) => {
+    if (mesh.current) {
+      const s = 1 + Math.sin(state.clock.elapsedTime * 1.4) * 0.08;
+      mesh.current.scale.setScalar(s);
+      mesh.current.rotation.z = Math.sin(state.clock.elapsedTime * 0.7) * 0.12;
+    }
+  });
+  return (
+    <mesh ref={mesh} position={position} rotation-y={-Math.PI / 4}>
+      <ringGeometry args={[0.11, 0.135, 24]} />
+      <meshBasicMaterial color={color} transparent opacity={0.7} side={THREE.DoubleSide} />
+    </mesh>
+  );
+}
+
+function FloatNote({ position }: { position: [number, number, number] }) {
+  const group = useRef<THREE.Group>(null);
+  const tex = useMemo(() => getFloatNoteTexture(), []);
+  useFrame((state) => {
+    if (group.current) {
+      const t = state.clock.elapsedTime;
+      group.current.position.y = position[1] + Math.sin(t * 1.1) * 0.06;
+      group.current.rotation.z = Math.sin(t * 0.8) * 0.1;
+      group.current.rotation.x = Math.sin(t * 0.5) * 0.06;
+    }
+  });
+  return (
+    <group ref={group} position={position}>
+      <mesh rotation-y={-Math.PI / 4}>
+        <planeGeometry args={[0.42, 0.36]} />
+        <meshBasicMaterial map={tex} transparent opacity={0.85} side={THREE.DoubleSide} />
+      </mesh>
+    </group>
+  );
+}
+
+function CorridorDoodles() {
+  return (
+    <group>
+      <DoodleStar position={[2.45, 1.95, 16.7]} color={PALETTE.dim} speed={0.7} />
+      <DoodleSquiggle position={[1.0, 1.5, 17.4]} color={PALETTE.dim} />
+      <DoodleCircle position={[2.6, 1.35, 15.6]} color={PALETTE.accent} />
+      <FloatNote position={[1.1, 2.1, 16.85]} />
+    </group>
+  );
+}
+
 function CuratorFigure({ position }: { position: [number, number, number] }) {
   const group = useRef<THREE.Group>(null);
   useFrame(() => {
@@ -760,6 +1092,24 @@ function WalkableWorldScene({
     return targets;
   }, [corridorLayout]);
 
+  // Corridor frames are the sawtooth bay centers: each frame hangs on the
+  // angled wall of its own 4-unit bay, alternating sides as you walk south.
+  const corridorBays = useMemo(() => {
+    const east: BayFrameData[] = [];
+    const west: BayFrameData[] = [];
+    for (const surface of corridorLayout) {
+      for (const { anchor, placement } of surface.anchors) {
+        const spot = corridorFrameSpot(anchor.id);
+        if (!spot || !placement) continue;
+        const exhibitItem = byId.get(placement.entityId);
+        if (!exhibitItem) continue;
+        const frame = { centerZ: spot.position[2], exhibit: exhibitItem };
+        (spot.position[0] > 0 ? east : west).push(frame);
+      }
+    }
+    return { east, west };
+  }, [corridorLayout, byId]);
+
   return (
     <>
       <fog attach="fog" args={[PALETTE.paper, 26, 85]} />
@@ -780,6 +1130,19 @@ function WalkableWorldScene({
           south: { minX: -0.8, maxX: 0.8, minZ: 12.95, maxZ: 13.05 },
         }}
         palette={{ wall: PALETTE.corridorWall, floor: PALETTE.corridorFloor, ceiling: PALETTE.corridorCeiling }}
+        omitSides
+      />
+      <SawtoothSide
+        side="east"
+        fromZ={FOOTPRINTS.corridor.maxZ}
+        toZ={FOOTPRINTS.corridor.minZ}
+        bayFrames={corridorBays.east}
+      />
+      <SawtoothSide
+        side="west"
+        fromZ={FOOTPRINTS.corridor.maxZ}
+        toZ={FOOTPRINTS.corridor.minZ}
+        bayFrames={corridorBays.west}
       />
       <RoomBox
         footprint={FOOTPRINTS.exhibit}
@@ -795,24 +1158,6 @@ function WalkableWorldScene({
       {world.doors.map((door) => (
         <DoorPanel key={door.id} door={door} openDoors={openDoors} />
       ))}
-
-      {corridorLayout.map((surface) =>
-        surface.anchors.map(({ anchor, placement }) => {
-          const spot = corridorFrameSpot(anchor.id);
-          if (!spot || !placement) return null;
-          const exhibitItem = byId.get(placement.entityId);
-          if (!exhibitItem) return null;
-          return (
-            <Frame
-              key={anchor.id}
-              position={spot.position}
-              ry={spot.ry}
-              title={exhibitItem.title}
-              tagline={exhibitItem.tagline}
-            />
-          );
-        })
-      )}
 
       {roomLayout.map((surface) =>
         surface.anchors.map(({ anchor, placement }) => {
@@ -860,6 +1205,7 @@ function WalkableWorldScene({
       />
 
       <CuratorFigure position={[1.8, 0, 16.2]} />
+      <CorridorDoodles />
 
       <WalkablePlayer
         world={world}

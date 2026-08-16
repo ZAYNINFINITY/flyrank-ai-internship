@@ -131,15 +131,20 @@ export function buildDoors(): WorldDoor[] {
   ];
 }
 
-// ry follows the same convention as the room walls: the frame's front face
-// (text side) must point AWAY from its wall, back into the corridor toward
-// the player. East-wall frames (x=2.85) face -X; west-wall frames (x=-2.85)
-// face +X. These were previously swapped, which rendered the text mirrored.
+// Frames hang on the sawtooth bay walls (angled wall across each 4-unit bay:
+// outer x=3.0 at the high-Z end → inner x=1.6 at the low-Z end). The ry below
+// matches SawtoothSide's bay-wall rotation so each frame's front face (text
+// side) points back into the corridor toward the player.
+//   east bay wall: baseRotation = -atan2(dz, dx) + PI   (dx=-1.4, dz=-4)
+//   west bay wall: baseRotation = -atan2(dz, dx)       (dx=+1.4, dz=-4)
+const BAY_WALL_X = 2.3;
+const EAST_BAY_RY = -Math.atan2(-4, -1.4) + Math.PI;
+const WEST_BAY_RY = -Math.atan2(-4, 1.4);
 const CORRIDOR_FRAMES: Record<string, { position: [number, number, number]; ry: number }> = {
-  "corridor-exhibit-1": { position: [2.85, 2.25, 4], ry: -Math.PI / 2 },
-  "corridor-exhibit-2": { position: [2.85, 2.25, 8], ry: -Math.PI / 2 },
-  "corridor-exhibit-3": { position: [-2.85, 2.25, -4], ry: Math.PI / 2 },
-  "corridor-exhibit-4": { position: [-2.85, 2.25, -8], ry: Math.PI / 2 },
+  "corridor-exhibit-1": { position: [BAY_WALL_X, 2.25, 4], ry: EAST_BAY_RY },
+  "corridor-exhibit-2": { position: [BAY_WALL_X, 2.25, 8], ry: EAST_BAY_RY },
+  "corridor-exhibit-3": { position: [-BAY_WALL_X, 2.25, -4], ry: WEST_BAY_RY },
+  "corridor-exhibit-4": { position: [-BAY_WALL_X, 2.25, -8], ry: WEST_BAY_RY },
 };
 
 export const ROOM_SPOTS: Record<

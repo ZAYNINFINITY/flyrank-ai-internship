@@ -9,7 +9,8 @@
 
 - **Walkable 3D museum** on WebGL2-capable devices: scroll-rail glide through approach → reception → corridor → exhibit room
 - **Home is the museum** on 3D devices (`app/page.tsx`); flat “Enter the Museum” fallback otherwise
-- **ITOM-inspired polish:** paper texture, fog, vignette, ink palette, sketched frames
+- **Latest museum rescue pass:** root website chrome removed, home starts in the 3D museum, reception now reads as an exhibit preview hall, and exhibit previews route into project rooms
+- **Visual polish:** the earlier ITOM-inspired paper pass has been superseded in the active working tree by a darker concrete/stone/wood museum moodboard with warm strip lighting, backlit panels, category signage, and framed exhibit portraits
 - **Arrival beat:** exterior path + facade signage + brief “Approaching” intro overlay
 - **Curator placeholder:** simple figure in reception; inspect links to `/assistant`
 - **`?via=` adapter:** `lib/museum/via-entry.ts` + spawn mapping in `walkable-model.ts`
@@ -21,6 +22,7 @@
 - World graph structure (`world.ts` rooms/doors/anchors)
 - Placement engine and entity registry architecture
 - AI curator chat implementation (`/assistant`, `/api/chat`)
+- Live GitHub auth/API integration; current profiles are GitHub-shaped seed data
 - Full building exterior modeling and animated curator (week 9/10)
 
 ## Key architectural decision
@@ -62,7 +64,8 @@ e2e museum-flow    — updated for 3D-or-flat home entry
 - Portfolio PNG assets still large
 - Lighthouse not re-run this session
 - Curator is a placeholder mesh, not a guided character
+- Current developer profile data is mocked until GitHub auth/repo fetching is wired
 
 ## Next logical step
 
-Week 9/10: full exterior approach path, rigged curator, door reveal shader, on-screen mobile joystick, image asset compression pipeline.
+Next: do a visual QA pass of exhibit preview → curator narration → Open exhibit → project room. Week 9/10 polish remains full exterior approach path, rigged curator, door reveal shader, on-screen mobile joystick, and image asset compression.

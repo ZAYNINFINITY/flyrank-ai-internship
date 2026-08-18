@@ -234,15 +234,26 @@ export function ExhibitRoom3D({
 
       {/* Vignette + grain overlay */}
       <div
-        className="pointer-events-none absolute inset-0 z-[45] bg-[radial-gradient(circle_at_center,transparent_55%,rgba(70,58,34,0.18)_100%)]"
+        className="pointer-events-none absolute inset-0 z-[45] bg-[radial-gradient(circle_at_center,transparent_65%,rgba(70,58,34,0.06)_100%)]"
         aria-hidden="true"
       />
-      <div className="pointer-events-none absolute left-4 top-4 flex flex-col gap-0.5">
-        <p className="text-[10px] uppercase tracking-[0.25em] text-[#2a2a30]/70">
+      <div
+        className="pointer-events-none absolute inset-0 z-[44] opacity-[0.035]"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E")`,
+          mixBlendMode: "multiply",
+        }}
+        aria-hidden="true"
+      />
+
+      {/* Top-left identity chip — same pill/blur/border treatment as every
+          other overlay element, instead of text floating bare on the canvas */}
+      <div className="pointer-events-none absolute left-4 top-4 flex flex-col gap-0.5 rounded-sm border border-[#2a2a30]/15 bg-[#efe9da]/85 px-3 py-2 shadow-sm backdrop-blur-sm">
+        <p className="text-[10px] uppercase tracking-[0.25em] text-[#2a2a30]/80">
           Plinth
         </p>
-        <p className="text-[10px] uppercase tracking-[0.2em] text-[#2a2a30]/45">
-          {isTouch ? "Swipe to move · Tap to inspect" : "Scroll to move · E to inspect"}
+        <p className="text-[10px] uppercase tracking-[0.2em] text-[#2a2a30]/50">
+          {isTouch ? "Swipe to move · Tap to inspect" : "Scroll to move · Click to inspect"}
         </p>
       </div>
 
@@ -251,7 +262,7 @@ export function ExhibitRoom3D({
       <button
         type="button"
         onClick={() => setShowTextWalls(true)}
-        className="pointer-events-auto absolute right-4 top-4 min-h-[44px] border border-[#2a2a30]/20 bg-[#efe9da]/85 px-3 py-1.5 text-[10px] uppercase tracking-[0.2em] text-[#2a2a30]/70 shadow-sm backdrop-blur-sm transition-all duration-500 hover:border-[#2a2a30]/50 hover:text-[#2a2a30] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+        className="pointer-events-auto absolute right-4 top-4 min-h-[44px] rounded-sm border border-[#2a2a30]/20 bg-[#efe9da]/85 px-3 py-1.5 text-[10px] uppercase tracking-[0.2em] text-[#2a2a30]/70 shadow-sm backdrop-blur-sm transition-all duration-300 hover:border-[#2a2a30]/50 hover:text-[#2a2a30] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
       >
         Text walls
       </button>
@@ -266,11 +277,11 @@ export function ExhibitRoom3D({
               event.stopPropagation();
               inputState.activate = true;
             }}
-            className="pointer-events-auto border border-[#2a2a30]/25 bg-[#efe9da]/90 px-5 py-2.5 text-xs uppercase tracking-[0.2em] text-[#2a2a30]/90 shadow-sm backdrop-blur-sm transition-colors duration-300 hover:border-[#2a2a30]/50"
+            className="pointer-events-auto rounded-sm border border-[#2a2a30]/25 bg-[#efe9da]/90 px-5 py-2.5 text-xs uppercase tracking-[0.2em] text-[#2a2a30]/90 shadow-sm backdrop-blur-sm transition-colors duration-200 hover:border-[#2a2a30]/50"
           >
             {prompt}
             <span aria-hidden="true" className="ml-3 opacity-50">
-              {isTouch ? "\u00A0Tap" : "\u00A0E"}
+              {isTouch ? "\u00A0Tap" : "\u00A0Click"}
             </span>
           </button>
         </div>
@@ -283,7 +294,7 @@ export function ExhibitRoom3D({
           aria-modal="true"
           aria-label="Inspect"
           tabIndex={-1}
-          className="absolute inset-x-3 bottom-3 border border-[#2a2a30]/15 bg-[#efe9da]/95 p-5 shadow-lg backdrop-blur-sm sm:inset-x-auto sm:right-4 sm:bottom-4 sm:left-auto sm:w-[22rem] focus:outline-none"
+          className="absolute inset-x-3 bottom-3 rounded-sm border border-[#2a2a30]/15 bg-[#efe9da]/95 p-5 shadow-lg backdrop-blur-sm sm:inset-x-auto sm:right-4 sm:bottom-4 sm:left-auto sm:w-[22rem] focus:outline-none"
         >
           <p className="text-[10px] uppercase tracking-[0.25em] text-[#6f6c62]">
             {SOURCE_LABELS[inspect.source]}
@@ -298,7 +309,7 @@ export function ExhibitRoom3D({
             {inspect.href && (
               <Link
                 href={inspect.href}
-                className="text-xs uppercase tracking-[0.2em] text-[#2a2a30]/60 transition-opacity duration-300 hover:text-[#2a2a30] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent min-h-[44px] inline-flex items-center"
+                className="inline-flex min-h-[44px] items-center text-xs uppercase tracking-[0.2em] text-[#2a2a30]/60 transition-opacity duration-200 hover:text-[#2a2a30] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
               >
                 {inspect.hrefLabel ?? "Continue"} &rarr;
               </Link>
@@ -306,7 +317,7 @@ export function ExhibitRoom3D({
             {portfolioRoute && !inspect.href && (
               <Link
                 href={portfolioRoute}
-                className="text-xs uppercase tracking-[0.2em] text-[#2a2a30]/60 transition-opacity duration-300 hover:text-[#2a2a30] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                className="inline-flex min-h-[44px] items-center text-xs uppercase tracking-[0.2em] text-[#2a2a30]/60 transition-opacity duration-200 hover:text-[#2a2a30] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
               >
                 Open full exhibit &rarr;
               </Link>
@@ -314,7 +325,7 @@ export function ExhibitRoom3D({
             <button
               type="button"
               onClick={closeInspect}
-              className="border border-[#2a2a30]/20 px-3 py-1.5 text-[11px] uppercase tracking-[0.2em] text-[#2a2a30]/60 transition-all duration-300 hover:border-[#2a2a30]/50 hover:text-[#2a2a30] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+              className="rounded-sm border border-[#2a2a30]/20 px-3 py-1.5 text-[11px] uppercase tracking-[0.2em] text-[#2a2a30]/60 transition-all duration-200 hover:border-[#2a2a30]/50 hover:text-[#2a2a30] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
             >
               Close
             </button>
@@ -322,11 +333,12 @@ export function ExhibitRoom3D({
         </div>
       )}
 
-      {/* Exit back to the flat museum — a real escape route out of the
-          full-screen takeover, since there's no page chrome around it now */}
+      {/* Exit back to the flat museum. Shifted right of the corner (left-20,
+          not left-4) so it doesn't collide with the site's own chat/profile
+          widget, which lives in that exact bottom-left corner. */}
       <Link
         href={portfolioRoute ?? "/"}
-        className="pointer-events-auto absolute left-4 bottom-4 border border-[#2a2a30]/20 bg-[#efe9da]/85 px-3 py-1.5 text-[10px] uppercase tracking-[0.2em] text-[#2a2a30]/70 shadow-sm backdrop-blur-sm transition-all duration-500 hover:border-[#2a2a30]/50 hover:text-[#2a2a30] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+        className="pointer-events-auto absolute bottom-4 left-20 min-h-[44px] rounded-sm border border-[#2a2a30]/20 bg-[#efe9da]/85 px-3 py-1.5 text-[10px] uppercase tracking-[0.2em] text-[#2a2a30]/70 shadow-sm backdrop-blur-sm transition-all duration-300 hover:border-[#2a2a30]/50 hover:text-[#2a2a30] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
       >
         &larr; Leave the room
       </Link>

@@ -71,7 +71,7 @@ export default function HomePage() {
     <ExhibitRoom3D
       layout={layout}
       exhibitId={HOME_EXHIBIT_ID}
-      portfolioRoute={getPortfolioRouteForExhibitId(HOME_EXHIBIT_ID)}
+      portfolioRoute={getPortfolioRouteForExhibitId()}
       quality={capability.quality}
       arrivedVia={null}
     />

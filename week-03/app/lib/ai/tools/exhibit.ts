@@ -1,41 +1,24 @@
 import { tool } from "ai";
 import { z } from "zod";
-import type { Exhibit } from "@/lib/types/exhibit";
 import type { ExhibitRepository } from "@/lib/repository";
-
-export const exhibitCollections = [
-  "infrastructure",
-  "visual-design",
-  "experiments",
-  "journey",
-] as const;
 
 export const exhibitLookupSchema = z
   .object({
-    id: z.string().min(1).optional().describe("Exact exhibit id, e.g. \"pos-it\""),
+    id: z.string().min(1).optional().describe('Exact exhibit id, e.g. "pos-it"'),
     collection: z
-      .enum(exhibitCollections)
+      .string()
+      .min(1)
       .optional()
-      .describe("Filter exhibits by collection"),
+      .describe("Filter exhibits by collection id, e.g. frontend, fullstack, data-viz, experiments"),
     query: z
       .string()
       .min(1)
       .optional()
-      .describe("Free-text search across title, tagline, description, and developer"),
+      .describe("Free-text search across title, tagline, description, technologies, and developer id"),
   })
   .describe("Look up project exhibits in the Plinth museum");
 
 export type ExhibitLookupInput = z.infer<typeof exhibitLookupSchema>;
-
-function matchesQuery(exhibit: Exhibit, query: string): boolean {
-  const needle = query.toLowerCase();
-  return [
-    exhibit.title,
-    exhibit.tagline,
-    exhibit.description,
-    exhibit.developer,
-  ].some((field) => field.toLowerCase().includes(needle));
-}
 
 /**
  * Tool contract:
@@ -54,11 +37,11 @@ export function createExhibitLookupTool(repo: ExhibitRepository) {
       }
 
       let exhibits = collection
-        ? await repo.getByCollection(collection)
+        ? await repo.filter({ collectionId: collection })
         : await repo.getAll();
 
       if (query) {
-        exhibits = exhibits.filter((e) => matchesQuery(e, query));
+        exhibits = await repo.search(query);
       }
 
       return exhibits;

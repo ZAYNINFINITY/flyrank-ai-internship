@@ -15,10 +15,24 @@
 }
 
 @theme inline {
-  --color-text: oklch(0.208 0.040 265.8);
-  --color-background: oklch(0.985 0.000 89.9);
-  --color-accent: oklch(0.546 0.245 262.881);
+  /* ─── Museum color system ───────────────────────────────── */
+  --color-text: oklch(0.13 0.02 260);
+  --color-background: oklch(0.97 0.003 90);
+  --color-accent: oklch(0.55 0.18 265);
 
+  /* Surface hierarchy */
+  --color-surface: oklch(0.97 0.003 90);
+  --color-surface-dim: oklch(0.93 0.005 85);
+  --color-surface-dark: oklch(0.88 0.008 80);
+
+  /* Border / divider */
+  --color-border: oklch(0.13 0.02 260 / 0.08);
+  --color-border-strong: oklch(0.13 0.02 260 / 0.15);
+
+  /* Muted text */
+  --color-muted: oklch(0.13 0.02 260 / 0.45);
+
+  /* ─── Typography ─────────────────────────────────────────── */
   --font-heading: var(--font-space-grotesk);
   --font-body: var(--font-inter);
 }
@@ -48,8 +62,6 @@ h1, h2, h3, h4, h5, h6 {
 
 /* ─── Motion language ─────────────────────────────────────── */
 
-/* Easing tokens for the motion language — referenced by motion-button.tsx
-   via var(--motion-ease-*). Kept in sync with lib/motion/tokens.ts. */
 :root {
   --motion-ease-standard: cubic-bezier(0.2, 0.8, 0.2, 1);
   --motion-ease-enter: cubic-bezier(0.05, 0.7, 0.1, 1);

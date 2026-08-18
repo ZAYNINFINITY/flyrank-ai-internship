@@ -12,17 +12,24 @@ export type ExhibitArtifact = {
   description: string;
 };
 
-export type ExhibitCollection = "infrastructure" | "visual-design" | "experiments" | "journey";
+export type ExhibitLink = {
+  label: string;
+  url: string;
+  type: "github" | "demo" | "video" | "other";
+};
 
 export type Exhibit = {
   id: ExhibitId;
   title: string;
   tagline: string;
   description: string;
+  developerId: string;
   media: ExhibitMedia[];
   artifacts: ExhibitArtifact[];
+  technologies: string[];
+  links: ExhibitLink[];
   curatorNotes: string;
-  collection: ExhibitCollection;
-  developer: string;
+  collectionIds: string[];
   year: string;
+  featured: boolean;
 };

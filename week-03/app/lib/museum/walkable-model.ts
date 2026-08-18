@@ -114,7 +114,7 @@ export function buildDoors(): WorldDoor[] {
       position: [0, 1.3, -13],
       hingeX: -0.8,
       hingeZ: -13,
-      swing: -1.9,
+      swing: -1.57,
       rect: wallRect(-0.8, 0.8, -13 - WALL_THICKNESS, -13 + WALL_THICKNESS),
       toLabel: "Exhibit Room",
     },
@@ -124,7 +124,7 @@ export function buildDoors(): WorldDoor[] {
       position: [0, 1.3, 13],
       hingeX: 0.8,
       hingeZ: 13,
-      swing: 1.9,
+      swing: 1.57,
       rect: wallRect(-0.8, 0.8, 13 - WALL_THICKNESS, 13 + WALL_THICKNESS),
       toLabel: "Reception Hall",
     },
@@ -162,7 +162,12 @@ export const ROOM_SPOTS: Record<
     label: "Curator's note",
   },
   "exhibit-media-wall": {
-    position: (o) => [4.7, 2.4, o.z + 3.5],
+    // Nudged 0.4 off exhibit-notes' Z (both were at the exact same
+    // coordinate). The interaction system picks the nearest item by Z
+    // distance only — an exact tie meant one of the two could never be
+    // triggered, no matter where the player stopped. This makes both
+    // individually reachable.
+    position: (o) => [4.7, 2.4, o.z + 3.1],
     source: "projection",
     label: "Media projection",
   },
@@ -185,10 +190,12 @@ export function corridorFrameSpot(anchorId: string) {
 export function frameInspect(exhibit: Exhibit): InspectInfo {
   return {
     title: exhibit.title,
-    body: [exhibit.tagline, exhibit.developer, exhibit.year, exhibit.collection]
+    body: [exhibit.tagline, exhibit.year]
       .filter(Boolean)
       .join(" · "),
     source: "frame",
+    href: `/exhibit/e/${exhibit.id}`,
+    hrefLabel: "Open exhibit",
   };
 }
 
@@ -245,20 +252,20 @@ export function buildInteractives(
     range: 2.4,
     prompt: "Read signage",
     inspect: {
-      title: "Museum signage",
-      body: "Plinth Museum — walk the corridor to tour shipped projects. Collections and Curator Studio are through reception.",
+      title: "Plinth Museum",
+      body: "Welcome to Plinth — an open museum for digital work. Walk the corridor to explore exhibits, or step into the exhibit room for a deeper look.",
       source: "signage",
     },
   });
 
   items.push({
     id: "curator-presence",
-    position: [1.8, 1.0, 16.2],
+    position: [1.8, 1.0, 18.4],
     range: 2.8,
     prompt: "Talk to curator",
     inspect: {
       title: "The Curator",
-      body: "A guide for this archive — ask about exhibits, collections, or where to go next.",
+      body: "I guide visitors through the museum. Each exhibit tells the story behind what was built — the architecture, the decisions, and the craft. Click any exhibit frame to preview, or step into the exhibit room for the full experience.",
       source: "curator",
       href: "/assistant",
       hrefLabel: "Open Curator Studio",

@@ -17,9 +17,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Plinth — A room for every project you've shipped",
+  title: "Plinth — Open digital museum for developers",
   description:
-    "Open-source platform where any developer can create a public exhibit page for their projects. Not a card grid — a gallery.",
+    "An open-source platform where developers exhibit their work as curated collections. Not a card grid — a gallery.",
 };
 
 export default function RootLayout({
@@ -42,14 +42,6 @@ export default function RootLayout({
         <Nav />
         <main id="main-content" className="flex-1">{children}</main>
         <footer className="flex items-center gap-6 border-t border-text/10 px-6 py-6 sm:px-8 md:px-12">
-          <a
-            href="https://github.com/ZAYNINFINITY"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-body text-sm text-text/40 transition-colors duration-200 hover:text-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-          >
-            GitHub
-          </a>
           <Link
             href="/about"
             className="font-body text-sm text-text/40 transition-colors duration-200 hover:text-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"

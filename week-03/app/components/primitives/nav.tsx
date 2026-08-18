@@ -7,7 +7,6 @@ const navLinks = [
   { label: "Museum", href: "/entrance" },
   { label: "Explore", href: "/explore" },
   { label: "About", href: "/about" },
-  { label: "Sign in", href: "/login" },
 ];
 
 export function Nav() {
@@ -51,14 +50,6 @@ export function Nav() {
               {link.label}
             </Link>
           ))}
-          <a
-            href="https://github.com/ZAYNINFINITY"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-body text-sm text-text/60 transition-colors duration-200 hover:text-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-          >
-            GitHub
-          </a>
         </nav>
 
         {/* Mobile menu trigger — text only, no hamburger */}
@@ -105,15 +96,6 @@ export function Nav() {
                 {link.label}
               </Link>
             ))}
-            <a
-              href="https://github.com/ZAYNINFINITY"
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => setIsOpen(false)}
-              className="font-heading text-[24px] text-text transition-colors duration-200 hover:text-text/60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-            >
-              GitHub
-            </a>
           </nav>
         </div>
       )}

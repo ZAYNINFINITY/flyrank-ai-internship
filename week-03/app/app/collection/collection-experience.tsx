@@ -2,25 +2,25 @@ import Link from "next/link";
 import { mockExhibits } from "@/lib/repository/mock-exhibit-repository";
 
 export const collectionMeta: Record<string, { label: string; description: string; color: string }> = {
-  infrastructure: {
-    label: "Infrastructure",
-    description: "Systems, backends, and resilient architectures",
+  frontend: {
+    label: "Frontend Engineering",
+    description: "Components, design systems, and interactive experiences",
     color: "border-l-[var(--color-text)]/30",
   },
-  "visual-design": {
-    label: "Visual Design",
-    description: "Interfaces, stores, and user-facing products",
+  fullstack: {
+    label: "Full-Stack Systems",
+    description: "End-to-end applications and production infrastructure",
     color: "border-l-[var(--color-text)]/20",
   },
-  experiments: {
-    label: "Experiments",
-    description: "Prototypes, games, and weekend builds",
-    color: "border-l-[var(--color-text)]/15",
-  },
-  journey: {
-    label: "Journey",
-    description: "Learning artifacts and growth milestones",
+  "data-viz": {
+    label: "Data Visualization",
+    description: "Interactive data stories and visual exploration",
     color: "border-l-[var(--color-text)]/25",
+  },
+  experiments: {
+    label: "Experiments & Prototypes",
+    description: "Bold explorations and creative coding",
+    color: "border-l-[var(--color-text)]/15",
   },
 };
 
@@ -39,7 +39,7 @@ export function CollectionExperience() {
 
       <div className="grid gap-4 sm:grid-cols-2">
         {Object.entries(collectionMeta).map(([key, meta]) => {
-          const count = all.filter((e) => e.collection === key).length;
+          const count = all.filter((e) => e.collectionIds.includes(key)).length;
           return (
             <Link
               key={key}

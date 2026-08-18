@@ -26,7 +26,7 @@ function ExhibitRoomContent({ id }: { id: string }) {
     [id]
   );
 
-  const portfolioRoute = getPortfolioRouteForExhibitId(id);
+  const portfolioRoute = getPortfolioRouteForExhibitId();
 
   return (
     <WorldRenderer

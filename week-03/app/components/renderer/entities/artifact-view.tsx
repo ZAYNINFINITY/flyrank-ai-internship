@@ -31,7 +31,7 @@ export function ArtifactView({ entityId }: EntityComponentProps) {
       )}
 
       <div className="flex items-center gap-3 text-xs opacity-30 pt-2 border-t border-[var(--color-text)]/8">
-        <span>{exhibit.developer}</span>
+        <span>{exhibit.developerId}</span>
         <span aria-hidden="true">&middot;</span>
         <span>{exhibit.year}</span>
       </div>

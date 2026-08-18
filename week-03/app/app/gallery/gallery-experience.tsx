@@ -1,10 +1,9 @@
-import type { ExhibitCollection } from "@/lib/types/exhibit";
 import { collectionMeta } from "@/app/collection/collection-experience";
 
 export function GalleryExperience({
   collection = null,
 }: {
-  collection?: ExhibitCollection | null;
+  collection?: string | null;
 }) {
   const meta = collection ? collectionMeta[collection] : null;
 

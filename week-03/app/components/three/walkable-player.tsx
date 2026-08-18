@@ -59,34 +59,70 @@ export function WalkablePlayer({
   const glanceOffset = useRef(0);
   const targetGlance = useRef(0);
   const currentPrompt = useRef<string | null>(null);
+  // Click-to-focus: itom-style, looking at a clicked wall item turns the
+  // camera to actually face it instead of freezing wherever it happened to
+  // be. Set on activate, cleared once `enabled` flips back to true (the
+  // dialog closed). focusBlend eases the turn both in and out.
+  const focusPos = useRef<[number, number, number] | null>(null);
+  const focusBlend = useRef(0);
+  const lastFocusYaw = useRef(0);
+  const lastFocusPitch = useRef(0);
 
   useFrame((_, delta) => {
-    if (!enabled) return;
     const dt = Math.min(delta, 0.2);
     const rate = dt * 60;
 
-    const scrollInput = inputState.scrollDelta;
-    inputState.scrollDelta = 0;
-    targetZ.current = clamp(targetZ.current - scrollInput * SCROLL_SPEED, RAIL_END, RAIL_START);
-    currentZ.current = THREE.MathUtils.lerp(
-      currentZ.current,
-      targetZ.current,
-      1 - Math.pow(1 - SCROLL_SMOOTHING, rate)
-    );
+    if (enabled) {
+      focusPos.current = null;
 
-    const parallaxLerp = 1 - Math.pow(1 - PARALLAX_SMOOTHING, rate);
-    parallaxX.current = THREE.MathUtils.lerp(parallaxX.current, inputState.mouse.x * PARALLAX_X, parallaxLerp);
-    parallaxY.current = THREE.MathUtils.lerp(parallaxY.current, inputState.mouse.y * PARALLAX_Y, parallaxLerp);
+      const scrollInput = inputState.scrollDelta;
+      inputState.scrollDelta = 0;
+      targetZ.current = clamp(targetZ.current - scrollInput * SCROLL_SPEED, RAIL_END, RAIL_START);
+      currentZ.current = THREE.MathUtils.lerp(
+        currentZ.current,
+        targetZ.current,
+        1 - Math.pow(1 - SCROLL_SMOOTHING, rate)
+      );
 
-    targetGlance.current = computeGlance(currentZ.current, glanceTargets);
-    const releasing = Math.abs(targetGlance.current) < Math.abs(glanceOffset.current);
-    const glanceLerp = 1 - Math.pow(1 - (releasing ? GLANCE_RELEASE_SMOOTHING : GLANCE_LOOK_SMOOTHING), rate);
-    glanceOffset.current = THREE.MathUtils.lerp(glanceOffset.current, targetGlance.current, glanceLerp);
+      const parallaxLerp = 1 - Math.pow(1 - PARALLAX_SMOOTHING, rate);
+      parallaxX.current = THREE.MathUtils.lerp(parallaxX.current, inputState.mouse.x * PARALLAX_X, parallaxLerp);
+      parallaxY.current = THREE.MathUtils.lerp(parallaxY.current, inputState.mouse.y * PARALLAX_Y, parallaxLerp);
+
+      targetGlance.current = computeGlance(currentZ.current, glanceTargets);
+      const releasing = Math.abs(targetGlance.current) < Math.abs(glanceOffset.current);
+      const glanceLerp = 1 - Math.pow(1 - (releasing ? GLANCE_RELEASE_SMOOTHING : GLANCE_LOOK_SMOOTHING), rate);
+      glanceOffset.current = THREE.MathUtils.lerp(glanceOffset.current, targetGlance.current, glanceLerp);
+    } else {
+      inputState.scrollDelta = 0;
+    }
 
     camera.position.set(parallaxX.current, EYE_HEIGHT + parallaxY.current, currentZ.current);
-    const yaw = parallaxX.current * -0.045 + glanceOffset.current;
-    const pitch = parallaxY.current * 0.035;
+
+    const forwardYaw = parallaxX.current * -0.045 + glanceOffset.current;
+    const forwardPitch = parallaxY.current * 0.035;
+
+    const focusLerp = 1 - Math.pow(1 - 0.14, rate);
+    focusBlend.current = THREE.MathUtils.lerp(focusBlend.current, focusPos.current ? 1 : 0, focusLerp);
+
+    let yaw = forwardYaw;
+    let pitch = forwardPitch;
+    if (focusPos.current) {
+      const dx = focusPos.current[0] - camera.position.x;
+      const dy = focusPos.current[1] - camera.position.y;
+      const dz = focusPos.current[2] - camera.position.z;
+      lastFocusYaw.current = Math.atan2(dx, -dz);
+      lastFocusPitch.current = -Math.atan2(dy, Math.hypot(dx, dz));
+    }
+    if (focusBlend.current > 0.001) {
+      // Reuse the last computed focus angle while easing out too, not just
+      // while easing in — otherwise the look-back-to-forward motion snaps
+      // the instant the dialog closes instead of turning smoothly.
+      yaw = THREE.MathUtils.lerp(forwardYaw, lastFocusYaw.current, focusBlend.current);
+      pitch = THREE.MathUtils.lerp(forwardPitch, lastFocusPitch.current, focusBlend.current);
+    }
     camera.rotation.set(pitch, yaw, 0);
+
+    if (!enabled) return;
 
     for (const door of world.doors) {
       if (
@@ -102,7 +138,10 @@ export function WalkablePlayer({
 
     if (inputState.activate) {
       inputState.activate = false;
-      if (item) onInspect(item.inspect);
+      if (item) {
+        focusPos.current = item.position;
+        onInspect(item.inspect);
+      }
     }
 
     setPrompt(onPrompt, currentPrompt, item ? item.prompt : null);

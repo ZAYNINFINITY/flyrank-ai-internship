@@ -3,7 +3,6 @@
 import { Suspense, useEffect, useState, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 import type { Visitor } from "@/lib/museum/types";
-import type { ExhibitCollection } from "@/lib/types/exhibit";
 import { createPlacementMap, populateCorridor } from "@/lib/museum/placement";
 import { createVisitor, enterRoom } from "@/lib/museum/visitor";
 import { useDoorEntry } from "@/lib/museum/use-door-entry";
@@ -15,17 +14,10 @@ import { GalleryExperience } from "./gallery-experience";
 
 const repo = new MockExhibitRepository();
 
-const validCollections: ExhibitCollection[] = [
-  "infrastructure",
-  "visual-design",
-  "experiments",
-  "journey",
-];
+const validCollections = ["frontend", "fullstack", "data-viz", "experiments"];
 
-function toCollection(value: string | null): ExhibitCollection | null {
-  return validCollections.includes(value as ExhibitCollection)
-    ? (value as ExhibitCollection)
-    : null;
+function toCollection(value: string | null): string | null {
+  return value && validCollections.includes(value) ? value : null;
 }
 
 export default function GalleryPage() {
@@ -57,7 +49,7 @@ function GalleryView() {
     const load = async () => {
       setPlacements(createPlacementMap());
       const exhibits = collection
-        ? await repo.getByCollection(collection)
+        ? await repo.filter({ collectionId: collection })
         : await repo.getAll();
       const next = await populateCorridor(
         createPlacementMap(),

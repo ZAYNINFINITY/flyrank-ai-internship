@@ -23,7 +23,9 @@ import { getPaperTexture } from "@/lib/three/paper-texture";
 import { RevealMaterial } from "@/lib/three/reveal-material";
 import { WalkablePlayer, type GlanceTarget } from "./walkable-player";
 
-const HEIGHT = 4.2;
+// Itom's corridor runs 3.5 units tall, noticeably cozier than a generic
+// 4-unit box — that proportion reads as "designed" rather than cavernous.
+const HEIGHT = 3.6;
 const BASEBOARD_H = 0.14;
 const BASEBOARD_D = 0.08;
 const DOOR_POST = 0.14;
@@ -41,31 +43,29 @@ const BAY_INNER_X = 1.6; // recessed bay face toward the corridor center
 const BAY_HALF_SPAN = 2; // half the bay length along Z (DOOR_Z_SPAN = 4)
 const BAY_TILT = { base: 0.02, max: 0.2, start: 12, peak: 2, lerp: 0.06 };
 
-// ITOM-INSPIRED SKETCHBOOK PALETTE — bright warm paper, not dark ink.
-// Mirrors itomdev.com's mood: cream paper walls, faint floor grid, ink text,
-// thin sketch frames. "Wall" reads slightly warmer/cooler per room so each
-// space still has its own paper tone without breaking the sketchbook feel.
+// Architectural museum palette — dark concrete, clean white gallery surfaces,
+// restrained warm accent. The museum should feel designed, not sketched.
 const PALETTE = {
-  corridorWall: "#efe9da",
-  corridorFloor: "#e4ddca",
-  corridorCeiling: "#e9e3d2",
-  roomWall: "#eae6df",
-  roomFloor: "#ded8c8",
-  roomCeiling: "#e4dfd3",
-  receptionWall: "#e8e4d5",
-  receptionFloor: "#dcd5c2",
-  receptionCeiling: "#e2dccb",
-  approachWall: "#ddd6c4",
-  approachFloor: "#d3ccb8",
-  approachPath: "#e6dfcd",
-  ivory: "#2a2a30",
-  dim: "#6f6c62",
-  accent: "#c96a3a",
-  gold: "#b09048",
-  frame: "#3c3a33",
-  door: "#e2dbc8",
-  ink: "#2a2a30",
-  paper: "#efe9da",
+  corridorWall: "#e8e4dc",
+  corridorFloor: "#d8d3c8",
+  corridorCeiling: "#e4e0d8",
+  roomWall: "#f0ede6",
+  roomFloor: "#ccc8be",
+  roomCeiling: "#e8e4dc",
+  receptionWall: "#ece8e0",
+  receptionFloor: "#d4d0c6",
+  receptionCeiling: "#e4e0d8",
+  approachWall: "#c8c3b8",
+  approachFloor: "#b8b3a8",
+  approachPath: "#d8d3c8",
+  ivory: "#1a1a20",
+  dim: "#5a5850",
+  accent: "#8b6a4a",
+  gold: "#a08850",
+  frame: "#2a2a30",
+  door: "#d4d0c6",
+  ink: "#1a1a20",
+  paper: "#e8e4dc",
 };
 
 function paperMaterial(color: string, roughness = 0.94) {
@@ -79,6 +79,14 @@ function paperMaterial(color: string, roughness = 0.94) {
       side={THREE.DoubleSide}
     />
   );
+}
+
+function inkMaterial(color = PALETTE.frame, roughness = 0.82) {
+  return <meshStandardMaterial color={color} roughness={roughness} metalness={0} />;
+}
+
+function washMaterial(color = PALETTE.accent, opacity = 0.16) {
+  return <meshBasicMaterial color={color} transparent opacity={opacity} side={THREE.DoubleSide} />;
 }
 
 // ─── Sketch→paint reveal card (the signature itom moment) ─────
@@ -250,11 +258,11 @@ function RoomBox({
       <group>
         <mesh position={[midX, HEIGHT / 2, x]} rotation-y={ry}>
           <planeGeometry args={[width, HEIGHT]} />
-          {paperMaterial(palette.wall)}
+          {paperMaterial(palette.wall, 0.94)}
         </mesh>
         <mesh position={[midX, BASEBOARD_H / 2, x]}>
           <boxGeometry args={[width, BASEBOARD_H, BASEBOARD_D]} />
-          <meshStandardMaterial color={PALETTE.frame} roughness={0.85} />
+          {inkMaterial()}
         </mesh>
       </group>
     );
@@ -277,11 +285,11 @@ function RoomBox({
       <group>
         <mesh position={[z, HEIGHT / 2, midZ]} rotation-y={ry}>
           <planeGeometry args={[width, HEIGHT]} />
-          {paperMaterial(palette.wall)}
+          {paperMaterial(palette.wall, 0.94)}
         </mesh>
         <mesh position={[z, BASEBOARD_H / 2, midZ]}>
           <boxGeometry args={[BASEBOARD_D, BASEBOARD_H, width]} />
-          <meshStandardMaterial color={PALETTE.frame} roughness={0.85} />
+          {inkMaterial()}
         </mesh>
       </group>
     );
@@ -372,19 +380,19 @@ function Doorway({
     <group>
       <mesh position={[postA[0], DOOR_LINTEL_Y / 2, postA[1]]}>
         <boxGeometry args={alongX ? [DOOR_POST, DOOR_LINTEL_Y, 0.16] : [0.16, DOOR_LINTEL_Y, DOOR_POST]} />
-        <meshStandardMaterial color={PALETTE.frame} roughness={0.85} />
+        {inkMaterial()}
       </mesh>
       <mesh position={[postB[0], DOOR_LINTEL_Y / 2, postB[1]]}>
         <boxGeometry args={alongX ? [DOOR_POST, DOOR_LINTEL_Y, 0.16] : [0.16, DOOR_LINTEL_Y, DOOR_POST]} />
-        <meshStandardMaterial color={PALETTE.frame} roughness={0.85} />
+        {inkMaterial()}
       </mesh>
       <mesh position={alongX ? [mid, DOOR_LINTEL_Y, at] : [at, DOOR_LINTEL_Y, mid]}>
         <boxGeometry args={alongX ? [length + DOOR_POST, 0.16, 0.16] : [0.16, 0.16, length + DOOR_POST]} />
-        <meshStandardMaterial color={PALETTE.frame} roughness={0.85} />
+        {inkMaterial()}
       </mesh>
       <mesh position={alongX ? [mid, 0.012, at] : [at, 0.012, mid]}>
         <boxGeometry args={alongX ? [length + 0.5, 0.02, 0.1] : [0.1, 0.02, length + 0.5]} />
-        <meshStandardMaterial color={PALETTE.frame} roughness={0.9} />
+        {inkMaterial(PALETTE.frame, 0.9)}
       </mesh>
     </group>
   );
@@ -433,7 +441,7 @@ function BayWall({
     <group ref={group} position={position}>
       <mesh position={[0, HEIGHT / 2, 0]}>
         <planeGeometry args={[width, HEIGHT]} />
-        {paperMaterial(PALETTE.corridorWall)}
+        {paperMaterial(PALETTE.corridorWall, 0.94)}
       </mesh>
       {children}
     </group>
@@ -523,11 +531,11 @@ function SawtoothSide({
             <group key={i} position={seg.position} rotation-y={seg.ry}>
               <mesh position={[0, HEIGHT / 2, 0]}>
                 <planeGeometry args={[seg.width, HEIGHT]} />
-                {paperMaterial(PALETTE.corridorWall)}
+                {paperMaterial(PALETTE.corridorWall, 0.94)}
               </mesh>
               <mesh position={[0, BASEBOARD_H / 2, 0]}>
                 <boxGeometry args={[seg.width, BASEBOARD_H, BASEBOARD_D]} />
-                <meshStandardMaterial color={PALETTE.frame} roughness={0.85} />
+                {inkMaterial()}
               </mesh>
             </group>
           );
@@ -536,7 +544,7 @@ function SawtoothSide({
           return (
             <mesh key={i} position={seg.position} rotation-y={seg.ry}>
               <planeGeometry args={[seg.width, HEIGHT]} />
-              {paperMaterial(PALETTE.corridorWall)}
+              {paperMaterial(PALETTE.corridorWall, 0.94)}
             </mesh>
           );
         }
@@ -556,6 +564,7 @@ function SawtoothSide({
                 revealZ={seg.frame.centerZ}
                 title={seg.frame.exhibit.title}
                 tagline={seg.frame.exhibit.tagline}
+                imageSrc={seg.frame.exhibit.media[0]?.src}
               />
             )}
           </BayWall>
@@ -572,40 +581,82 @@ function Frame({
   title,
   tagline,
   revealZ,
+  imageSrc,
 }: {
   position: [number, number, number];
   ry: number;
   title: string;
   tagline?: string;
   revealZ?: number;
+  imageSrc?: string;
 }) {
+  const [texture, setTexture] = useState<THREE.Texture | null>(null);
+
+  useEffect(() => {
+    if (!imageSrc) {
+      return;
+    }
+    let alive = true;
+    const loader = new THREE.TextureLoader();
+    loader.load(
+      imageSrc,
+      (tex) => {
+        tex.colorSpace = THREE.SRGBColorSpace;
+        if (alive) setTexture(tex);
+      },
+      undefined,
+      () => {
+        if (alive) setTexture(null);
+      }
+    );
+    return () => {
+      alive = false;
+    };
+  }, [imageSrc]);
+
   return (
     <group position={position} rotation-y={ry}>
+      <mesh position={[0, 0, 0.055]}>
+        <planeGeometry args={[1.72, 2.52]} />
+        {washMaterial(PALETTE.accent, 0.1)}
+      </mesh>
       {/* Thin ink sketch frame — four strokes around the mat, no slab */}
       <mesh position={[0, 1.175, 0.1]}>
         <boxGeometry args={[1.58, 0.05, 0.05]} />
-        <meshStandardMaterial color={PALETTE.ivory} roughness={0.6} metalness={0} />
+        {inkMaterial()}
       </mesh>
       <mesh position={[0, -1.175, 0.1]}>
         <boxGeometry args={[1.58, 0.05, 0.05]} />
-        <meshStandardMaterial color={PALETTE.ivory} roughness={0.6} metalness={0} />
+        {inkMaterial()}
       </mesh>
       <mesh position={[0.79, 0, 0.1]}>
         <boxGeometry args={[0.05, 2.4, 0.05]} />
-        <meshStandardMaterial color={PALETTE.ivory} roughness={0.6} metalness={0} />
+        {inkMaterial()}
       </mesh>
       <mesh position={[-0.79, 0, 0.1]}>
         <boxGeometry args={[0.05, 2.4, 0.05]} />
-        <meshStandardMaterial color={PALETTE.ivory} roughness={0.6} metalness={0} />
+        {inkMaterial()}
       </mesh>
       {/* Paper mat */}
       <mesh position={[0, 0, 0.11]}>
         <planeGeometry args={[1.5, 2.3]} />
-        {paperMaterial(PALETTE.paper, 0.95)}
+        {paperMaterial("#f7f0df", 0.95)}
+      </mesh>
+      <mesh position={[0, 0.52, 0.22]}>
+        <planeGeometry args={[0.72, 0.72]} />
+        {texture ? (
+          <meshStandardMaterial map={texture} color="#ffffff" roughness={0.88} />
+        ) : (
+          <meshStandardMaterial color="#d8ceb7" roughness={0.9} />
+        )}
+      </mesh>
+      <mesh position={[0, 0.52, 0.245]}>
+        <ringGeometry args={[0.39, 0.42, 36]} />
+        <meshBasicMaterial color={PALETTE.ivory} transparent opacity={0.78} side={THREE.DoubleSide} />
       </mesh>
       <Text
-        position={[0, 0.45, 0.27]}
-        fontSize={0.16}
+        position={[0, -0.05, 0.27]}
+        fontSize={0.145}
         color={PALETTE.ivory}
         anchorX="center"
         anchorY="middle"
@@ -615,7 +666,7 @@ function Frame({
         {title}
       </Text>
       <Text
-        position={[0, -0.5, 0.27]}
+        position={[0, -0.58, 0.27]}
         fontSize={0.1}
         color={PALETTE.dim}
         anchorX="center"
@@ -625,7 +676,7 @@ function Frame({
       >
         {tagline ?? ""}
       </Text>
-      <SketchCard position={[0, -0.95, 0.2]} seed={title} frameZ={revealZ} />
+      <SketchCard position={[0, -1.0, 0.2]} seed={title} frameZ={revealZ} />
     </group>
   );
 }
@@ -677,6 +728,41 @@ function Plaque({
   );
 }
 
+function LinearLight({
+  position,
+  rotation = [0, 0, 0],
+  length = 4,
+}: {
+  position: [number, number, number];
+  rotation?: [number, number, number];
+  length?: number;
+}) {
+  return (
+    <group position={position} rotation={rotation}>
+      <mesh>
+        <boxGeometry args={[length, 0.035, 0.055]} />
+        <meshBasicMaterial color={PALETTE.gold} transparent opacity={0.5} />
+      </mesh>
+      <pointLight intensity={1.6} distance={6} decay={2} color="#f0cf8b" />
+    </group>
+  );
+}
+
+function MuseumLighting() {
+  return (
+    <group>
+      <LinearLight position={[0, HEIGHT - 0.08, 16.4]} length={7.2} />
+      <LinearLight position={[0, HEIGHT - 0.08, -2]} length={5.4} />
+      <LinearLight position={[0, HEIGHT - 0.08, -16.5]} length={6.2} />
+      {[4.75].map((x) =>
+        [14.8, 17, 19].map((z) => (
+          <pointLight key={`${x}-${z}`} position={[x * 0.86, 2.7, z]} intensity={1.8} distance={4.5} decay={2} color="#f0cf8b" />
+        ))
+      )}
+    </group>
+  );
+}
+
 function ProjectionScreen({
   position,
   ry,
@@ -718,7 +804,7 @@ function ProjectionScreen({
         anchorX="center"
         anchorY="middle"
       >
-        Projection · media display
+        GitHub profile image
       </Text>
     </group>
   );
@@ -727,19 +813,35 @@ function ProjectionScreen({
 function ArtifactPlinth({
   position,
   ry,
+  label,
+  description,
 }: {
   position: [number, number, number];
   ry: number;
+  label?: string;
+  description?: string;
 }) {
   return (
     <group position={position} rotation-y={ry}>
       <mesh position={[0, 0, 0]}>
         <boxGeometry args={[0.9, 1.1, 0.9]} />
-        {paperMaterial(PALETTE.paper, 0.95)}
+        {paperMaterial("#e7dec9", 0.9)}
+      </mesh>
+      <mesh position={[0, -0.53, 0]}>
+        <boxGeometry args={[1.02, 0.08, 1.02]} />
+        <meshBasicMaterial color={PALETTE.gold} transparent opacity={0.45} />
+      </mesh>
+      <mesh position={[0, 1.02, 0]}>
+        <boxGeometry args={[0.76, 0.05, 0.76]} />
+        <meshStandardMaterial color="#f7f0df" roughness={0.5} metalness={0} transparent opacity={0.55} />
       </mesh>
       <mesh position={[0, 1.35, 0]}>
         <octahedronGeometry args={[0.32]} />
-        <meshStandardMaterial color={PALETTE.accent} roughness={0.35} metalness={0.1} />
+        <meshStandardMaterial color={PALETTE.accent} roughness={0.55} metalness={0} />
+      </mesh>
+      <mesh position={[0, 1.36, 0]}>
+        <boxGeometry args={[0.82, 0.7, 0.82]} />
+        <meshBasicMaterial color={PALETTE.ink} wireframe transparent opacity={0.16} />
       </mesh>
       <Text
         position={[0, -0.95, 0.5]}
@@ -747,9 +849,24 @@ function ArtifactPlinth({
         color={PALETTE.dim}
         anchorX="center"
         anchorY="middle"
+        maxWidth={1.3}
+        overflowWrap="break-word"
       >
-        Artifact on display
+        {label ?? "Project artifact"}
       </Text>
+      {description && (
+        <Text
+          position={[0, -1.18, 0.5]}
+          fontSize={0.07}
+          color={PALETTE.dim}
+          anchorX="center"
+          anchorY="middle"
+          maxWidth={1.35}
+          overflowWrap="break-word"
+        >
+          {description}
+        </Text>
+      )}
     </group>
   );
 }
@@ -764,25 +881,34 @@ function DoorPanel({
   const group = useRef<THREE.Group>(null);
   const current = useRef(0);
   const panelOffset = door.hingeX > 0 ? -0.8 : 0.8;
+  const tex = useMemo(() => getDoorPanelTexture(), []);
 
   useFrame((_, delta) => {
     const open = openDoors.current?.has(door.id) ?? false;
     const target = open ? door.swing : 0;
-    current.current += (target - current.current) * Math.min(1, delta * 6);
+    current.current += (target - current.current) * Math.min(1, delta * 4);
     if (group.current) group.current.rotation.y = current.current;
   });
 
+  const handleX = panelOffset > 0 ? panelOffset + 0.12 : panelOffset - 0.12;
+
   return (
     <>
-      {/* Swinging panel + handle — this group's rotation animates open/closed */}
+      {/* Swinging panel with visible thickness + handle */}
       <group ref={group} position={[door.hingeX, 0, door.hingeZ]}>
-        <mesh position={[panelOffset, 1.3, 0]}>
-          <boxGeometry args={[1.6, 2.6, 0.08]} />
-          <meshStandardMaterial color={PALETTE.door} roughness={0.7} metalness={0.2} side={THREE.DoubleSide} />
+        <mesh position={[panelOffset, 1.2, 0]}>
+          <boxGeometry args={[1.5, 2.35, 0.06]} />
+          <meshStandardMaterial map={tex} color="#ffffff" roughness={0.88} />
         </mesh>
-        <mesh position={[panelOffset + (panelOffset > 0 ? 0.62 : -0.62), 1.3, 0]}>
-          <boxGeometry args={[0.08, 0.3, 0.08]} />
-          <meshStandardMaterial color={PALETTE.gold} roughness={0.3} metalness={0.8} />
+        {/* Handle rod */}
+        <mesh position={[handleX, 1.0, 0.04]} rotation-z={Math.PI / 2}>
+          <cylinderGeometry args={[0.015, 0.015, 0.12, 8]} />
+          <meshStandardMaterial color={PALETTE.gold} metalness={0.3} roughness={0.6} />
+        </mesh>
+        {/* Handle knob */}
+        <mesh position={[handleX, 1.0, 0.04]}>
+          <sphereGeometry args={[0.022, 8, 8]} />
+          <meshStandardMaterial color={PALETTE.gold} metalness={0.3} roughness={0.6} />
         </mesh>
       </group>
       {/* Label — fixed above the door FRAME (not the panel), so it stays
@@ -806,16 +932,38 @@ function ApproachExterior() {
   const widthX = approach.maxX - approach.minX;
   const widthZ = approach.maxZ - approach.minZ;
   const midZ = (approach.minZ + approach.maxZ) / 2;
+  const APPROACH_HEIGHT = HEIGHT * 1.6;
 
   return (
     <group>
-      <mesh rotation-x={-Math.PI / 2} position={[0, 0.01, midZ]}>
+      {/* Full-width ground plane, not just a narrow path strip — the path
+          reads as a slightly different tone laid over solid ground instead
+          of being the only geometry with void on either side of it. */}
+      <mesh rotation-x={-Math.PI / 2} position={[0, 0, midZ]}>
+        <planeGeometry args={[widthX, widthZ]} />
+        {paperMaterial(PALETTE.approachFloor, 0.95)}
+      </mesh>
+      <mesh rotation-x={-Math.PI / 2} position={[0, 0.012, midZ]}>
         <planeGeometry args={[2.4, widthZ]} />
         {paperMaterial(PALETTE.approachPath, 0.9)}
       </mesh>
+
+      {/* Flanking courtyard walls — without these the approach reads as an
+          open void either side of the path instead of a bounded space.
+          Taller than the interior rooms so it still reads as "outside" the
+          museum proper, not just another identical room. */}
+      <mesh position={[approach.minX, APPROACH_HEIGHT / 2, midZ]} rotation-y={Math.PI / 2}>
+        <planeGeometry args={[widthZ, APPROACH_HEIGHT]} />
+        {paperMaterial(PALETTE.approachWall, 0.96)}
+      </mesh>
+      <mesh position={[approach.maxX, APPROACH_HEIGHT / 2, midZ]} rotation-y={-Math.PI / 2}>
+        <planeGeometry args={[widthZ, APPROACH_HEIGHT]} />
+        {paperMaterial(PALETTE.approachWall, 0.96)}
+      </mesh>
+
       <mesh position={[0, HEIGHT / 2, approach.minZ]}>
         <planeGeometry args={[widthX, HEIGHT * 1.05]} />
-        {paperMaterial(PALETTE.approachWall)}
+        <meshStandardMaterial map={getFacadeTexture()} color="#ffffff" roughness={0.94} side={THREE.DoubleSide} />
       </mesh>
       <mesh position={[-1.6, 1.2, approach.minZ + 1.2]}>
         <boxGeometry args={[0.18, 2.4, 0.18]} />
@@ -830,6 +978,8 @@ function ApproachExterior() {
         <boxGeometry args={[3.4, 0.22, 0.18]} />
         <meshStandardMaterial color={PALETTE.frame} roughness={0.85} />
       </mesh>
+      {/* An actual door filling the frame, instead of an open hole */}
+      <EntranceDoor />
       <Text
         position={[0, 3.1, approach.minZ + 0.4]}
         fontSize={0.32}
@@ -846,7 +996,7 @@ function ApproachExterior() {
         anchorX="center"
         anchorY="middle"
       >
-        Digital archive of shipped work
+        An open museum — any developer can exhibit here
       </Text>
     </group>
   );
@@ -859,185 +1009,222 @@ function ApproachExterior() {
 
 const NOTE_TEXTURE_CACHE = new Map<string, THREE.CanvasTexture>();
 
-function getFloatNoteTexture() {
-  const cached = NOTE_TEXTURE_CACHE.get("float-note");
+// ─── Illustrated door panel (ink linework, not a flat block) ──
+function getDoorPanelTexture() {
+  const cached = NOTE_TEXTURE_CACHE.get("door-panel");
   if (cached) return cached;
+  const w = 256;
+  const h = 384;
   const canvas = document.createElement("canvas");
-  canvas.width = 256;
-  canvas.height = 224;
+  canvas.width = w;
+  canvas.height = h;
   const ctx = canvas.getContext("2d");
   if (ctx) {
-    ctx.clearRect(0, 0, 256, 224);
+    const wood = ctx.createLinearGradient(0, 0, w, 0);
+    wood.addColorStop(0, "#2c1b13");
+    wood.addColorStop(0.5, "#6a4228");
+    wood.addColorStop(1, "#241710");
+    ctx.fillStyle = wood;
+    ctx.fillRect(0, 0, w, h);
+    ctx.strokeStyle = "#caa463";
+    ctx.lineWidth = 5;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    ctx.strokeRect(16, 16, w - 32, h - 32);
+    wobblyLine(ctx, 30, 32, w - 30, 32, 1);
+    ctx.strokeRect(32, 34, w - 64, h * 0.38);
+    ctx.strokeRect(32, h * 0.5, w - 64, h * 0.38);
+    ctx.beginPath();
+    ctx.arc(w - 44, h / 2, 8, 0, Math.PI * 2);
+    ctx.fillStyle = "#3c3a33";
+    ctx.fill();
+    ctx.strokeStyle = "rgba(255,224,170,0.14)";
+    ctx.lineWidth = 2;
+    for (let x = 26; x < w; x += 28) {
+      wobblyLine(ctx, x, 24, x + Math.sin(x) * 6, h - 24, x);
+    }
+  }
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  NOTE_TEXTURE_CACHE.set("door-panel", tex);
+  return tex;
+}
+
+// ─── Illustrated facade (sketched columns + pediment, not a flat wall) ──
+function getFacadeTexture() {
+  const cached = NOTE_TEXTURE_CACHE.get("facade");
+  if (cached) return cached;
+  const w = 1024;
+  const h = 512;
+  const canvas = document.createElement("canvas");
+  canvas.width = w;
+  canvas.height = h;
+  const ctx = canvas.getContext("2d");
+  if (ctx) {
+    const paper = ctx.createLinearGradient(0, 0, w, h);
+    paper.addColorStop(0, "#f4ecd9");
+    paper.addColorStop(0.52, "#eadfc8");
+    paper.addColorStop(1, "#d9ccb1");
+    ctx.fillStyle = paper;
+    ctx.fillRect(0, 0, w, h);
     ctx.strokeStyle = "#3c3a33";
     ctx.lineWidth = 5;
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
+    wobblyLine(ctx, 30, h - 40, w - 30, h - 40, 2);
 
-    // Wobbly five-point star (straight strokes nudged slightly off-grid).
-    const cx = 128;
-    const cy = 98;
-    const R = 48;
-    const r = 22;
+    const colXs = [w * 0.1, w * 0.2, w * 0.8, w * 0.9];
+    colXs.forEach((x, i) => {
+      wobblyLine(ctx, x, h - 40, x, 96, i + 1);
+      ctx.beginPath();
+      ctx.moveTo(x - 26, 96);
+      ctx.lineTo(x + 26, 96);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(x - 16, 74);
+      ctx.lineTo(x + 16, 74);
+      ctx.stroke();
+      for (let f = -12; f <= 12; f += 12) {
+        ctx.beginPath();
+        ctx.moveTo(x + f, 96);
+        ctx.lineTo(x + f, h - 40);
+        ctx.stroke();
+      }
+    });
+
     ctx.beginPath();
-    for (let i = 0; i < 10; i++) {
-      const radius = i % 2 === 0 ? R : r;
-      const a = (i * Math.PI) / 5 - Math.PI / 2;
-      const x = cx + Math.cos(a) * radius + (i % 3) * 1.6;
-      const y = cy + Math.sin(a) * radius + (i % 2) * 1.6;
-      if (i === 0) ctx.moveTo(x, y);
-      else ctx.lineTo(x, y);
+    ctx.moveTo(w * 0.24, 96);
+    ctx.lineTo(w * 0.5, 24);
+    ctx.lineTo(w * 0.76, 96);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(w * 0.5, 24, 6, 0, Math.PI * 2);
+    ctx.stroke();
+    for (let i = 0; i < 9000; i++) {
+      const alpha = 0.012 + Math.random() * 0.035;
+      ctx.fillStyle = Math.random() > 0.5 ? `rgba(255,250,235,${alpha})` : `rgba(80,68,45,${alpha})`;
+      ctx.fillRect(Math.random() * w, Math.random() * h, 1, 1);
     }
-    ctx.closePath();
-    ctx.stroke();
-
-    // Squiggle underline + two accent dots.
-    wobblyLine(ctx, cx - 42, cy + 66, cx + 42, cy + 66, 3);
-    ctx.beginPath();
-    ctx.arc(cx - 64, cy + 6, 4, 0, Math.PI * 2);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.arc(cx + 64, cy - 4, 4, 0, Math.PI * 2);
-    ctx.stroke();
   }
   const tex = new THREE.CanvasTexture(canvas);
   tex.colorSpace = THREE.SRGBColorSpace;
-  NOTE_TEXTURE_CACHE.set("float-note", tex);
+  NOTE_TEXTURE_CACHE.set("facade", tex);
   return tex;
 }
 
-function DoodleStar({ position, color, speed }: { position: [number, number, number]; color: string; speed: number }) {
-  const group = useRef<THREE.Group>(null);
-  useFrame((_, delta) => {
-    if (group.current) group.current.rotation.z += delta * speed;
-  });
-  return (
-    <group ref={group} position={position}>
-      {[0, Math.PI / 4, Math.PI / 2, (3 * Math.PI) / 4].map((a) => (
-        <mesh key={a} rotation-z={a}>
-          <planeGeometry args={[0.3, 0.055]} />
-          <meshBasicMaterial color={color} transparent opacity={0.75} side={THREE.DoubleSide} />
-        </mesh>
-      ))}
-    </group>
-  );
-}
+// ─── A real entrance door — two panels that swing open as you approach,
+// instead of an open frame with nothing filling it.
+function EntranceDoor() {
+  const approach = FOOTPRINTS.approach;
+  const doorZ = approach.minZ + 1.2;
+  const left = useRef<THREE.Group>(null);
+  const right = useRef<THREE.Group>(null);
+  const swing = useRef(0);
+  const tex = useMemo(() => getDoorPanelTexture(), []);
 
-function DoodleSquiggle({ position, color }: { position: [number, number, number]; color: string }) {
-  const group = useRef<THREE.Group>(null);
-  useFrame((state) => {
-    if (group.current) {
-      group.current.position.x = position[0] + Math.sin(state.clock.elapsedTime * 1.2) * 0.05;
-      group.current.position.y = position[1] + Math.cos(state.clock.elapsedTime * 0.9) * 0.03;
-    }
+  useFrame(({ camera }, delta) => {
+    const dist = Math.abs(camera.position.z - doorZ);
+    const target = dist < 6 ? 1 : 0;
+    swing.current = THREE.MathUtils.lerp(swing.current, target, Math.min(1, delta * 4));
+    const angle = swing.current * 1.57;
+    if (left.current) left.current.rotation.y = -angle;
+    if (right.current) right.current.rotation.y = angle;
   });
-  return (
-    <group ref={group} position={position}>
-      {[-3, -2, -1, 0, 1, 2, 3].map((i) => (
-        <mesh key={i} position={[i * 0.055, Math.sin(i * 0.9) * 0.05, 0]}>
-          <sphereGeometry args={[0.022, 6, 6]} />
-          <meshBasicMaterial color={color} transparent opacity={0.8} />
-        </mesh>
-      ))}
-    </group>
-  );
-}
 
-function DoodleCircle({ position, color }: { position: [number, number, number]; color: string }) {
-  const mesh = useRef<THREE.Mesh>(null);
-  useFrame((state) => {
-    if (mesh.current) {
-      const s = 1 + Math.sin(state.clock.elapsedTime * 1.4) * 0.08;
-      mesh.current.scale.setScalar(s);
-      mesh.current.rotation.z = Math.sin(state.clock.elapsedTime * 0.7) * 0.12;
-    }
-  });
-  return (
-    <mesh ref={mesh} position={position} rotation-y={-Math.PI / 4}>
-      <ringGeometry args={[0.11, 0.135, 24]} />
-      <meshBasicMaterial color={color} transparent opacity={0.7} side={THREE.DoubleSide} />
-    </mesh>
-  );
-}
-
-function FloatNote({ position }: { position: [number, number, number] }) {
-  const group = useRef<THREE.Group>(null);
-  const tex = useMemo(() => getFloatNoteTexture(), []);
-  useFrame((state) => {
-    if (group.current) {
-      const t = state.clock.elapsedTime;
-      group.current.position.y = position[1] + Math.sin(t * 1.1) * 0.06;
-      group.current.rotation.z = Math.sin(t * 0.8) * 0.1;
-      group.current.rotation.x = Math.sin(t * 0.5) * 0.06;
-    }
-  });
-  return (
-    <group ref={group} position={position}>
-      <mesh rotation-y={-Math.PI / 4}>
-        <planeGeometry args={[0.42, 0.36]} />
-        <meshBasicMaterial map={tex} transparent opacity={0.85} side={THREE.DoubleSide} />
-      </mesh>
-    </group>
-  );
-}
-
-function CorridorDoodles() {
   return (
     <group>
-      <DoodleStar position={[2.45, 1.95, 16.7]} color={PALETTE.dim} speed={0.7} />
-      <DoodleSquiggle position={[1.0, 1.5, 17.4]} color={PALETTE.dim} />
-      <DoodleCircle position={[2.6, 1.35, 15.6]} color={PALETTE.accent} />
-      <FloatNote position={[1.1, 2.1, 16.85]} />
+      {/* Left leaf — hinges on outer (-x) edge */}
+      <group ref={left} position={[-0.02, 0, doorZ]}>
+        <mesh position={[-0.375, 1.2, 0]}>
+          <boxGeometry args={[0.75, 2.35, 0.06]} />
+          <meshStandardMaterial map={tex} color="#ffffff" roughness={0.88} />
+        </mesh>
+        {/* Handle — inner edge */}
+        <mesh position={[-0.38 + 0.12, 1.0, 0.04]} rotation-z={Math.PI / 2}>
+          <cylinderGeometry args={[0.015, 0.015, 0.12, 8]} />
+          <meshStandardMaterial color={PALETTE.gold} metalness={0.3} roughness={0.6} />
+        </mesh>
+        <mesh position={[-0.38 + 0.12, 1.0, 0.04]}>
+          <sphereGeometry args={[0.022, 8, 8]} />
+          <meshStandardMaterial color={PALETTE.gold} metalness={0.3} roughness={0.6} />
+        </mesh>
+      </group>
+      {/* Right leaf — hinges on outer (+x) edge */}
+      <group ref={right} position={[0.02, 0, doorZ]}>
+        <mesh position={[0.375, 1.2, 0]}>
+          <boxGeometry args={[0.75, 2.35, 0.06]} />
+          <meshStandardMaterial map={tex} color="#ffffff" roughness={0.88} />
+        </mesh>
+        <mesh position={[0.38 - 0.12, 1.0, 0.04]} rotation-z={Math.PI / 2}>
+          <cylinderGeometry args={[0.015, 0.015, 0.12, 8]} />
+          <meshStandardMaterial color={PALETTE.gold} metalness={0.3} roughness={0.6} />
+        </mesh>
+        <mesh position={[0.38 - 0.12, 1.0, 0.04]}>
+          <sphereGeometry args={[0.022, 8, 8]} />
+          <meshStandardMaterial color={PALETTE.gold} metalness={0.3} roughness={0.6} />
+        </mesh>
+      </group>
+      {/* Threshold strip */}
+      <mesh position={[0, 0.015, doorZ]}>
+        <boxGeometry args={[1.8, 0.03, 0.12]} />
+        <meshStandardMaterial color={PALETTE.frame} roughness={0.8} />
+      </mesh>
     </group>
   );
 }
 
 function CuratorFigure({ position }: { position: [number, number, number] }) {
-  const group = useRef<THREE.Group>(null);
-  useFrame(() => {
-    if (group.current) {
-      group.current.position.set(
-        position[0],
-        position[1] + Math.sin(Date.now() * 0.002) * 0.04,
-        position[2]
-      );
-    }
+  const meshRef = useRef<THREE.Mesh>(null);
+  const [texture, setTexture] = useState<THREE.Texture | null>(null);
+
+  useEffect(() => {
+    let alive = true;
+    const loader = new THREE.TextureLoader();
+    loader.load("/images/curator.png", (tex) => {
+      tex.colorSpace = THREE.SRGBColorSpace;
+      if (alive) setTexture(tex);
+    });
+    return () => { alive = false; };
+  }, []);
+
+  useFrame(({ camera, clock }) => {
+    if (!meshRef.current) return;
+    meshRef.current.quaternion.copy(camera.quaternion);
+    meshRef.current.position.set(
+      position[0],
+      position[1] + 1.4 + Math.sin(clock.elapsedTime * 0.8) * 0.04,
+      position[2]
+    );
   });
 
+  if (!texture) return null;
+
   return (
-    <group ref={group}>
-      {/* Legs */}
-      <mesh position={[-0.09, 0.32, 0]}>
-        <capsuleGeometry args={[0.08, 0.42, 4, 8]} />
-        <meshStandardMaterial color={PALETTE.ivory} roughness={0.8} metalness={0} />
+    <group position={position}>
+      {/* Ground shadow disc */}
+      <mesh position={[0, 0.01, 0]} rotation-x={-Math.PI / 2}>
+        <circleGeometry args={[0.5, 24]} />
+        <meshBasicMaterial color="#000000" transparent opacity={0.08} />
       </mesh>
-      <mesh position={[0.09, 0.32, 0]}>
-        <capsuleGeometry args={[0.08, 0.42, 4, 8]} />
-        <meshStandardMaterial color={PALETTE.ivory} roughness={0.8} metalness={0} />
+      {/* Billboard sprite — always faces camera */}
+      <mesh ref={meshRef} position={[0, 1.4, 0]}>
+        <planeGeometry args={[1.8, 2.8]} />
+        <meshBasicMaterial
+          map={texture}
+          transparent
+          alphaTest={0.1}
+          side={THREE.DoubleSide}
+          depthWrite={false}
+        />
       </mesh>
-      {/* Torso — a slightly fuller "coat" shape */}
-      <mesh position={[0, 0.82, 0]}>
-        <capsuleGeometry args={[0.17, 0.5, 4, 8]} />
-        <meshStandardMaterial color={PALETTE.ivory} roughness={0.8} metalness={0} />
-      </mesh>
-      {/* Arms */}
-      <mesh position={[-0.26, 0.78, 0]} rotation-z={0.12}>
-        <capsuleGeometry args={[0.05, 0.42, 4, 8]} />
-        <meshStandardMaterial color={PALETTE.ivory} roughness={0.8} metalness={0} />
-      </mesh>
-      <mesh position={[0.26, 0.78, 0]} rotation-z={-0.12}>
-        <capsuleGeometry args={[0.05, 0.42, 4, 8]} />
-        <meshStandardMaterial color={PALETTE.ivory} roughness={0.8} metalness={0} />
-      </mesh>
-      {/* Head + a sketch-ink eye */}
-      <mesh position={[0, 1.3, 0]}>
-        <sphereGeometry args={[0.17, 12, 12]} />
-        <meshStandardMaterial color={PALETTE.ivory} roughness={0.7} />
-      </mesh>
-      <mesh position={[0, 1.32, 0.15]}>
-        <sphereGeometry args={[0.04, 8, 8]} />
-        <meshStandardMaterial color={PALETTE.paper} roughness={0.5} />
-      </mesh>
-      <Text position={[0, 1.78, 0]} fontSize={0.09} color={PALETTE.dim} anchorX="center" anchorY="middle">
+      {/* Label */}
+      <Text
+        position={[0, -0.1, 0.1]}
+        fontSize={0.12}
+        color={PALETTE.ivory}
+        anchorX="center"
+        anchorY="middle"
+      >
         Curator
       </Text>
     </group>
@@ -1112,13 +1299,13 @@ function WalkableWorldScene({
 
   return (
     <>
-      <fog attach="fog" args={[PALETTE.paper, 26, 85]} />
-      <ambientLight intensity={0.9} />
-      <hemisphereLight args={["#fff7e6", "#9a9384", 0.9]} />
-      <directionalLight position={[4, 8, 3]} intensity={1.15} color="#fff4dd" />
-      <pointLight position={[0, 3.2, 0]} intensity={14} distance={22} decay={2} color={PALETTE.accent} />
-      <pointLight position={[0, 3.2, -16]} intensity={12} distance={18} decay={2} color="#8a7a5a" />
-      <pointLight position={[0, 3.2, 16.5]} intensity={12} distance={18} decay={2} color="#7a8a6a" />
+      <fog attach="fog" args={[PALETTE.paper, 18, 55]} />
+      <ambientLight intensity={0.55} />
+      <hemisphereLight args={["#f0ede6", "#d2c4a8", 0.75]} />
+      <directionalLight position={[4, 8, 3]} intensity={1.0} color="#fff6df" />
+      <pointLight position={[0, 3.2, 0]} intensity={3.0} distance={20} decay={2} color="#f0cf8b" />
+      <pointLight position={[0, 3.2, -14]} intensity={2.5} distance={18} decay={2} color="#e8e4dc" />
+      <MuseumLighting />
 
       <ApproachExterior />
       <GridFloor />
@@ -1187,25 +1374,26 @@ function WalkableWorldScene({
                 position={position}
                 ry={Math.PI / 2}
                 title="Curator's note"
-                body="Behind-the-scenes notes about building this one."
+                body={exhibit?.curatorNotes}
                 size={[2.6, 1.4]}
               />
             );
           }
-          return <ArtifactPlinth key={anchor.id} position={position} ry={anchor.id.includes("1") ? -Math.PI / 2 : Math.PI / 2} />;
+          const artifactIndex = anchor.id.includes("2") ? 1 : 0;
+          const artifact = exhibit?.artifacts[artifactIndex] ?? exhibit?.artifacts[0];
+          return (
+            <ArtifactPlinth
+              key={anchor.id}
+              position={position}
+              ry={anchor.id.includes("1") ? -Math.PI / 2 : Math.PI / 2}
+              label={artifact?.label}
+              description={artifact?.description}
+            />
+          );
         })
       )}
 
-      <Plaque
-        position={[0, 2.25, 13.3]}
-        ry={0}
-        title="Plinth Museum"
-        body="Scroll forward to tour the corridor. Reception and curator are ahead."
-        size={[3.2, 1.5]}
-      />
-
-      <CuratorFigure position={[1.8, 0, 16.2]} />
-      <CorridorDoodles />
+      <CuratorFigure position={[1.8, 0, 18.4]} />
 
       <WalkablePlayer
         world={world}

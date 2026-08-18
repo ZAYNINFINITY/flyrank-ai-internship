@@ -1,5 +1,4 @@
 import type { RoomId } from "./types";
-import { exhibits as portfolioExhibits } from "@/lib/mock-data/exhibits";
 
 const routeMap: Record<RoomId, string> = {
   "entrance-hall": "/",
@@ -27,11 +26,17 @@ export function getExhibitRoute(exhibitId: string): string {
   return `/exhibit/e/${exhibitId}`;
 }
 
-export function getPortfolioRouteForExhibitId(exhibitId: string): string | undefined {
-  for (const exhibit of Object.values(portfolioExhibits)) {
-    if (exhibit.projects.some((project) => project.id === exhibitId)) {
-      return `/exhibit/${exhibit.username}`;
-    }
-  }
+/**
+ * Resolves an exhibit id to its developer's profile route.
+ * Returns undefined if the exhibit has no developer profile.
+ */
+export function getDeveloperRouteForExhibitId(): string | undefined {
+  // This will be wired to the DeveloperRepository in a later phase.
+  // For now, return undefined — the 3D world will handle missing routes.
   return undefined;
+}
+
+/** @deprecated Use getDeveloperRouteForExhibitId instead */
+export function getPortfolioRouteForExhibitId(): string | undefined {
+  return getDeveloperRouteForExhibitId();
 }

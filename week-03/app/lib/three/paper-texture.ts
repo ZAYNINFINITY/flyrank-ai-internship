@@ -20,11 +20,27 @@ export function getPaperTexture(): THREE.CanvasTexture {
     return cached;
   }
 
-  // Warm cream paper base with a soft vertical tonal drift.
+  // Warm cream paper base with a soft vertical tonal drift — pushed a bit
+  // stronger than before so the texture itself carries some of the "designed"
+  // depth (itom bakes lighting straight into painted textures rather than
+  // relying purely on runtime lights, which is part of why his scene never
+  // looks accidentally flat or blown-out).
   const gradient = ctx.createLinearGradient(0, 0, 0, size);
-  gradient.addColorStop(0, "#f2ecdd");
-  gradient.addColorStop(1, "#eae3cf");
+  gradient.addColorStop(0, "#f5efdf");
+  gradient.addColorStop(0.5, "#eee6d2");
+  gradient.addColorStop(1, "#e2d8bf");
   ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, size, size);
+
+  // Soft radial vignette — gently darker toward the edges of each tile so
+  // walls read as painted panels with depth, not a flat computed color.
+  const vignette = ctx.createRadialGradient(
+    size / 2, size / 2, size * 0.2,
+    size / 2, size / 2, size * 0.75
+  );
+  vignette.addColorStop(0, "rgba(0,0,0,0)");
+  vignette.addColorStop(1, "rgba(70,58,34,0.09)");
+  ctx.fillStyle = vignette;
   ctx.fillRect(0, 0, size, size);
 
   // Fine mottled grain — darker fiber specks and lighter brights.

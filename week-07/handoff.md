@@ -1,5 +1,83 @@
 # Week 07 · FE-AA2 — Walkable 3D Museum: Handoff (very detailed)
 
+> **LATEST CONTINUATION — August 17, 2026.**
+> The current working tree is no longer the committed paper/sketch pass described
+> later in this document. A new rescue pass is in progress under `week-03/app`
+> that moves Plinth toward a **public 3D museum**, closer to the
+> user's latest direction: no website wrapper, no personal-only portfolio, no
+> broken hallway labels.
+
+## §0 — Current working tree state (museum stabilization pass)
+
+The active app is still `week-03/app`. The home route now treats the museum as
+the product, not as an optional landing-page enhancement:
+
+- `app/layout.tsx` removed the global nav/footer shell so the 3D experience is
+  not wrapped in old website chrome.
+- `app/page.tsx` starts from a public developer seed (`torvalds`) instead of a
+  personal project/default portfolio.
+- `lib/repository/mock-exhibit-repository.ts` now contains GitHub-shaped public
+  developer profiles: profile identity, avatar/image URL, curator notes, and
+  project-like artifacts. This is still mock data, but the shape is intentionally
+  ready for GitHub auth/API wiring.
+- `lib/museum/walkable-model.ts` now exposes reception exhibit frames,
+  `Inspect exhibit` interactions, exhibit preview copy, `Open exhibit`, and
+  curator narration that explains what the visitor is looking at.
+- `components/three/walkable-world.tsx` now renders the main hall as a portrait gallery with exhibit-backed frames, a Collections/category wall,
+  warmer visible LED strips, backlit panels, darker concrete/stone/metal/wood
+  materials, upgraded doors, richer plinths, and profile-room project artifacts.
+- `lib/three/paper-texture.ts` now includes procedural museum materials
+  (`concrete`, `floor-stone`, `wood`, `metal`, `dark-panel`) in addition to the
+  prior paper texture work.
+
+Correction after user feedback: do **not** treat the dark concrete moodboard as
+the final direction. The user explicitly asked to take help from `itomdev.com`,
+so the next visual pass should re-anchor the museum in itomdev's actual design
+moves: warm hand-drawn/sketch corridor, flat geometry instead of Blender-style
+models, smooth scroll/camera storytelling, doors as navigation, click-based
+inspection, wall frames that reveal/paint as visitors approach, and minimal
+website chrome. The developer-profile idea is still correct, but the art
+direction should feel authored and sketch-built, not like a random dark museum
+theme.
+
+### Current verification
+
+From the last continuation session:
+
+- `npm run typecheck` passed.
+- `npm run lint` passed with the same two pre-existing unused-import warnings.
+- `npm run build` passed.
+- August 17 continuation: local dev server started from `week-03/app` with
+  `npm run dev -- -p 3000`; `http://localhost:3000/` returned HTTP 200.
+  Log file: `week-03/app/dev-server.log`.
+
+### Important remaining work
+
+- Connect real GitHub auth/profile/repository data. The current developer
+  profiles are GitHub-shaped seed content, not live GitHub API output.
+- Immediate fix now in progress: keep the developer-profile museum concept, but
+  remove the random dark concrete/metal moodboard styling from the active scene
+  and restore the itomdev-inspired warm paper/sketch visual language already
+  present in the older pass.
+- Fix applied in `components/three/walkable-world.tsx`: the active scene palette
+  is back to warm paper/ink/terracotta, visible wall/floor/ceiling/frame/panel
+  materials use paper/ink washes again, the facade texture was repainted from
+  dark concrete to sketched paper, and the profile/project content remains in
+  place. This preserves the useful developer museum work while removing the
+  random dark moodboard layer.
+- Verification after that fix: `npm run typecheck` passed; `npm run lint`
+  passed with only the two existing warnings in `lib/museum/queries.ts` and
+  `lib/museum/world.ts`; `npm run build` passed.
+- Replace/finish the curator visual with a real asset or character system. The
+  referenced `curator.jpg` was mentioned by the user, but it was not reliably
+  loaded in the prior session.
+- Run visual verification again after any scene changes: desktop and mobile
+  screenshots, canvas nonblank check, and interaction check for portrait preview
+  → `Open exhibit` → project room.
+- Update older docs if this direction becomes final. Sections below preserve
+  historical context and may still mention the earlier paper/sketch pass,
+  sawtooth corridor pass, or "all committed" state.
+
 > **READ FIRST — DECIDED DIRECTION (supersedes everything below this box).**
 > This brief was settled in a Claude working session with the user. The previous
 > prototype feedback ("not itomdev-like") is superseded by a much bigger vision.
@@ -11,7 +89,7 @@ The exhibit route should become an **arrival sequence**, not a landing page:
 
 - Someone visits the link and they are **standing outside a building** — a gate,
   a path leading up to it, and the building itself reads **unmistakably as a
-  museum** (architecture that says "tech museum for developers" the way a stone
+  museum** (architecture that says "museum" the way a stone
   facade with columns says "history museum").
 - They **walk the path, through the gate, into the museum** — and that is the
   actual homepage. **No header nav, no hero text, no button first.**
@@ -553,3 +631,249 @@ Wall heights 4.2, wall thickness 0.1.
   in the INTERNSHIP folder instead — keep it there).
 - Prior week conventions: submission packets in `week-05/` and `week-06/`
   (`submission-summary.md`), lighthouse baseline in `%TEMP%\opencode\lh-baseline\`.
+
+---
+
+## §D — Visual Polish Plan: Doors, Ambience, Curator (August 18, 2026)
+
+> **STATUS: PLANNED — not yet executed.**
+> This section contains a complete, line-by-line execution plan for the three
+> visual issues identified during user review: compressed doors, over-lit
+> ambience, and the curator being a portrait frame instead of a character.
+> Reference site: itomdev.com. Curator asset: `C:\Users\user\Downloads\curator.png`.
+
+### §D1 — DOORS: Make Them Real
+
+**Root cause:** Both `DoorPanel` (interior) and `EntranceDoor` (facade) use
+`planeGeometry` — zero-thickness flat planes that read as cardboard.
+
+**File:** `components/three/walkable-world.tsx`
+
+#### DoorPanel (lines 875–918)
+
+| What | Current | New |
+|------|---------|-----|
+| Geometry | `planeGeometry [1.6, 2.4]` | `boxGeometry [1.5, 2.35, 0.06]` |
+| Hinge offset | 0.8 | 0.75 |
+| Swing lerp | `delta * 6` | `delta * 4` (heavier feel) |
+| Handle | None | Cylinder [0.015 radius, 0.12 length] + Sphere [0.022] at handle pos |
+
+Replace lines 894–903 with boxGeometry + handle group. Handle position:
+`panelOffset > 0 ? panelOffset + 0.12 : panelOffset - 0.12` at y=1.0, z=0.04.
+Handle color: `PALETTE.gold`, metalness 0.3, roughness 0.6.
+
+#### EntranceDoor (lines 1107–1140)
+
+Same geometry upgrade per leaf:
+- Each leaf: `boxGeometry [0.75, 2.35, 0.06]`
+- Handle at x=±0.38 (inner edge), y=1.0
+- Swing: `angle = swing.current * 1.57` (was 1.7)
+- Add threshold strip: `boxGeometry [1.8, 0.03, 0.12]` at y=0.015
+
+#### walkable-model.ts swing angles
+
+| Door | Current | New |
+|------|---------|-----|
+| `door-exhibit-from-corridor` | `swing: -1.9` | `swing: -1.57` |
+| `door-corridor-from-reception` | `swing: 1.9` | `swing: 1.57` |
+
+### §D2 — AMBIENCE: Kill the Over-Lighting
+
+**Root cause:** 18+ light sources with ambient at 1.7 flattens shadows. All
+lights gold `#f0cf8b` — monochromatic warmth kills depth. Vignette 0.18 is
+6× heavier than itom's ~0.03.
+
+**File:** `components/three/walkable-world.tsx`
+
+#### Global lights (lines 1281–1288) — replace entirely:
+
+```tsx
+<fog attach="fog" args={[PALETTE.paper, 18, 55]} />
+<ambientLight intensity={0.55} />
+<hemisphereLight args={["#f0ede6", "#d2c4a8", 0.75]} />
+<directionalLight position={[4, 8, 3]} intensity={1.0} color="#fff6df" />
+<pointLight position={[0, 3.2, 0]} intensity={3.0} distance={20} decay={2} color="#f0cf8b" />
+<pointLight position={[0, 3.2, -14]} intensity={2.5} distance={18} decay={2} color="#e8e4dc" />
+```
+
+**Removed:** Third global point light (z=16.5, intensity 5).
+**Changed:** fog start 22→18, end 70→55. Ambient 1.7→0.55. Hemi 1.2→0.75.
+Point: 6→3.0 and 5→2.5. Added cool `#e8e4dc` on second point light.
+
+#### LinearLight (line 746):
+
+`pointLight intensity={1.6}` (was 2.2)
+
+#### MuseumLighting (lines 751–764) — reduce:
+
+- Remove LinearLight at z=12.6 (keep 3 of 4)
+- Remove all 3 west reception point lights (keep 3 of 6)
+- Reception point intensity: 2.2→1.8
+
+#### CSS Vignette (exhibit-room-3d.tsx line 237):
+
+```
+transparent_55%→65%, opacity 0.18→0.06
+```
+
+#### Film grain overlay — ADD after vignette div (after line 239):
+
+```tsx
+<div
+  className="pointer-events-none absolute inset-0 z-[44] opacity-[0.035]"
+  style={{
+    backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E")`,
+    mixBlendMode: "multiply",
+  }}
+  aria-hidden="true"
+/>
+```
+
+### §D3 — CURATOR: Billboard Sprite from Provided Image
+
+**Root cause:** Current curator is a framed `avatar.png` portrait — a 2D
+billboard frame that bobs up and down. The handoff describes "ink humanoid
+silhouette" but the code is a painting. User provided `curator.png` of a
+standing figure.
+
+**Asset:** Copy `C:\Users\user\Downloads\curator.png` to
+`public/images/curator.png`.
+
+**Replace CuratorFigure (lines 1142–1211) entirely:**
+
+```tsx
+function CuratorFigure({ position }: { position: [number, number, number] }) {
+  const meshRef = useRef<THREE.Mesh>(null);
+  const [texture, setTexture] = useState<THREE.Texture | null>(null);
+
+  useEffect(() => {
+    let alive = true;
+    const loader = new THREE.TextureLoader();
+    loader.load("/images/curator.png", (tex) => {
+      tex.colorSpace = THREE.SRGBColorSpace;
+      if (alive) setTexture(tex);
+    });
+    return () => { alive = false; };
+  }, []);
+
+  useFrame(({ camera, clock }) => {
+    if (!meshRef.current) return;
+    meshRef.current.quaternion.copy(camera.quaternion);
+    meshRef.current.position.set(
+      position[0],
+      position[1] + 1.4 + Math.sin(clock.elapsedTime * 0.8) * 0.04,
+      position[2]
+    );
+  });
+
+  if (!texture) return null;
+
+  return (
+    <group position={position}>
+      <mesh position={[0, 0.01, 0]} rotation-x={-Math.PI / 2}>
+        <circleGeometry args={[0.5, 24]} />
+        <meshBasicMaterial color="#000000" transparent opacity={0.08} />
+      </mesh>
+      <mesh ref={meshRef} position={[0, 1.4, 0]}>
+        <planeGeometry args={[1.8, 2.8]} />
+        <meshBasicMaterial
+          map={texture}
+          transparent
+          alphaTest={0.1}
+          side={THREE.DoubleSide}
+          depthWrite={false}
+        />
+      </mesh>
+      <Text
+        position={[0, -0.1, 0.1]}
+        fontSize={0.12}
+        color={PALETTE.ivory}
+        anchorX="center"
+        anchorY="middle"
+      >
+        Curator
+      </Text>
+    </group>
+  );
+}
+```
+
+**Key techniques:**
+- `quaternion.copy(camera.quaternion)` — billboard always faces camera
+- `alphaTest: 0.1` — transparent background pixels become invisible
+- `depthWrite: false` — prevents z-fighting with wall behind
+- `planeGeometry [1.8, 2.8]` — tall standing proportions
+- Shadow disc on floor for grounding
+- Gentle bob via `sin(time * 0.8) * 0.04`
+- Loads `/images/curator.png` (NOT avatar.png)
+
+**If image has opaque background:** Either preprocess to add alpha channel,
+or replace `alphaTest` approach with a custom shader that discards white/near-white
+pixels: `if (all(greaterThan(color.rgb, vec3(0.95)))) discard;`
+
+### §D4 — PAPER TEAR INTRO (Phase 2 — Optional, signature itom effect)
+
+**Current:** Simple 2.8s CSS fade overlay (`fade-out_2.8s_ease_forwards`).
+**New:** Two paper halves that rip apart, revealing the 3D corridor.
+
+**Replace arrival intro (exhibit-room-3d.tsx lines 221–233) with:**
+
+```tsx
+{arrivalIntro && sceneReady && (
+  <div className="pointer-events-none absolute inset-0 z-50" aria-hidden="true">
+    <div
+      className="absolute inset-0 origin-left motion-safe:animate-[tear-left_1.5s_ease-in-out_forwards]"
+      style={{ backgroundColor: "#efe9da" }}
+    >
+      <div className="absolute right-0 top-0 h-full w-8"
+           style={{ background: "linear-gradient(to left, transparent, rgba(180,170,155,0.3))" }} />
+    </div>
+    <div
+      className="absolute inset-0 origin-right motion-safe:animate-[tear-right_1.5s_ease-in-out_forwards]"
+      style={{ backgroundColor: "#efe9da" }}
+    >
+      <div className="absolute left-0 top-0 h-full w-8"
+           style={{ background: "linear-gradient(to right, transparent, rgba(180,170,155,0.3))" }} />
+    </div>
+    <div className="absolute left-1/2 top-0 h-full w-12 -translate-x-1/2 motion-safe:animate-[fade-out_0.5s_ease_1.2s_forwards]"
+         style={{ background: "repeating-linear-gradient(to bottom, transparent 0px, rgba(160,150,130,0.2) 2px, transparent 4px)" }} />
+    <div className="absolute inset-0 flex items-center justify-center motion-safe:animate-[fade-out_0.8s_ease_0.8s_forwards]">
+      <div className="text-center">
+        <p className="text-[10px] uppercase tracking-[0.35em] text-[#6f6c62]">Approaching</p>
+        <p className="mt-2 font-heading text-xl tracking-tight text-[#2a2a30]">Plinth Museum</p>
+      </div>
+    </div>
+  </div>
+)}
+```
+
+**Add CSS keyframes (tailwind config or global CSS):**
+
+```css
+@keyframes tear-left {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-105%); }
+}
+@keyframes tear-right {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(105%); }
+}
+```
+
+### §D5 — FILES CHANGED SUMMARY
+
+| File | Changes | Lines Affected |
+|------|---------|---------------|
+| `components/three/walkable-world.tsx` | Doors (BoxGeometry + handles), lighting overhaul, curator sprite | ~746, 751–764, 875–918, 1107–1211, 1281–1288 |
+| `components/three/exhibit-room-3d.tsx` | Vignette lighten, grain overlay, paper tear intro | ~221–239 |
+| `lib/museum/walkable-model.ts` | Door swing angles (1.9→1.57) | ~118, ~125 |
+| `public/images/curator.png` | NEW — curator standing figure asset | N/A |
+
+### §D6 — VERIFICATION AFTER EACH FIX
+
+1. `npm run typecheck` — must pass
+2. `npm run lint` — 0 new errors
+3. `npm run build` — clean
+4. Visual check at `localhost:3000` — corridor, doors, curator, ambience
+5. Mobile check — touch navigation still works
+6. Performance — FPS stays above 30 on SwiftShader

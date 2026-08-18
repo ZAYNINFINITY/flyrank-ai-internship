@@ -36,7 +36,7 @@ export function ExhibitToolResult({ exhibits }: { exhibits: Exhibit[] }) {
           className="group block border border-[var(--color-text)]/10 p-5 transition-all duration-500 hover:border-[var(--color-text)]/30"
         >
           <p className="text-[10px] uppercase tracking-[0.2em] opacity-30 mb-2">
-            {exhibit.collection}
+            {exhibit.collectionIds[0] ?? "uncategorized"}
           </p>
           <h3 className="font-heading text-base tracking-tight transition-opacity duration-300 group-hover:opacity-80">
             {exhibit.title}
@@ -45,7 +45,7 @@ export function ExhibitToolResult({ exhibits }: { exhibits: Exhibit[] }) {
             {exhibit.tagline}
           </p>
           <p className="mt-3 text-[11px] opacity-30">
-            {exhibit.developer}
+            {exhibit.developerId}
             <span aria-hidden="true"> · </span>
             {exhibit.year}
           </p>

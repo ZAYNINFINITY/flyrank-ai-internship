@@ -19,7 +19,7 @@ export function ExhibitCard({ entityId, anchor }: EntityComponentProps) {
       className={`group block h-full border border-[var(--color-text)]/10 p-6 shadow-[0_8px_24px_-12px_rgba(0,0,0,0.35)] hover:border-[var(--color-text)]/30 hover:shadow-[0_12px_28px_-10px_rgba(0,0,0,0.4)] transition-all duration-500 ${positionStyles[anchor.position]}`}
     >
       <p className="text-xs uppercase tracking-[0.2em] opacity-30 mb-2">
-        {exhibit.collection}
+        {exhibit.collectionIds[0] ?? "uncategorized"}
       </p>
       <h3 className="font-heading text-lg tracking-tight group-hover:opacity-80 transition-opacity duration-300">
         {exhibit.title}
@@ -28,7 +28,7 @@ export function ExhibitCard({ entityId, anchor }: EntityComponentProps) {
         {exhibit.tagline}
       </p>
       <div className="mt-4 flex items-center gap-3 text-xs opacity-30">
-        <span>{exhibit.developer}</span>
+        <span>{exhibit.developerId}</span>
         <span aria-hidden="true">&middot;</span>
         <span>{exhibit.year}</span>
       </div>

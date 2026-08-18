@@ -7,14 +7,17 @@ const exhibits: Exhibit[] = [
   {
     id: "e1",
     title: "POS-it",
-    collection: "experiments",
+    collectionIds: ["experiments"],
     tagline: "A sticky-note clone",
     description: "Turn sticky notes into an API.",
     media: [{ type: "image", src: "/pos-it.png", alt: "POS-it screenshot" }],
     artifacts: [{ id: "a1", label: "Source", description: "GitHub repo" }],
+    technologies: ["React", "Node.js"],
+    links: [],
     curatorNotes: "Shipped in a weekend.",
-    developer: "Zain Ul Abideen",
+    developerId: "test-dev",
     year: "2026",
+    featured: false,
   },
 ];
 

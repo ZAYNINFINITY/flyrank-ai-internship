@@ -53,11 +53,14 @@ describe("walkable-model", () => {
     expect(title?.inspect.title).toBe(exhibit.title);
   });
 
-  it("includes curator interactive with assistant link", () => {
+  it("includes curator interactive that opens the in-scene chat (no href)", () => {
     const items = buildInteractives([], [], mockExhibits, { x: 0, z: -16.5 });
     const curator = items.find((i) => i.id === "curator-presence");
     expect(curator?.prompt).toBe("Talk to curator");
-    expect(curator?.inspect.href).toBe("/assistant");
+    expect(curator?.inspect.source).toBe("curator");
+    // Curator no longer navigates to /assistant — the room hosts the real
+    // ChatPanel in-scene (see exhibit-room-3d.tsx), so there's no href.
+    expect(curator?.inspect.href).toBeUndefined();
   });
 
   it("resolveSpawnFromVia maps doors and defaults to approach path", () => {

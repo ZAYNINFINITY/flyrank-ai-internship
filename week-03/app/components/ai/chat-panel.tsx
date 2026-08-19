@@ -37,9 +37,18 @@ function renderExhibitOutput(output: unknown) {
 export function ChatPanel({
   heading = "Assistant",
   subtitle = "AI interaction engine",
+  variant = "page",
+  onClose,
 }: {
   heading?: string;
   subtitle?: string;
+  /** "page" = full viewport (used by /assistant). "panel" = fills its
+   * parent's bounds instead, so it can be dropped into a fixed-size
+   * container (e.g. the curator's in-scene chat window). */
+  variant?: "page" | "panel";
+  /** Only rendered in "panel" mode — lets the host (curator overlay)
+   * dismiss the chat without unmounting the whole 3D scene. */
+  onClose?: () => void;
 }) {
   const { messages, sendMessage, stop, regenerate, clearError, status, error } =
     useChat({
@@ -88,13 +97,29 @@ export function ChatPanel({
     messages[messages.length - 1].role === "user";
 
   return (
-    <div className="flex h-[100dvh] flex-col bg-background">
+    <div
+      className={`relative flex flex-col bg-background ${
+        variant === "panel" ? "h-full" : "h-[100dvh]"
+      }`}
+    >
       {/* Header */}
       <header className="flex items-center border-b border-text/10 px-6 py-4 sm:px-8">
         <h1 className="font-heading text-[18px] font-medium text-text">
           {heading}
         </h1>
         <span className="ml-3 font-body text-[12px] text-text/30">{subtitle}</span>
+        {variant === "panel" && onClose && (
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Close chat"
+            className="ml-auto flex h-8 w-8 items-center justify-center rounded-sm text-text/40 transition-colors hover:text-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+          >
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+              <path d="M2 2l10 10M12 2L2 12" />
+            </svg>
+          </button>
+        )}
       </header>
 
       {/* Messages */}

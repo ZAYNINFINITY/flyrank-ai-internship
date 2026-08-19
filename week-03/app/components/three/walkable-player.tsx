@@ -10,7 +10,10 @@ import { inputState } from "./walkable-input";
 const EYE_HEIGHT = 1.7;
 
 const SCROLL_SPEED = 0.028;
-const SCROLL_SMOOTHING = 0.09;
+// Bumped from 0.09 — the old smoothing made the camera visibly lag a beat
+// behind input, which read as "movement feels off"/floaty. Snappier catch-up
+// while still easing, not an instant snap.
+const SCROLL_SMOOTHING = 0.14;
 const PARALLAX_X = 1.1;
 const PARALLAX_Y = 0.55;
 const PARALLAX_SMOOTHING = 0.06;
@@ -85,8 +88,14 @@ export function WalkablePlayer({
       );
 
       const parallaxLerp = 1 - Math.pow(1 - PARALLAX_SMOOTHING, rate);
-      parallaxX.current = THREE.MathUtils.lerp(parallaxX.current, inputState.mouse.x * PARALLAX_X, parallaxLerp);
-      parallaxY.current = THREE.MathUtils.lerp(parallaxY.current, inputState.mouse.y * PARALLAX_Y, parallaxLerp);
+      // Gyroscope (phone tilt) drives look on mobile once enabled; mouse
+      // position drives it on desktop and as the touch-drag fallback
+      // otherwise. Never blended together — one or the other owns "look"
+      // at any given time, so they don't fight.
+      const lookX = inputState.gyroEnabled ? inputState.gyro.x : inputState.mouse.x;
+      const lookY = inputState.gyroEnabled ? inputState.gyro.y : inputState.mouse.y;
+      parallaxX.current = THREE.MathUtils.lerp(parallaxX.current, lookX * PARALLAX_X, parallaxLerp);
+      parallaxY.current = THREE.MathUtils.lerp(parallaxY.current, lookY * PARALLAX_Y, parallaxLerp);
 
       targetGlance.current = computeGlance(currentZ.current, glanceTargets);
       const releasing = Math.abs(targetGlance.current) < Math.abs(glanceOffset.current);
@@ -141,6 +150,19 @@ export function WalkablePlayer({
       if (item) {
         focusPos.current = item.position;
         onInspect(item.inspect);
+      }
+    }
+
+    // Direct click/tap on an object (see InteractiveHitboxes in
+    // walkable-world.tsx) — inspects exactly what was clicked, regardless
+    // of whether it's the "nearest" item along the rail.
+    if (inputState.clickedItemId) {
+      const clickedId = inputState.clickedItemId;
+      inputState.clickedItemId = null;
+      const clicked = world.interactives.find((i) => i.id === clickedId);
+      if (clicked) {
+        focusPos.current = clicked.position;
+        onInspect(clicked.inspect);
       }
     }
 

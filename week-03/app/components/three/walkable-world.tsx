@@ -28,6 +28,8 @@ import { WalkablePlayer, type GlanceTarget } from "./walkable-player";
 const HEIGHT = 3.6;
 const BASEBOARD_H = 0.14;
 const BASEBOARD_D = 0.08;
+const CROWN_H = 0.09;
+const CROWN_D = 0.07;
 const DOOR_POST = 0.14;
 const DOOR_LINTEL_Y = 2.72;
 
@@ -42,6 +44,14 @@ const BAY_OUTER_X = 3.0; // corridor half-width (outer wall line)
 const BAY_INNER_X = 1.6; // recessed bay face toward the corridor center
 const BAY_HALF_SPAN = 2; // half the bay length along Z (DOOR_Z_SPAN = 4)
 const BAY_TILT = { base: 0.02, max: 0.2, start: 12, peak: 2, lerp: 0.06 };
+
+// The museum's actual front-door opening. Matches walkable-model.ts's
+// DOOR_GAP exactly (minX:-0.8, maxX:0.8) so the visual doorway lines up
+// with the one place in the collision model where the wall is genuinely
+// open. Previously the entrance door was a decorative prop sized to a
+// completely different (wider) opening than any real gap in the wall, so
+// opening it revealed solid geometry no matter what.
+const ENTRANCE_HALF = 0.8;
 
 // Architectural museum palette — dark concrete, clean white gallery surfaces,
 // restrained warm accent. The museum should feel designed, not sketched.
@@ -232,11 +242,17 @@ function RoomBox({
   gaps,
   palette,
   omitSides = false,
+  omitDoorwayFrame = [],
 }: {
   footprint: Rect;
   gaps: Partial<Record<"north" | "south" | "east" | "west", Rect>>;
   palette: { wall: string; floor: string; ceiling: string };
   omitSides?: boolean;
+  /** Directions whose gap should still cut a real hole in the wall, but
+   * skip RoomBox's own posts/lintel/threshold — used where a grander,
+   * custom-built doorway (e.g. the exterior entrance) already frames the
+   * same opening, so the two frames don't double up. */
+  omitDoorwayFrame?: Array<"north" | "south" | "east" | "west">;
 }) {
   const widthX = footprint.maxX - footprint.minX;
   const widthZ = footprint.maxZ - footprint.minZ;
@@ -262,6 +278,10 @@ function RoomBox({
         </mesh>
         <mesh position={[midX, BASEBOARD_H / 2, x]}>
           <boxGeometry args={[width, BASEBOARD_H, BASEBOARD_D]} />
+          {inkMaterial()}
+        </mesh>
+        <mesh position={[midX, HEIGHT - CROWN_H / 2, x]}>
+          <boxGeometry args={[width, CROWN_H, CROWN_D]} />
           {inkMaterial()}
         </mesh>
       </group>
@@ -291,6 +311,10 @@ function RoomBox({
           <boxGeometry args={[BASEBOARD_D, BASEBOARD_H, width]} />
           {inkMaterial()}
         </mesh>
+        <mesh position={[z, HEIGHT - CROWN_H / 2, midZ]}>
+          <boxGeometry args={[CROWN_D, CROWN_H, width]} />
+          {inkMaterial()}
+        </mesh>
       </group>
     );
   };
@@ -304,7 +328,7 @@ function RoomBox({
     <group>
       <mesh rotation-x={-Math.PI / 2}>
         <planeGeometry args={[widthX, widthZ]} />
-        {paperMaterial(palette.floor, 0.98)}
+        {tileFloorMaterial(palette.floor, widthX, widthZ)}
       </mesh>
       <mesh rotation-x={Math.PI / 2} position={[0, HEIGHT, 0]}>
         <planeGeometry args={[widthX, widthZ]} />
@@ -350,10 +374,18 @@ function RoomBox({
       {/* Doorway frames inset slightly toward each room's own interior so
           the corridor and its neighbouring room don't z-fight at the shared
           wall line (each room renders the opening from its own side). */}
-      {north && <Doorway axis="x" at={footprint.minZ + 0.02} gap={north} />}
-      {south && <Doorway axis="x" at={footprint.maxZ - 0.02} gap={south} />}
-      {!omitSides && east && <Doorway axis="z" at={footprint.maxX - 0.02} gap={east} />}
-      {!omitSides && west && <Doorway axis="z" at={footprint.minX + 0.02} gap={west} />}
+      {north && !omitDoorwayFrame.includes("north") && (
+        <Doorway axis="x" at={footprint.minZ + 0.02} gap={north} />
+      )}
+      {south && !omitDoorwayFrame.includes("south") && (
+        <Doorway axis="x" at={footprint.maxZ - 0.02} gap={south} />
+      )}
+      {!omitSides && east && !omitDoorwayFrame.includes("east") && (
+        <Doorway axis="z" at={footprint.maxX - 0.02} gap={east} />
+      )}
+      {!omitSides && west && !omitDoorwayFrame.includes("west") && (
+        <Doorway axis="z" at={footprint.minX + 0.02} gap={west} />
+      )}
     </group>
   );
 }
@@ -535,6 +567,10 @@ function SawtoothSide({
               </mesh>
               <mesh position={[0, BASEBOARD_H / 2, 0]}>
                 <boxGeometry args={[seg.width, BASEBOARD_H, BASEBOARD_D]} />
+                {inkMaterial()}
+              </mesh>
+              <mesh position={[0, HEIGHT - CROWN_H / 2, 0]}>
+                <boxGeometry args={[seg.width, CROWN_H, CROWN_D]} />
                 {inkMaterial()}
               </mesh>
             </group>
@@ -927,6 +963,47 @@ function DoorPanel({
   );
 }
 
+// ─── Facade with a real door-shaped cutout (ShapeGeometry + a hole), instead
+// of splitting one plane into two separately-stretched halves. Splitting
+// duplicated the pediment art (each half stretched the SAME full texture
+// across itself) and left a gap above the door where the two halves never
+// met — exactly the double-peak-and-void look that showed up in-game.
+function ApproachFacade() {
+  const approach = FOOTPRINTS.approach;
+  const widthX = approach.maxX - approach.minX;
+  const facadeBottom = HEIGHT / 2 - (HEIGHT * 1.05) / 2;
+  const facadeTop = HEIGHT / 2 + (HEIGHT * 1.05) / 2;
+  const doorTop = 2.61; // matches the lintel's top edge (y=2.5, height 0.22)
+
+  const geometry = useMemo(() => {
+    const shape = new THREE.Shape();
+    const hw = widthX / 2;
+    shape.moveTo(-hw, facadeBottom);
+    shape.lineTo(hw, facadeBottom);
+    shape.lineTo(hw, facadeTop);
+    shape.lineTo(-hw, facadeTop);
+    shape.lineTo(-hw, facadeBottom);
+
+    // The door-shaped hole — reaches from the base of the facade up to the
+    // lintel, at the exact ENTRANCE_HALF width the door itself uses.
+    const hole = new THREE.Path();
+    hole.moveTo(-ENTRANCE_HALF, facadeBottom);
+    hole.lineTo(ENTRANCE_HALF, facadeBottom);
+    hole.lineTo(ENTRANCE_HALF, doorTop);
+    hole.lineTo(-ENTRANCE_HALF, doorTop);
+    hole.lineTo(-ENTRANCE_HALF, facadeBottom);
+    shape.holes.push(hole);
+
+    return new THREE.ShapeGeometry(shape);
+  }, [widthX, facadeBottom, facadeTop, doorTop]);
+
+  return (
+    <mesh position={[0, 0, approach.minZ + 0.03]} geometry={geometry}>
+      <meshStandardMaterial map={getFacadeTexture()} color="#ffffff" roughness={0.94} side={THREE.DoubleSide} />
+    </mesh>
+  );
+}
+
 function ApproachExterior() {
   const approach = FOOTPRINTS.approach;
   const widthX = approach.maxX - approach.minX;
@@ -941,11 +1018,37 @@ function ApproachExterior() {
           of being the only geometry with void on either side of it. */}
       <mesh rotation-x={-Math.PI / 2} position={[0, 0, midZ]}>
         <planeGeometry args={[widthX, widthZ]} />
-        {paperMaterial(PALETTE.approachFloor, 0.95)}
+        {tileFloorMaterial(PALETTE.approachFloor, widthX, widthZ)}
       </mesh>
       <mesh rotation-x={-Math.PI / 2} position={[0, 0.012, midZ]}>
         <planeGeometry args={[2.4, widthZ]} />
         {paperMaterial(PALETTE.approachPath, 0.9)}
+      </mesh>
+
+      {/* Lamp posts flanking the walk toward the entrance */}
+      <LampPost position={[-2.6, 0, approach.minZ + 5.5]} />
+      <LampPost position={[2.6, 0, approach.minZ + 5.5]} />
+      <LampPost position={[-2.6, 0, approach.maxZ - 1.5]} />
+      <LampPost position={[2.6, 0, approach.maxZ - 1.5]} />
+
+      {/* Planters flanking the entrance */}
+      <Planter position={[-2.4, 0, approach.minZ + 2.1]} />
+      <Planter position={[2.4, 0, approach.minZ + 2.1]} />
+
+      {/* Shallow stone steps rising to the threshold */}
+      {[0, 1, 2].map((i) => (
+        <mesh key={i} position={[0, 0.03 + i * 0.055, approach.minZ + 1.55 - i * 0.22]}>
+          <boxGeometry args={[3.6 - i * 0.3, 0.06, 0.42]} />
+          {inkMaterial("#c9c2ae", 0.85)}
+        </mesh>
+      ))}
+
+      {/* Welcome mat at the foot of the steps — grounds the entrance instead
+          of stone tile running straight into the stairs with no threshold
+          cue. */}
+      <mesh rotation-x={-Math.PI / 2} position={[0, 0.022, approach.minZ + 2.55]}>
+        <planeGeometry args={[2.0, 0.9]} />
+        <meshStandardMaterial color={PALETTE.accent} roughness={0.92} metalness={0} />
       </mesh>
 
       {/* Flanking courtyard walls — without these the approach reads as an
@@ -961,24 +1064,25 @@ function ApproachExterior() {
         {paperMaterial(PALETTE.approachWall, 0.96)}
       </mesh>
 
-      <mesh position={[0, HEIGHT / 2, approach.minZ]}>
-        <planeGeometry args={[widthX, HEIGHT * 1.05]} />
-        <meshStandardMaterial map={getFacadeTexture()} color="#ffffff" roughness={0.94} side={THREE.DoubleSide} />
-      </mesh>
-      <mesh position={[-1.6, 1.2, approach.minZ + 1.2]}>
+      {/* Facade — a single plane with a real door-shaped hole cut into it
+          (ApproachFacade, via ShapeGeometry), not two stretched halves. */}
+      <ApproachFacade />
+      <mesh position={[-(ENTRANCE_HALF + 0.09), 1.2, approach.minZ + 0.06]}>
         <boxGeometry args={[0.18, 2.4, 0.18]} />
         <meshStandardMaterial color={PALETTE.frame} roughness={0.85} />
       </mesh>
-      <mesh position={[1.6, 1.2, approach.minZ + 1.2]}>
+      <mesh position={[ENTRANCE_HALF + 0.09, 1.2, approach.minZ + 0.06]}>
         <boxGeometry args={[0.18, 2.4, 0.18]} />
         <meshStandardMaterial color={PALETTE.frame} roughness={0.85} />
       </mesh>
       {/* Lintel — turns the two posts into a real doorway */}
-      <mesh position={[0, 2.5, approach.minZ + 1.2]}>
-        <boxGeometry args={[3.4, 0.22, 0.18]} />
+      <mesh position={[0, 2.5, approach.minZ + 0.06]}>
+        <boxGeometry args={[(ENTRANCE_HALF + 0.09) * 2 + 0.18, 0.22, 0.18]} />
         <meshStandardMaterial color={PALETTE.frame} roughness={0.85} />
       </mesh>
-      {/* An actual door filling the frame, instead of an open hole */}
+      {/* An actual door filling the frame, hinged right at the wall's real
+          opening — so opening it now looks straight through into
+          reception instead of into a hidden solid wall. */}
       <EntranceDoor />
       <Text
         position={[0, 3.1, approach.minZ + 0.4]}
@@ -990,7 +1094,7 @@ function ApproachExterior() {
         PLINTH MUSEUM
       </Text>
       <Text
-        position={[0, 2.5, approach.minZ + 0.4]}
+        position={[0, 2.82, approach.minZ + 0.4]}
         fontSize={0.11}
         color={PALETTE.dim}
         anchorX="center"
@@ -1048,6 +1152,72 @@ function getDoorPanelTexture() {
   tex.colorSpace = THREE.SRGBColorSpace;
   NOTE_TEXTURE_CACHE.set("door-panel", tex);
   return tex;
+}
+
+// ─── Procedural stone/tile floor texture — grout lines + mottled tiles +
+// fine grain, so floors read as laid stone instead of a flat color plane.
+function getFloorTileTexture(tint: string) {
+  const key = `floor-${tint}`;
+  const cached = NOTE_TEXTURE_CACHE.get(key);
+  if (cached) return cached;
+  const size = 512;
+  const canvas = document.createElement("canvas");
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext("2d");
+  if (ctx) {
+    ctx.fillStyle = tint;
+    ctx.fillRect(0, 0, size, size);
+    const tile = size / 4;
+    ctx.strokeStyle = "rgba(58,52,40,0.28)";
+    ctx.lineWidth = 3;
+    for (let i = 0; i <= 4; i++) {
+      const p = i * tile;
+      wobblyLine(ctx, p, 0, p, size, i);
+      wobblyLine(ctx, 0, p, size, p, i + 10);
+    }
+    for (let ty = 0; ty < 4; ty++) {
+      for (let tx = 0; tx < 4; tx++) {
+        const shade = (Math.sin(tx * 13.1 + ty * 7.7) + 1) / 2;
+        ctx.fillStyle = `rgba(58,52,40,${0.02 + shade * 0.035})`;
+        ctx.fillRect(tx * tile + 5, ty * tile + 5, tile - 10, tile - 10);
+      }
+    }
+    for (let i = 0; i < 4000; i++) {
+      const alpha = 0.01 + Math.random() * 0.02;
+      ctx.fillStyle =
+        Math.random() > 0.5 ? `rgba(255,250,235,${alpha})` : `rgba(70,60,40,${alpha})`;
+      ctx.fillRect(Math.random() * size, Math.random() * size, 1, 1);
+    }
+  }
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.wrapS = THREE.RepeatWrapping;
+  tex.wrapT = THREE.RepeatWrapping;
+  NOTE_TEXTURE_CACHE.set(key, tex);
+  return tex;
+}
+
+// One tile texture per color, cloned per-room so each room can set its own
+// repeat count without fighting over a shared texture's UV scale.
+const FLOOR_MATERIAL_CACHE = new Map<string, THREE.Texture>();
+
+function tileFloorMaterial(color: string, widthX: number, widthZ: number) {
+  const cacheKey = `${color}-${widthX}-${widthZ}`;
+  let tex = FLOOR_MATERIAL_CACHE.get(cacheKey);
+  if (!tex) {
+    const base = getFloorTileTexture(color);
+    tex = base.clone();
+    tex.needsUpdate = true;
+    tex.wrapS = THREE.RepeatWrapping;
+    tex.wrapT = THREE.RepeatWrapping;
+    // ~1.4-unit real-world tile size, regardless of room footprint.
+    tex.repeat.set(Math.max(1, widthX / 1.4), Math.max(1, widthZ / 1.4));
+    FLOOR_MATERIAL_CACHE.set(cacheKey, tex);
+  }
+  return (
+    <meshStandardMaterial color="#ffffff" map={tex} roughness={0.85} metalness={0} />
+  );
 }
 
 // ─── Illustrated facade (sketched columns + pediment, not a flat wall) ──
@@ -1113,14 +1283,19 @@ function getFacadeTexture() {
 }
 
 // ─── A real entrance door — two panels that swing open as you approach,
-// instead of an open frame with nothing filling it.
+// hinged at the outer jambs so they cover the FULL doorway opening and
+// meet in the middle when closed. Sized to ENTRANCE_HALF — the same
+// opening the reception wall actually cuts a hole for — rather than an
+// arbitrary wider frame that didn't correspond to anything real.
 function EntranceDoor() {
-  const approach = FOOTPRINTS.approach;
-  const doorZ = approach.minZ + 1.2;
+  const doorZ = FOOTPRINTS.approach.minZ + 0.06;
   const left = useRef<THREE.Group>(null);
   const right = useRef<THREE.Group>(null);
   const swing = useRef(0);
   const tex = useMemo(() => getDoorPanelTexture(), []);
+
+  const LEAF_GAP = 0.04; // thin reveal where the two leaves meet, closed
+  const leafWidth = ENTRANCE_HALF - LEAF_GAP / 2;
 
   useFrame(({ camera }, delta) => {
     const dist = Math.abs(camera.position.z - doorZ);
@@ -1133,40 +1308,41 @@ function EntranceDoor() {
 
   return (
     <group>
-      {/* Left leaf — hinges on outer (-x) edge */}
-      <group ref={left} position={[-0.02, 0, doorZ]}>
-        <mesh position={[-0.375, 1.2, 0]}>
-          <boxGeometry args={[0.75, 2.35, 0.06]} />
+      {/* Left leaf — hinged at the outer jamb (x=-ENTRANCE_HALF), spans
+          inward to meet the right leaf at center. */}
+      <group ref={left} position={[-ENTRANCE_HALF, 0, doorZ]}>
+        <mesh position={[leafWidth / 2, 1.2, 0]}>
+          <boxGeometry args={[leafWidth, 2.35, 0.06]} />
           <meshStandardMaterial map={tex} color="#ffffff" roughness={0.88} />
         </mesh>
-        {/* Handle — inner edge */}
-        <mesh position={[-0.38 + 0.12, 1.0, 0.04]} rotation-z={Math.PI / 2}>
-          <cylinderGeometry args={[0.015, 0.015, 0.12, 8]} />
+        {/* Handle — near the inner edge, where the leaves meet */}
+        <mesh position={[leafWidth - 0.1, 1.0, 0.04]} rotation-z={Math.PI / 2}>
+          <cylinderGeometry args={[0.013, 0.013, 0.1, 8]} />
           <meshStandardMaterial color={PALETTE.gold} metalness={0.3} roughness={0.6} />
         </mesh>
-        <mesh position={[-0.38 + 0.12, 1.0, 0.04]}>
-          <sphereGeometry args={[0.022, 8, 8]} />
+        <mesh position={[leafWidth - 0.1, 1.0, 0.04]}>
+          <sphereGeometry args={[0.02, 8, 8]} />
           <meshStandardMaterial color={PALETTE.gold} metalness={0.3} roughness={0.6} />
         </mesh>
       </group>
-      {/* Right leaf — hinges on outer (+x) edge */}
-      <group ref={right} position={[0.02, 0, doorZ]}>
-        <mesh position={[0.375, 1.2, 0]}>
-          <boxGeometry args={[0.75, 2.35, 0.06]} />
+      {/* Right leaf — mirrored, hinged at x=+ENTRANCE_HALF */}
+      <group ref={right} position={[ENTRANCE_HALF, 0, doorZ]}>
+        <mesh position={[-leafWidth / 2, 1.2, 0]}>
+          <boxGeometry args={[leafWidth, 2.35, 0.06]} />
           <meshStandardMaterial map={tex} color="#ffffff" roughness={0.88} />
         </mesh>
-        <mesh position={[0.38 - 0.12, 1.0, 0.04]} rotation-z={Math.PI / 2}>
-          <cylinderGeometry args={[0.015, 0.015, 0.12, 8]} />
+        <mesh position={[-(leafWidth - 0.1), 1.0, 0.04]} rotation-z={Math.PI / 2}>
+          <cylinderGeometry args={[0.013, 0.013, 0.1, 8]} />
           <meshStandardMaterial color={PALETTE.gold} metalness={0.3} roughness={0.6} />
         </mesh>
-        <mesh position={[0.38 - 0.12, 1.0, 0.04]}>
-          <sphereGeometry args={[0.022, 8, 8]} />
+        <mesh position={[-(leafWidth - 0.1), 1.0, 0.04]}>
+          <sphereGeometry args={[0.02, 8, 8]} />
           <meshStandardMaterial color={PALETTE.gold} metalness={0.3} roughness={0.6} />
         </mesh>
       </group>
-      {/* Threshold strip */}
+      {/* Threshold strip — spans the full opening */}
       <mesh position={[0, 0.015, doorZ]}>
-        <boxGeometry args={[1.8, 0.03, 0.12]} />
+        <boxGeometry args={[ENTRANCE_HALF * 2 + 0.06, 0.03, 0.12]} />
         <meshStandardMaterial color={PALETTE.frame} roughness={0.8} />
       </mesh>
     </group>
@@ -1227,6 +1403,106 @@ function CuratorFigure({ position }: { position: [number, number, number] }) {
       >
         Curator
       </Text>
+    </group>
+  );
+}
+
+// ─── Furnishings — benches, planted greenery, lamp posts. Small props that
+// make a room read as inhabited instead of an empty geometric shell.
+function Bench({ position, ry = 0 }: { position: [number, number, number]; ry?: number }) {
+  return (
+    <group position={position} rotation-y={ry}>
+      <mesh position={[0, 0.42, 0]}>
+        <boxGeometry args={[1.4, 0.06, 0.42]} />
+        {inkMaterial("#5a4632", 0.7)}
+      </mesh>
+      <mesh position={[0, 0.62, -0.17]}>
+        <boxGeometry args={[1.4, 0.42, 0.05]} />
+        {inkMaterial("#5a4632", 0.7)}
+      </mesh>
+      {[-0.6, 0.6].map((x) => (
+        <group key={x}>
+          <mesh position={[x, 0.21, 0.12]}>
+            <boxGeometry args={[0.05, 0.42, 0.05]} />
+            {inkMaterial(PALETTE.frame, 0.75)}
+          </mesh>
+          <mesh position={[x, 0.21, -0.12]}>
+            <boxGeometry args={[0.05, 0.42, 0.05]} />
+            {inkMaterial(PALETTE.frame, 0.75)}
+          </mesh>
+        </group>
+      ))}
+    </group>
+  );
+}
+
+function PottedPlant({
+  position,
+  scale = 1,
+}: {
+  position: [number, number, number];
+  scale?: number;
+}) {
+  return (
+    <group position={position} scale={scale}>
+      <mesh position={[0, 0.18, 0]}>
+        <cylinderGeometry args={[0.22, 0.16, 0.36, 12]} />
+        {inkMaterial("#8b6a4a", 0.8)}
+      </mesh>
+      <mesh position={[0, 0.4, 0]}>
+        <sphereGeometry args={[0.3, 10, 8]} />
+        <meshStandardMaterial color="#5c6b3f" roughness={0.88} metalness={0} />
+      </mesh>
+      <mesh position={[0.13, 0.66, 0.04]} rotation-z={0.32}>
+        <coneGeometry args={[0.1, 0.5, 6]} />
+        <meshStandardMaterial color="#6d7d47" roughness={0.88} metalness={0} />
+      </mesh>
+      <mesh position={[-0.14, 0.6, -0.07]} rotation-z={-0.26}>
+        <coneGeometry args={[0.09, 0.44, 6]} />
+        <meshStandardMaterial color="#748852" roughness={0.88} metalness={0} />
+      </mesh>
+    </group>
+  );
+}
+
+function Planter({ position, ry = 0 }: { position: [number, number, number]; ry?: number }) {
+  return (
+    <group position={position} rotation-y={ry}>
+      <mesh position={[0, 0.28, 0]}>
+        <boxGeometry args={[0.6, 0.56, 0.6]} />
+        {inkMaterial("#4a4438", 0.8)}
+      </mesh>
+      <mesh position={[0, 0.57, 0]}>
+        <boxGeometry args={[0.66, 0.04, 0.66]} />
+        {inkMaterial(PALETTE.frame, 0.75)}
+      </mesh>
+      <PottedPlant position={[0, 0.58, 0]} scale={1.3} />
+    </group>
+  );
+}
+
+function LampPost({ position }: { position: [number, number, number] }) {
+  return (
+    <group position={position}>
+      <mesh position={[0, 0.03, 0]}>
+        <cylinderGeometry args={[0.16, 0.18, 0.06, 10]} />
+        {inkMaterial(PALETTE.frame, 0.75)}
+      </mesh>
+      <mesh position={[0, 1.0, 0]}>
+        <cylinderGeometry args={[0.04, 0.05, 2.0, 8]} />
+        {inkMaterial(PALETTE.frame, 0.7)}
+      </mesh>
+      <mesh position={[0, 2.08, 0]}>
+        <boxGeometry args={[0.22, 0.24, 0.22]} />
+        <meshStandardMaterial
+          color="#f4ecd9"
+          emissive="#f0cf8b"
+          emissiveIntensity={0.6}
+          roughness={0.6}
+          metalness={0}
+        />
+      </mesh>
+      <pointLight position={[0, 2.08, 0]} intensity={1.4} distance={5} decay={2} color="#f0cf8b" />
     </group>
   );
 }
@@ -1338,7 +1614,19 @@ function WalkableWorldScene({
       />
       <RoomBox
         footprint={FOOTPRINTS.reception}
-        gaps={{ north: { minX: -0.8, maxX: 0.8, minZ: 12.95, maxZ: 13.05 } }}
+        gaps={{
+          north: { minX: -0.8, maxX: 0.8, minZ: 12.95, maxZ: 13.05 },
+          // The real front-door opening — this was missing entirely, so
+          // reception's south wall rendered fully solid even though the
+          // collision model already had a gap here. That mismatch is why
+          // opening the entrance door revealed nothing: a solid wall sat
+          // right behind it no matter what the door was doing.
+          south: { minX: -ENTRANCE_HALF, maxX: ENTRANCE_HALF, minZ: 19.95, maxZ: 20.05 },
+        }}
+        // The exterior approach builds its own grand door frame (taller
+        // posts, wide lintel, PLINTH MUSEUM signage) — skip RoomBox's
+        // standard doorway frame here so the two don't double up.
+        omitDoorwayFrame={["south"]}
         palette={{ wall: PALETTE.receptionWall, floor: PALETTE.receptionFloor, ceiling: PALETTE.receptionCeiling }}
       />
 
@@ -1394,6 +1682,15 @@ function WalkableWorldScene({
       )}
 
       <CuratorFigure position={[1.8, 0, 18.4]} />
+
+      {/* Reception furnishing */}
+      <Bench position={[-3.6, 0, 15.6]} ry={Math.PI / 2} />
+      <PottedPlant position={[4.3, 0, 14.2]} scale={1.4} />
+      <PottedPlant position={[-4.3, 0, 19.2]} scale={1.4} />
+
+      {/* Exhibit room furnishing */}
+      <PottedPlant position={[-4.3, 0, -19.3]} scale={1.2} />
+      <PottedPlant position={[4.3, 0, -19.3]} scale={1.2} />
 
       <WalkablePlayer
         world={world}

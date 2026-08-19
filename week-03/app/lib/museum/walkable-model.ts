@@ -264,11 +264,12 @@ export function buildInteractives(
     range: 2.8,
     prompt: "Talk to curator",
     inspect: {
+      // No href here on purpose: the curator opens the real chat panel
+      // in-scene (see exhibit-room-3d.tsx's source === "curator" branch)
+      // instead of navigating away to /assistant.
       title: "The Curator",
-      body: "I guide visitors through the museum. Each exhibit tells the story behind what was built — the architecture, the decisions, and the craft. Click any exhibit frame to preview, or step into the exhibit room for the full experience.",
+      body: "I guide visitors through the museum. Each exhibit tells the story behind what was built — the architecture, the decisions, and the craft.",
       source: "curator",
-      href: "/assistant",
-      hrefLabel: "Open Curator Studio",
     },
   });
 

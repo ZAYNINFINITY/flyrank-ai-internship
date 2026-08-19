@@ -3,19 +3,27 @@
 **Intern:** Zain Ul Abideen  
 **Track:** Frontend AI Engineering  
 **Feature:** FE-AA2 — Walkable 3D exhibit corridor  
-**Week status:** Complete for agreed handoff scope  
+**Week status:** Complete — including museum platform pivot and §D visual polish  
 
 ## What changed
 
-- **Walkable 3D museum** on WebGL2-capable devices: scroll-rail glide through approach → reception → corridor → exhibit room
-- **Home is the museum** on 3D devices (`app/page.tsx`); flat “Enter the Museum” fallback otherwise
-- **Latest museum rescue pass:** root website chrome removed, home starts in the 3D museum, reception now reads as an exhibit preview hall, and exhibit previews route into project rooms
-- **Visual polish:** the earlier ITOM-inspired paper pass has been superseded in the active working tree by a darker concrete/stone/wood museum moodboard with warm strip lighting, backlit panels, category signage, and framed exhibit portraits
-- **Arrival beat:** exterior path + facade signage + brief “Approaching” intro overlay
-- **Curator placeholder:** simple figure in reception; inspect links to `/assistant`
-- **`?via=` adapter:** `lib/museum/via-entry.ts` + spawn mapping in `walkable-model.ts`
-- **Tests:** +13 unit tests (via, walkable-model, museum logic); E2E updated for 3D home
-- **Cleanup:** removed `room-scene-3d.tsx`, `window.__plinth` debug hook
+### Phase 1 — Data Architecture
+- **Multi-developer museum data:** New types (`Developer`, `Collection`, `Exhibition`) and repository interfaces with mock implementations
+- **4 seed developers** (Torvalds, Karpathy, Gaonkar, Zain), 12 exhibits, 4 collections, 4 exhibitions
+- **Repository barrel** (`lib/repository/index.ts`) — single entry point for all data access
+- **74 tests passing** (10 test files) including acceptance test validating data integrity
+
+### Phase 2 — Visual System + Museum Identity
+- **Design token system** in `globals.css`: `--color-text`, `--color-background`, `--color-accent`, surface/border/muted tokens, museum space atmospheres, motion tokens
+- **3D palette rebuilt:** warm beige → architectural neutrals (concrete gray `#9d978c`, clean white `#f7f2e8`, warm brown accent `#8b6a4a`)
+- **Visual noise removed:** DoodleStar, DoodleSquiggle, DoodleCircle, FloatNote, CorridorDoodles, ReceptionFurnishing, decorative tree billboards, getTreeTexture, getFloatNoteTexture
+- **Zain-specific UI cleaned:** nav "Sign in"/"GitHub" links removed, layout metadata → "Open digital museum for developers", footer GitHub link removed, about page rewritten for museum language
+- **CuratorFigure:** removed hardcoded "Zain Ul Abideen" name label
+
+### Phase 3A — §D Visual Polish (Week 7)
+- **§D1 — Doors:** BoxGeometry with visible thickness (0.06 depth), gold handle rod + knob, hinge pivot, swing angles 1.9→1.57 (π/2), swing lerp 6→4 (heavier feel), threshold strip on entrance double-leaf
+- **§D2 — Ambience:** Global lights reduced (ambient 1.7→0.55, hemisphere 1.2→0.75, directional 1.15→1.0), third point light removed, LinearLight 2.2→1.6, MuseumLighting reduced from 6→3 LinearLights, vignette lightened (transparent 55%→65%), SVG film grain overlay added, fog range 22-70→18-55
+- **§D3 — Curator:** Replaced framed portrait with billboard sprite (`curator.png`), camera-facing quaternion, alphaTest, gentle bob animation, ground shadow disc
 
 ## What was deliberately not changed
 
@@ -23,13 +31,15 @@
 - Placement engine and entity registry architecture
 - AI curator chat implementation (`/assistant`, `/api/chat`)
 - Live GitHub auth/API integration; current profiles are GitHub-shaped seed data
-- Full building exterior modeling and animated curator (week 9/10)
+- 3D movement system, collision, or interaction code
+- Data types, repositories, or seed data from Phase 1
 
-## Key architectural decision
+## Key architectural decisions
 
-Kept `World Graph → Queries/Placement → Renderer` intact. The 3D scene reads the same `SurfaceLayout[]` as the flat renderer. Capability detection (`lib/renderer/capability.ts`) chooses 3D vs 2D; users can always toggle “Text walls” inside the 3D overlay.
-
-Orbit diorama v1 (`room-scene-3d.tsx`) was **rejected and deleted**. Week 7 ships the **scroll-rail walkable corridor** instead.
+1. **Museum-first, not portfolio-first:** Plinth is now an open digital museum platform where any developer can exhibit their work. Zain is one exhibitor among many.
+2. **ITOMDEV as method, not template:** Used spatial storytelling and museum logic from ITOMDEV, but Plinth has its own identity (architectural, editorial, contemporary museum).
+3. **3D is secondary:** Hybrid approach — 3D where it adds spatial value, normal UI for details/metadata/publishing/auth.
+4. **`World Graph → Queries/Placement → Renderer`:** The 3D scene reads the same `SurfaceLayout[]` as the flat renderer. Capability detection chooses 3D vs 2D.
 
 ## Accessibility
 
@@ -39,9 +49,9 @@ Orbit diorama v1 (`room-scene-3d.tsx`) was **rejected and deleted**. Week 7 ship
 
 ## Performance
 
-- 3D stack remains one lazy chunk (~1 MB raw, measured previously in `fe-aa2-perf-note.md`)
-- Procedural geometry only; paper texture generated once
-- Build and 54 unit tests green
+- 3D stack remains one lazy chunk (~1 MB raw)
+- Procedural geometry only; textures generated once
+- 74 unit tests green
 
 ## Mobile
 
@@ -51,21 +61,43 @@ Orbit diorama v1 (`room-scene-3d.tsx`) was **rejected and deleted**. Week 7 ship
 ## Testing
 
 ```text
-npm run typecheck  — pass
-npm run lint       — pass (2 pre-existing warnings)
-npm test           — 54/54 pass
-npm run build      — pass
-e2e museum-flow    — updated for 3D-or-flat home entry
+npx tsc --noEmit   — 0 errors
+npx eslint .       — 0 errors (2 pre-existing warnings)
+npx vitest run     — 74/74 pass
+npx next build     — clean (after .next cache clear)
 ```
+
+## Files changed in this session
+
+| File | Changes |
+|------|---------|
+| `app/globals.css` | Design tokens, museum palette |
+| `app/about/page.tsx` | Rewritten for museum language |
+| `app/layout.tsx` | Metadata: "Open digital museum for developers" |
+| `app/page.tsx` | Museum-first home |
+| `components/primitives/nav.tsx` | Removed Zain-specific links |
+| `components/three/walkable-world.tsx` | §D1 doors, §D2 lighting, §D3 curator |
+| `components/three/exhibit-room-3d.tsx` | §D2 vignette + grain |
+| `lib/museum/walkable-model.ts` | §D1 swing angles |
+| `lib/types/` | New: Developer, Collection, Exhibition |
+| `lib/repository/` | New: all repositories + acceptance test |
+| `lib/seed/` | New: 4 devs, 12 exhibits, 4 collections, 4 exhibitions |
+| `public/images/curator.png` | New curator asset |
+
+## Screenshots
+
+- `C:\Users\user\phase3a-entrance.png`
+- `C:\Users\user\phase3a-homepage.png`
+- `C:\Users\user\phase3a-about.png`
 
 ## Known limitations
 
-- 2D museum pages not fully redesigned (fallback path)
-- Portfolio PNG assets still large
-- Lighthouse not re-run this session
-- Curator is a placeholder mesh, not a guided character
-- Current developer profile data is mocked until GitHub auth/repo fetching is wired
+- Curator billboard uses placeholder asset (not final character design)
+- 3D is still WebGL-only; no mobile joystick
+- Developer profiles in corridor not yet wired to data layer
+- No image asset compression pass yet
+- Lighthouse not re-run
 
 ## Next logical step
 
-Next: do a visual QA pass of exhibit preview → curator narration → Open exhibit → project room. Week 9/10 polish remains full exterior approach path, rigged curator, door reveal shader, on-screen mobile joystick, and image asset compression.
+Hand off 5 remaining visual polish tasks to Emergent (or next session): facade texture cleanup, door panel texture/lighting, corridor developer profile wiring, material roughness improvements, ceiling fixture visibility, grid floor opacity. All file-specific fixes with exact line numbers documented in the Emergent prompt.

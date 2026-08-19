@@ -2,102 +2,124 @@
 
 **Intern:** Zain Ul Abideen  
 **Track:** Frontend AI Engineering  
-**Feature:** FE-AA2 — Walkable 3D exhibit corridor  
-**Week status:** Complete — including museum platform pivot and §D visual polish  
+**Week status:** Complete — 4 tasks submitted  
 
-## What changed
+## Task 1: FE-AA2 — 3D Experience on the Web
 
-### Phase 1 — Data Architecture
-- **Multi-developer museum data:** New types (`Developer`, `Collection`, `Exhibition`) and repository interfaces with mock implementations
-- **4 seed developers** (Torvalds, Karpathy, Gaonkar, Zain), 12 exhibits, 4 collections, 4 exhibitions
-- **Repository barrel** (`lib/repository/index.ts`) — single entry point for all data access
-- **74 tests passing** (10 test files) including acceptance test validating data integrity
+### What was built
+A **walkable 3D museum corridor** using React Three Fiber. Visitors glide through an exterior approach → reception → sawtooth corridor → exhibit room on a scroll-rail camera. The museum is the homepage on WebGL2-capable devices; a 2D flat path exists as fallback.
 
-### Phase 2 — Visual System + Museum Identity
-- **Design token system** in `globals.css`: `--color-text`, `--color-background`, `--color-accent`, surface/border/muted tokens, museum space atmospheres, motion tokens
-- **3D palette rebuilt:** warm beige → architectural neutrals (concrete gray `#9d978c`, clean white `#f7f2e8`, warm brown accent `#8b6a4a`)
-- **Visual noise removed:** DoodleStar, DoodleSquiggle, DoodleCircle, FloatNote, CorridorDoodles, ReceptionFurnishing, decorative tree billboards, getTreeTexture, getFloatNoteTexture
-- **Zain-specific UI cleaned:** nav "Sign in"/"GitHub" links removed, layout metadata → "Open digital museum for developers", footer GitHub link removed, about page rewritten for museum language
-- **CuratorFigure:** removed hardcoded "Zain Ul Abideen" name label
+### Key features
+- **Scroll-rail movement**: scroll or touch-drag advances through the museum
+- **Gyroscope look** (mobile): tilt phone to look around, calibrated to resting angle
+- **Click-to-inspect**: tap any interactive object directly (raycasted hit)
+- **Auto-opening doors**: entrance double-leaf and interior doors swing open on approach
+- **Sawtooth corridor**: angled bay walls (itom-inspired) with exhibit frames, camera auto-glance
+- **Curator billboard**: camera-facing sprite at entrance with gentle bob
+- **Text walls toggle**: switches 3D → flat renderer for accessibility
+- **2D fallback**: automatic for reduced-motion / no-WebGL / low-memory devices
 
-### Phase 3A — §D Visual Polish (Week 7)
-- **§D1 — Doors:** BoxGeometry with visible thickness (0.06 depth), gold handle rod + knob, hinge pivot, swing angles 1.9→1.57 (π/2), swing lerp 6→4 (heavier feel), threshold strip on entrance double-leaf
-- **§D2 — Ambience:** Global lights reduced (ambient 1.7→0.55, hemisphere 1.2→0.75, directional 1.15→1.0), third point light removed, LinearLight 2.2→1.6, MuseumLighting reduced from 6→3 LinearLights, vignette lightened (transparent 55%→65%), SVG film grain overlay added, fog range 22-70→18-55
-- **§D3 — Curator:** Replaced framed portrait with billboard sprite (`curator.png`), camera-facing quaternion, alphaTest, gentle bob animation, ground shadow disc
+### Performance
+- 3D chunk: ~1 MB raw, lazy-loaded only on capable devices
+- Procedural geometry only (no GLTF models)
+- 74 unit tests passing
 
-## What was deliberately not changed
+### Evidence
+- `week-07/fe-aa2-3d-room.md` — full feature doc
+- `week-07/fe-aa2-perf-note.md` — performance analysis
+- `week-07/screenshots/` — 64 screenshots (local + deployed)
+- Live: Vercel deployment at `plinth` project
 
-- World graph structure (`world.ts` rooms/doors/anchors)
-- Placement engine and entity registry architecture
-- AI curator chat implementation (`/assistant`, `/api/chat`)
-- Live GitHub auth/API integration; current profiles are GitHub-shaped seed data
-- 3D movement system, collision, or interaction code
-- Data types, repositories, or seed data from Phase 1
+---
 
-## Key architectural decisions
+## Task 2: Break Your Own Site
 
-1. **Museum-first, not portfolio-first:** Plinth is now an open digital museum platform where any developer can exhibit their work. Zain is one exhibitor among many.
-2. **ITOMDEV as method, not template:** Used spatial storytelling and museum logic from ITOMDEV, but Plinth has its own identity (architectural, editorial, contemporary museum).
-3. **3D is secondary:** Hybrid approach — 3D where it adds spatial value, normal UI for details/metadata/publishing/auth.
-4. **`World Graph → Queries/Placement → Renderer`:** The 3D scene reads the same `SurfaceLayout[]` as the flat renderer. Capability detection chooses 3D vs 2D.
+### What was tested
+- Empty/garbage form submission
+- Rapid double-submit
+- Cross-browser (Firefox, Safari, Chrome)
+- Mobile viewports (375px, 390px, 412px)
+- Reduced-motion, no-WebGL, low-memory fallbacks
+- All navigation links and routes
+- 3D-specific breakage (scroll limits, click areas, keyboard)
 
-## Accessibility
+### Findings
+**Fixed:**
+- Door leaves too narrow (hinged at wrong position)
+- Opening door revealed solid wall (missing gap in visual)
+- Facade was solid sheet (no hole)
+- Touch drag too twitchy
+- Camera smoothing laggy
 
-- Reduced motion / no WebGL2 → 2D `SurfaceRenderer` automatically
-- 3D: Text walls toggle, keyboard `E` + prompt button, Escape closes inspect
-- Inspect dialog: `aria-modal="true"`, focus on open
+**Known limitations:**
+- No on-screen joystick for mobile
+- 3D not tested on physical devices
+- Portfolio PNGs still large
+- Lighthouse not in CI
 
-## Performance
+### Evidence
+- `week-07/break-your-own-site.md`
 
-- 3D stack remains one lazy chunk (~1 MB raw)
-- Procedural geometry only; textures generated once
-- 74 unit tests green
+---
 
-## Mobile
+## Task 3: Plant Your Flag — Domain + Badge
 
-- Breadcrumb wrap, `100dvh`, touch-friendly overlay controls
-- Touch vertical drag advances the rail (same as scroll)
+### Status
+- Deployed on Vercel with automatic HTTPS
+- Vercel free subdomain (clean fallback per FlyRank Q&A)
+- Page title, meta description, social preview, favicon all configured
+- Custom domain: not yet (budget constraint)
+- Analytics: not yet (deferred)
+- FlyRank badge: pending September certificate issuance
 
-## Testing
+### Evidence
+- `week-07/plant-your-flag.md`
 
-```text
-npx tsc --noEmit   — 0 errors
-npx eslint .       — 0 errors (2 pre-existing warnings)
-npx vitest run     — 74/74 pass
-npx next build     — clean (after .next cache clear)
-```
+---
 
-## Files changed in this session
+## Task 4: FE-10 — Accessibility & Performance Audit
 
-| File | Changes |
-|------|---------|
-| `app/globals.css` | Design tokens, museum palette |
-| `app/about/page.tsx` | Rewritten for museum language |
-| `app/layout.tsx` | Metadata: "Open digital museum for developers" |
-| `app/page.tsx` | Museum-first home |
-| `components/primitives/nav.tsx` | Removed Zain-specific links |
-| `components/three/walkable-world.tsx` | §D1 doors, §D2 lighting, §D3 curator |
-| `components/three/exhibit-room-3d.tsx` | §D2 vignette + grain |
-| `lib/museum/walkable-model.ts` | §D1 swing angles |
-| `lib/types/` | New: Developer, Collection, Exhibition |
-| `lib/repository/` | New: all repositories + acceptance test |
-| `lib/seed/` | New: 4 devs, 12 exhibits, 4 collections, 4 exhibitions |
-| `public/images/curator.png` | New curator asset |
+### Lighthouse scores (August 19, 2026, desktop)
 
-## Screenshots
+| Page | Performance | Accessibility | SEO |
+|------|-------------|---------------|-----|
+| `/` (3D home) | 60 | 95 | 91 |
+| `/entrance` (3D museum) | 97 | 95 | 100 |
+| `/about` | 97 | 95 | 100 |
+| `/explore` | 99 | 95 | 100 |
 
-- `C:\Users\user\phase3a-entrance.png`
-- `C:\Users\user\phase3a-homepage.png`
-- `C:\Users\user\phase3a-about.png`
+### Analysis
+- **Home Performance = 60**: Expected — 3D museum loads three.js bundle client-side. 2D routes score 97-99. 3D is progressive enhancement.
+- **Accessibility = 95**: 5-point deduction from Three.js WebGL canvas (no ARIA). "Text walls" toggle provides full content access.
+- **SEO = 91 on Home**: Client-rendered 3D impacts crawlability. All other routes are server-rendered (100).
 
-## Known limitations
+### WAVE audit
+- 0 errors on `/about`, `/explore`, `/collection`
+- 2 alerts (Three.js canvas — inherent limitation)
 
-- Curator billboard uses placeholder asset (not final character design)
-- 3D is still WebGL-only; no mobile joystick
-- Developer profiles in corridor not yet wired to data layer
-- No image asset compression pass yet
-- Lighthouse not re-run
+### Keyboard-only pass
+- All navigation flows completable by keyboard
+- `E` key + prompt button for 3D inspection
+- Escape closes inspect dialog
+- Focus management on mobile nav overlay
 
-## Next logical step
+### Evidence
+- `week-07/AUDIT.md` — full before/after audit
+- `week-07/phone-audit.md` — mobile viewport testing
 
-Hand off 5 remaining visual polish tasks to Emergent (or next session): facade texture cleanup, door panel texture/lighting, corridor developer profile wiring, material roughness improvements, ceiling fixture visibility, grid floor opacity. All file-specific fixes with exact line numbers documented in the Emergent prompt.
+---
+
+## All week-07 files
+
+| File | Task |
+|------|------|
+| `week-07/fe-aa2-3d-room.md` | Task 1 |
+| `week-07/fe-aa2-perf-note.md` | Task 1 |
+| `week-07/break-your-own-site.md` | Task 2 |
+| `week-07/plant-your-flag.md` | Task 3 |
+| `week-07/AUDIT.md` | Task 4 |
+| `week-07/phone-audit.md` | Task 4 |
+| `week-07/submission-checklist.md` | All |
+| `week-07/week-7-submission-summary.md` | All |
+| `week-07/screenshots/` | Task 1 (64 images) |
+| `week-07/handoff.md` | Reference |

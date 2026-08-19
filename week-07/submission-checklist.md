@@ -1,73 +1,92 @@
-# Week 7 Submission Checklist
+# Week 7 — Submission Checklist (Portal Copy-Paste)
 
-## Task 1: FE-AA2 — 3D Experience on the Web
+Copy this per assignment. No code files — just evidence, links, and proof.
 
-- [x] Renders a real 3D scene in the browser (React Three Fiber)
-- [x] At least one meaningful interaction beyond orbiting (scroll-rail movement, click-to-inspect, gyroscope look, door auto-open)
-- [x] Loads responsibly: lazy-loaded via `next/dynamic` + `ssr:false`, procedural geometry only, no GLTF
-- [x] Fallback for reduced-motion / low-power contexts (2D `SurfaceRenderer`)
-- [x] Usable on mobile (touch drag, gyroscope tilt, 44px touch targets)
-- [x] Performance note documented (`fe-aa2-perf-note.md`)
-- [x] Live URL deployed (Vercel)
-- [x] README with what was built + perf note
-- [x] Feature doc (`fe-aa2-3d-room.md`)
-- [x] Screenshots captured (41 local + 23 deployed-site)
+**Repo:** https://github.com/ZAYNINFINITY/flyrank-ai-internship
+**Branch:** `main`
+**Master packet:** https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-07/week-7-submission-summary.md
 
-## Task 2: Break Your Own Site
+---
 
-- [x] Tested empty form submission (login form validates)
-- [x] Tested garbage input (email validation catches invalid)
-- [x] Tested rapid double-submit (disabled state prevents)
-- [x] Tested across browsers (Firefox, Safari, Chrome)
-- [x] Tested mobile viewports (375px, 390px, 412px)
-- [x] Tested reduced-motion → 2D fallback
-- [x] Tested no-WebGL → 2D fallback
-- [x] Tested all navigation links
-- [x] Tested 3D-specific breakage (scroll limits, click non-interactive, E key, Escape, doors)
-- [x] Findings triaged: fix-now items fixed, known limitations documented
-- [x] SEO/meta added (title, description, social preview, favicon)
-- [x] Documentation (`break-your-own-site.md`)
+## Assignment 1 — FE-AA2 (3D Experience on the Web)
 
-## Task 3: Plant Your Flag — Domain + Badge
+**Attach (MD):**
+- `week-7-submission-summary.md`
+- `fe-aa2-3d-room.md`
+- `fe-aa2-perf-note.md`
 
-- [x] Deployed on Vercel with HTTPS
-- [x] Vercel free subdomain (clean fallback per FlyRank Q&A)
-- [ ] Custom domain (budget constraint — using Vercel subdomain)
-- [ ] Analytics installed (deferred)
-- [x] Page title correct
-- [x] Meta description correct
-- [x] Social share preview correct
-- [x] Favicon generated
-- [ ] FlyRank badge (pending September certificate issuance)
-- [x] Documentation (`plant-your-flag.md`)
+**Screenshots (IMG):**
+- `fe-aa2-homepage.png`
+- `fe-aa2-entrance.png`
+- `fe-aa2-homepage-mobile.png`
+- `fe-aa2-entrance-mobile.png`
 
-## Task 4: FE-10 — Accessibility & Performance Audit
+**LINK:** https://plinth.vercel.app
 
-- [x] Lighthouse (desktop) run on 4 pages: `/`, `/entrance`, `/about`, `/explore`
-- [x] WAVE audit run (0 errors)
-- [x] Keyboard-only pass completed
-- [x] AI-specific accessibility checked (aria-live, stop button, focus management)
-- [x] AUDIT.md written with before/after scores
-- [x] Findings: fix-nows fixed, known limitations named
+**Repo links:**
+- https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-07/week-7-submission-summary.md
+- https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-07/fe-aa2-3d-room.md
+- https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-07/fe-aa2-perf-note.md
+- https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-07/screenshots/fe-aa2-homepage.png
+- https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-07/screenshots/fe-aa2-entrance.png
+- https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-07/screenshots/fe-aa2-homepage-mobile.png
+- https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-07/screenshots/fe-aa2-entrance-mobile.png
 
-### Lighthouse scores (August 19, 2026)
+---
 
-| Page | Performance | Accessibility | SEO |
-|------|-------------|---------------|-----|
-| `/` (3D home) | 60 | 95 | 91 |
-| `/entrance` (3D museum) | 97 | 95 | 100 |
-| `/about` | 97 | 95 | 100 |
-| `/explore` | 99 | 95 | 100 |
+## Assignment 2 — Break Your Own Site
 
-## Evidence files
+**Attach (MD):**
+- `break-your-own-site.md`
 
-| File | Task |
-|------|------|
-| `week-07/fe-aa2-3d-room.md` | Task 1 |
-| `week-07/fe-aa2-perf-note.md` | Task 1 |
-| `week-07/screenshots/` (64 images) | Task 1 |
-| `week-07/break-your-own-site.md` | Task 2 |
-| `week-07/plant-your-flag.md` | Task 3 |
-| `week-07/AUDIT.md` | Task 4 |
-| `week-07/phone-audit.md` | Task 4 |
-| `week-07/week-7-submission-summary.md` | All |
+**Screenshots (IMG):**
+- `break-your-own-site-explore.png`
+
+**LINK:** https://plinth.vercel.app/explore
+
+**Repo links:**
+- https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-07/break-your-own-site.md
+- https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-07/screenshots/break-your-own-site-explore.png
+
+---
+
+## Assignment 3 — Plant Your Flag (Domain + Badge)
+
+**Attach (MD):**
+- `plant-your-flag.md`
+
+**Screenshots (IMG):** none (deployment screenshot pending manual capture)
+
+**LINK:** https://plinth.vercel.app
+
+**Repo links:**
+- https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-07/plant-your-flag.md
+
+---
+
+## Assignment 4 — FE-10 (Accessibility and Performance Audit)
+
+**Attach (MD):**
+- `AUDIT.md`
+- `phone-audit.md`
+
+**Screenshots (IMG):**
+- `fe-10-audit-about.png`
+
+**LINK:** https://plinth.vercel.app/about
+
+**Repo links:**
+- https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-07/AUDIT.md
+- https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-07/phone-audit.md
+- https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-07/screenshots/fe-10-audit-about.png
+
+---
+
+## Quick Reference
+
+| # | Assignment | MD to attach | Screenshots | Live |
+|---|---|---|---|---|
+| 1 | FE-AA2 3D Experience | `week-7-submission-summary.md` + `fe-aa2-3d-room.md` + `fe-aa2-perf-note.md` | 4 (`fe-aa2-*`) | plinth.vercel.app |
+| 2 | Break Your Own Site | `break-your-own-site.md` | 1 (`break-your-own-site-explore.png`) | /explore |
+| 3 | Plant Your Flag | `plant-your-flag.md` | — | plinth.vercel.app |
+| 4 | FE-10 Audit | `AUDIT.md` + `phone-audit.md` | 1 (`fe-10-audit-about.png`) | /about |

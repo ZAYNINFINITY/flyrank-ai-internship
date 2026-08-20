@@ -12,33 +12,23 @@ export const seedExhibitions: Exhibition[] = [
     publishedAt: "2026-03-01",
   },
   {
-    id: "maya-motion-systems",
-    developerId: "maya",
-    title: "Motion & Design Systems",
+    id: "salaar-ai-experiments",
+    developerId: "salaar",
+    title: "AI Experiments",
     description:
-      "Exploring how animation and systematic design thinking can elevate developer tools and creative experiences.",
-    exhibitIds: ["prism-ui", "terraform-dashboard", "sonic-portfolio"],
+      "Exploring LLMs, computer vision, and voice interfaces — building chatbots that see, hear, and respond to the real world.",
+    exhibitIds: ["vision-and-voice-doctor"],
     featured: true,
     publishedAt: "2026-02-15",
   },
   {
-    id: "omar-real-time",
-    developerId: "omar",
-    title: "Real-Time Developer Tools",
+    id: "muzammil-chatbot",
+    developerId: "muzammil",
+    title: "Conversational AI",
     description:
-      "Building collaborative and real-time systems that solve actual developer workflow problems — from code editing to content management to live auctions.",
-    exhibitIds: ["code-collab", "pulse-cms", "auction-live"],
+      "Building chatbots that solve real problems — from legal knowledge access to domain-specific assistance.",
+    exhibitIds: ["pak-law-chatbot"],
     featured: false,
     publishedAt: "2026-03-10",
-  },
-  {
-    id: "sara-data-stories",
-    developerId: "sara",
-    title: "Data Stories",
-    description:
-      "Using interactive visualization and machine learning to make complex data accessible, beautiful, and actionable.",
-    exhibitIds: ["climate-viz", "portfolio-grader", "ml-playground"],
-    featured: true,
-    publishedAt: "2026-01-20",
   },
 ];

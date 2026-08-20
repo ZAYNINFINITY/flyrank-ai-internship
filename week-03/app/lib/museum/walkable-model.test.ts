@@ -12,6 +12,7 @@ import {
 import { createPlacementMap, populateExhibitRoom } from "./placement";
 import { getSurfaceLayout } from "./queries";
 import { mockExhibits } from "@/lib/repository/mock-exhibit-repository";
+import { seedDevelopers } from "@/lib/seed/developers";
 
 describe("walkable-model", () => {
   it("buildSolids leaves door gaps in corridor north/south walls", () => {
@@ -48,13 +49,13 @@ describe("walkable-model", () => {
       "exhibit-room",
       populateExhibitRoom(createPlacementMap(), exhibit.id, "exhibit-room")
     );
-    const items = buildInteractives([], layout, mockExhibits, { x: 0, z: -16.5 }, exhibit);
+    const items = buildInteractives([], layout, mockExhibits, seedDevelopers, { x: 0, z: -16.5 }, exhibit);
     const title = items.find((i) => i.id === "exhibit-title-wall");
     expect(title?.inspect.title).toBe(exhibit.title);
   });
 
   it("includes curator interactive that opens the in-scene chat (no href)", () => {
-    const items = buildInteractives([], [], mockExhibits, { x: 0, z: -16.5 });
+    const items = buildInteractives([], [], mockExhibits, seedDevelopers, { x: 0, z: -16.5 });
     const curator = items.find((i) => i.id === "curator-presence");
     expect(curator?.prompt).toBe("Talk to curator");
     expect(curator?.inspect.source).toBe("curator");

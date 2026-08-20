@@ -1,97 +1,161 @@
 # Plinth
 
-A room for every project you've shipped.
+**An open digital museum for developers.**
 
-Plinth is an open-source platform where developers create gallery-style exhibit pages for their projects — not card grids, not thumbnail clusters. Each project gets a dedicated room with space to tell the story behind what was built.
+Plinth is a platform where developers exhibit their work as curated gallery rooms — not card grids, not thumbnail clusters. Each project gets a dedicated space with architectural presence: a scrollable 3D corridor, an exhibit room with text walls and media, and an AI curator that answers questions about what's on display.
 
-> **Status:** Week 3 of a public build-in-progress. This is a skeleton — authentication, real data, and the full exhibit creation flow are not wired up yet. The exhibit pages, responsive layout, and design system are functional.
+**Live:** [plinth.vercel.app](https://plinth.vercel.app)
 
-## What's built so far
+## What it solves
 
-- **Landing / home** — on WebGL2-capable devices the museum is the homepage (scroll-rail 3D corridor); otherwise a flat “Enter the Museum” path
-- **Explore page** — grid of live and upcoming exhibits
-- **Exhibit page** — room-by-room layout; `/exhibit/e/[id]` adds walkable 3D with text-walls fallback
-- **Dashboard / Login** — honest placeholders showing what's coming
-- **Health check** — renders mock data, proving the data-fetching pattern works
-- **About** — what Plinth is and why it exists
-- **404** — in-voice, not a generic error
+Developer portfolios are all the same. Plinth gives projects the presentation they deserve — rooms, not cards. Visitors walk through a museum instead of scrolling a grid.
 
-## Tech stack
+## Who it's for
 
-- Next.js 16 (App Router, Turbopack)
-- React 19
-- Tailwind CSS v4
-- TypeScript
-- Space Grotesk + Inter (via `next/font/google`)
-
-## AI tool contract
-
-Plinth's chat route (`app/api/chat/route.ts`) exposes one server-side tool to the model via the AI SDK's `streamText`:
-
-| Name | Schema (`inputSchema`) | Return shape |
-|------|------------------------|--------------|
-| `exhibitLookup` | `{ id?: string, collection?: string, query?: string }` — all optional, validated with Zod (`lib/ai/tools/exhibit.ts`) | `Exhibit[]` — `{ id, title, tagline, developer, year, collection, media }` |
-
-The tool resolves data through the `ExhibitRepository` interface (`lib/repository/index.ts`), so swapping the mock source for real data is a one-line change. Tool lifecycle states (input-streaming / input-available / output-available / output-error) render as distinct UI in `components/ai/tool-state-views.tsx`.
-
-## Renderer (2D | 3D) — Week 7
-
-The exhibit room renders through a switchable renderer. `lib/renderer/capability.ts`
-decides the mode from WebGL2 support, `prefers-reduced-motion`, memory and
-pointer type; `lib/renderer/use-capable-renderer.ts` upgrades the mode
-after mount (no SSR flash).
-
-**3D (walkable v2):** `components/three/walkable-world.tsx` + `exhibit-room-3d.tsx`
-— scroll-rail glide through approach → reception → corridor → exhibit; inspect
-plaques/frames; auto-opening doors; curator placeholder in reception.
-
-**2D fallback:** `components/renderer/surface-renderer.tsx` — automatic on
-low-capability devices, or via the "Text walls" toggle inside the 3D overlay.
-
-Orbit diorama v1 (`room-scene-3d.tsx`) was removed. See `week-07/fe-aa2-3d-room.md`.
-
-`?via=` door entry is validated in `lib/museum/via-entry.ts`.
+Developers who want their work to feel like something more than a list of links. Visitors who want to explore projects like they explore a gallery.
 
 ## Getting started
 
 ```bash
-# Clone the repo
-git clone https://github.com/ZAYNINFINITY/plinth.git
-cd plinth/week-3/app
-
-# Install dependencies
+git clone https://github.com/ZAYNINFINITY/flyrank-ai-internship.git
+cd flyrank-ai-internship/week-03/app
 npm install
-
-# Run the dev server
 npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000).
 
-## Project structure
+## Environment variables
+
+Copy `.env.example` to `.env.local` and fill in:
+
+| Variable | Required | Notes |
+|----------|:--------:|-------|
+| `OPENROUTER_API_KEY` | Yes | API key for curator chat ([openrouter.ai](https://openrouter.ai)) |
+| `DATABASE_URL` | No | PostgreSQL connection (commented out — using mock repos) |
+| `NEXTAUTH_URL` | No | Auth callback URL (not wired yet) |
+| `NEXTAUTH_SECRET` | No | Auth secret (not wired yet) |
+
+## Architecture
 
 ```
 app/
+  page.tsx                    # Homepage — 3D museum takeover on capable devices
   layout.tsx                  # Root layout, fonts, nav, footer
-  page.tsx                    # / (platform landing)
+  about/page.tsx              # Museum language
   explore/page.tsx            # Grid of exhibits
-  exhibit/[username]/page.tsx # Dynamic exhibit route
-  dashboard/page.tsx          # Placeholder dashboard
-  login/page.tsx              # Placeholder auth form
+  exhibit/[username]/page.tsx # Developer exhibit page
+  assistant/page.tsx          # AI curator chat
+  api/chat/route.ts           # OpenRouter streaming endpoint
   health/page.tsx             # Mock data rendering
-  about/page.tsx              # About Plinth
-  not-found.tsx               # 404 page
+  not-found.tsx               # Custom 404
+
 components/
-  primitives/                 # Reshaped UI components (Frame, Spotlight Button, etc.)
+  ai/                         # ChatPanel, tool state views, exhibit tool results
+  primitives/                 # Frame, MotionButton, nav overlay, footer
+  renderer/                   # SurfaceRenderer (2D fallback), exhibit-walls seam
+  three/                      # WalkableWorld, ExhibitRoom3D, walkable-player, input
+
 lib/
-  mock-data/                  # Exhibit content (swap for real API later)
-  utils.ts                    # cn() utility
+  ai/                         # Config, prompts, tools (exhibitLookup), rate limiter
+  museum/                     # World model, placement, collision, queries
+  renderer/                   # Capability detection, useCapableRenderer hook
+  repository/                 # Mock repos (developer, exhibit, collection, exhibition)
+  seed/                       # Seed data (3 developers, 5 exhibits, 4 collections)
+  types/                      # TypeScript types for all entities
+  three/                      # Paper texture, reveal material
 ```
 
-## Contributing
+## AI integration
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for how to get started.
+Plinth's curator chat (`app/api/chat/route.ts`) uses **OpenRouter** (Gemini Flash) with a custom `exhibitLookup` tool:
+
+```typescript
+exhibitLookup: { id?: string, collection?: string, query?: string }
+```
+
+All parameters are optional. The tool resolves data through the `ExhibitRepository` interface — swapping mock for a real database is a one-line change. Tool lifecycle states (streaming → available → error) render as distinct UI in `components/ai/tool-state-views.tsx`.
+
+The model was chosen for cost efficiency. The hard part was the tool schema, not the prompt — a bad schema means the model guesses wrong, a good schema means the model feels smart.
+
+**Rate limiting:** 20 requests per minute per IP. Input capped at 2000 characters per message, 20 messages per conversation.
+
+## 3D + 2D renderer
+
+The museum renders through a capability-gated seam:
+
+- **3D path** (powerful devices): Scroll-rail corridor via Three.js + R3F. Approach → reception → corridor → exhibit. Door triggers, collision, gyroscope mobile controls, click-to-inspect.
+- **2D path** (low-end / accessibility): Flat `SurfaceRenderer` with full ARIA support. "Text walls" toggle inside 3D switches between paths.
+
+`lib/renderer/capability.ts` decides at mount time based on WebGL2 support, `prefers-reduced-motion`, memory, and pointer type. Both paths consume the same data layer.
+
+## Testing
+
+```bash
+# Unit tests
+npx vitest run
+
+# E2E tests
+npx playwright test
+```
+
+74 tests across 10 unit test files + 1 Playwright e2e spec:
+
+| Test file | Coverage |
+|-----------|----------|
+| `lib/repository/acceptance.test.ts` | Data architecture, search, filtering, referential integrity |
+| `lib/museum/walkable-model.test.ts` | Collision, door triggers, spawn resolution |
+| `lib/renderer/capability.test.ts` | Device tier detection |
+| `components/ai/chat-panel.test.tsx` | Chat UI rendering |
+| `components/ai/exhibit-tool-result.test.tsx` | Tool result display |
+| `components/ai/tool-state-views.test.tsx` | Lifecycle state UI |
+| `lib/museum/museum-logic.test.ts` | Museum logic |
+| `lib/museum/via-entry.test.ts` | Door entry validation |
+| `components/primitives/motion-button.test.tsx` | Motion button |
+| `app/login/page.test.tsx` | Login page |
+| `e2e/museum-flow.spec.ts` | Full museum flow (Playwright) |
+
+## Lighthouse scores
+
+| Route | Performance | Accessibility | SEO |
+|-------|:-----------:|:-------------:|:---:|
+| Home (/) | 60 | 95 | 91 |
+| Entrance | 97 | 95 | 100 |
+| About | 97 | 95 | 100 |
+| Explore | 99 | 95 | 100 |
+
+Home Performance = 60 is honest — three.js bundle is heavy. 2D routes score 97-99. Accessibility = 95 because Three.js canvas has no ARIA labels; "Text walls" toggle provides full 2D accessible path.
+
+## Known limitations
+
+- **3D canvas has no ARIA labels** — Three.js WebGL limitation. "Text walls" toggle provides full access.
+- **No physical device testing** — Desktop + devtools mobile simulation only.
+- **Lighthouse not in CI** — Manual run only.
+- **No external error tracking** — Manual monitoring.
+- **Auth not wired** — Dashboard and login are placeholders.
+
+## Future improvements
+
+- Real database (PostgreSQL) replacing mock repositories
+- OAuth authentication with GitHub
+- Public exhibit creation flow (developers submit their own projects)
+- Rigged 3D curator character with walking animation
+- Contextual curator buttons (location-aware guidance)
+- Lighthouse in CI pipeline
+- Physical device testing
+
+## Tech stack
+
+- Next.js 16 (App Router, Turbopack)
+- React 19
+- Three.js / React Three Fiber / drei
+- Tailwind CSS v4
+- TypeScript
+- OpenRouter (Gemini Flash)
+- AI SDK (`@ai-sdk/react`)
+- Vitest + Playwright
+- Vercel
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+MIT

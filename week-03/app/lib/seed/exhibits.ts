@@ -66,200 +66,42 @@ export const seedExhibits: Exhibit[] = [
     featured: false,
   },
 
-  // ── Maya Chen ────────────────────────────────────────────────
+  // ── Salaar Tariq ─────────────────────────────────────────────
   {
-    id: "prism-ui",
-    title: "Prism UI",
-    tagline: "Open-source React component library with motion",
+    id: "vision-and-voice-doctor",
+    title: "Vision & Voice Doctor",
+    tagline: "Image-and-voice symptom checker chatbot",
     description:
-      "A comprehensive React component library built on TypeScript with fluid Framer Motion animations. Features 40+ accessible components, a theme editor, and zero-config dark mode. Published on npm with 2k+ weekly downloads.",
-    developerId: "maya",
-    media: [{ type: "image", src: "", alt: "Prism UI component showcase" }],
-    artifacts: [
-      { id: "prism-theme", label: "Theme editor", description: "Real-time color and spacing customization" },
-      { id: "prism-motion", label: "Motion system", description: "Configurable spring and easing presets" },
-    ],
-    technologies: ["React", "TypeScript", "Framer Motion", "Storybook"],
+      "A chatbot that takes an uploaded image, works out what type of allergy it might indicate, and replies back using voice or text.",
+    developerId: "salaar",
+    media: [{ type: "image", src: "", alt: "Vision & Voice Doctor" }],
+    artifacts: [],
+    technologies: ["Python"],
     links: [
-      { label: "GitHub", url: "https://github.com/mayachen/prism-ui", type: "github" },
-      { label: "npm", url: "https://npmjs.com/package/prism-ui", type: "demo" },
+      { label: "GitHub", url: "https://github.com/SalaarTariq/Vision-And-Voice-Doctor", type: "github" },
     ],
-    curatorNotes: "Prism UI demonstrates how motion design can be systematic rather than decorative. Every animation serves a usability purpose.",
-    collectionIds: ["frontend"],
-    year: "2025",
-    featured: true,
-  },
-  {
-    id: "terraform-dashboard",
-    title: "Terraform Dashboard",
-    tagline: "Visual infrastructure monitoring with D3.js",
-    description:
-      "Real-time infrastructure monitoring dashboard that visualizes cloud resources, dependency graphs, and cost trends. Built with React, D3.js, and WebGL for rendering large-scale infrastructure maps with smooth 60fps interaction.",
-    developerId: "maya",
-    media: [{ type: "image", src: "", alt: "Terraform Dashboard visualization" }],
-    artifacts: [
-      { id: "tf-graph", label: "Dependency graph", description: "Interactive resource relationship map" },
-      { id: "tf-cost", label: "Cost trends", description: "Real-time spending visualization" },
-    ],
-    technologies: ["React", "D3.js", "WebGL", "TypeScript", "GraphQL"],
-    links: [
-      { label: "GitHub", url: "https://github.com/mayachen/terraform-dashboard", type: "github" },
-    ],
-    curatorNotes: "This project bridges infrastructure and frontend — a rare combination. The WebGL rendering layer handles thousands of nodes without frame drops.",
-    collectionIds: ["frontend", "data-viz"],
-    year: "2026",
-    featured: true,
-  },
-  {
-    id: "sonic-portfolio",
-    title: "Sonic Portfolio",
-    tagline: "Audio-reactive 3D portfolio experience",
-    description:
-      "An experimental portfolio site where 3D geometry responds to music. Uses the Web Audio API for real-time frequency analysis, Three.js for rendering, and GSAP for cinematic camera transitions. Every visit produces a unique visual composition.",
-    developerId: "maya",
-    media: [{ type: "video", src: "", alt: "Sonic Portfolio demo" }],
-    artifacts: [
-      { id: "sonic-audio", label: "Audio analyzer", description: "Real-time FFT frequency extraction" },
-      { id: "sonic-geo", label: "Reactive geometry", description: "Mesh deformation driven by bass and treble" },
-    ],
-    technologies: ["Three.js", "GSAP", "Web Audio API", "GLSL"],
-    links: [
-      { label: "Live Demo", url: "https://sonicportfolio.mayachen.dev", type: "demo" },
-    ],
-    curatorNotes: "Sonic Portfolio pushes the boundary of what a personal site can be. It's not a page — it's a performance.",
+    curatorNotes: "",
     collectionIds: ["experiments"],
-    year: "2025",
-    featured: false,
-  },
-
-  // ── Omar Farooq ──────────────────────────────────────────────
-  {
-    id: "code-collab",
-    title: "CodeCollab",
-    tagline: "Real-time collaborative code editor",
-    description:
-      "A browser-based collaborative code editor supporting multiple cursors, syntax highlighting for 50+ languages, and live preview. Uses operational transforms for conflict-free concurrent editing. Built with Monaco Editor and WebSockets.",
-    developerId: "omar",
-    media: [{ type: "image", src: "", alt: "CodeCollab editor interface" }],
-    artifacts: [
-      { id: "cc-ot", label: "OT engine", description: "Operational transform for concurrent edits" },
-      { id: "cc-preview", label: "Live preview", description: "Real-time code execution sandbox" },
-    ],
-    technologies: ["Next.js", "WebSocket", "Monaco Editor", "TypeScript", "Docker"],
-    links: [
-      { label: "GitHub", url: "https://github.com/omarfarooq/code-collab", type: "github" },
-      { label: "Live Demo", url: "https://codecollab.omarfarooq.dev", type: "demo" },
-    ],
-    curatorNotes: "CodeCollab solves the hardest problem in collaborative editing — keeping multiple cursors in sync without conflicts. The OT implementation is production-quality.",
-    collectionIds: ["fullstack"],
     year: "2026",
     featured: true,
   },
-  {
-    id: "pulse-cms",
-    title: "Pulse CMS",
-    tagline: "Headless CMS with visual page builder",
-    description:
-      "A headless CMS with an integrated visual page builder. Content editors can design pages using a drag-and-drop interface while developers maintain full API access. Includes role-based access control, media management, and webhook integrations.",
-    developerId: "omar",
-    media: [{ type: "image", src: "", alt: "Pulse CMS page builder" }],
-    artifacts: [
-      { id: "pc-builder", label: "Page builder", description: "Drag-and-drop visual editor" },
-      { id: "pc-api", label: "Content API", description: "RESTful API with GraphQL overlay" },
-    ],
-    technologies: ["Node.js", "React", "PostgreSQL", "Redis", "GraphQL"],
-    links: [
-      { label: "GitHub", url: "https://github.com/omarfarooq/pulse-cms", type: "github" },
-    ],
-    curatorNotes: "Pulse CMS bridges the gap between developer flexibility and editorial simplicity. The visual builder generates clean, predictable content structures.",
-    collectionIds: ["fullstack"],
-    year: "2025",
-    featured: false,
-  },
-  {
-    id: "auction-live",
-    title: "Auction Live",
-    tagline: "Real-time auction platform with WebSocket bidding",
-    description:
-      "A real-time auction platform where hundreds of bidders compete simultaneously. Features sub-100ms bid propagation, anti-sniping countdown extensions, and live bid history streaming. Built with Go backend and React frontend.",
-    developerId: "omar",
-    media: [{ type: "image", src: "", alt: "Auction Live bidding interface" }],
-    artifacts: [
-      { id: "al-bid", label: "Bid engine", description: "Sub-100ms bid propagation via WebSocket" },
-      { id: "al-anti", label: "Anti-sniping", description: "Automatic countdown extension on late bids" },
-    ],
-    technologies: ["Go", "WebSocket", "Redis", "React", "PostgreSQL"],
-    links: [
-      { label: "GitHub", url: "https://github.com/omarfarooq/auction-live", type: "github" },
-    ],
-    curatorNotes: "Auction Live demonstrates how backend language choice affects real-time performance. Go's goroutines handle hundreds of concurrent bid streams efficiently.",
-    collectionIds: ["fullstack"],
-    year: "2026",
-    featured: false,
-  },
 
-  // ── Sara Okonkwo ─────────────────────────────────────────────
+  // ── Muzammil Ahmad ───────────────────────────────────────────
   {
-    id: "climate-viz",
-    title: "Climate Viz",
-    tagline: "Interactive climate data visualization platform",
+    id: "pak-law-chatbot",
+    title: "PakLawChatBot",
+    tagline: "BS Software Engineering final year project",
     description:
-      "An interactive platform for exploring decades of climate research data. Features WebGL-powered globe rendering, animated temperature overlays, and downloadable datasets. Used by researchers at three universities for public communication.",
-    developerId: "sara",
-    media: [{ type: "image", src: "", alt: "Climate Viz globe visualization" }],
-    artifacts: [
-      { id: "cv-globe", label: "3D globe", description: "WebGL-rendered earth with temperature overlays" },
-      { id: "cv-timeline", label: "Timeline scrubber", description: "Animated data across 50+ years" },
-    ],
-    technologies: ["D3.js", "Python", "WebGL", "FastAPI", "PostgreSQL"],
+      "A chatbot built as a BS Software Engineering final year project.",
+    developerId: "muzammil",
+    media: [{ type: "image", src: "", alt: "PakLawChatBot" }],
+    artifacts: [],
+    technologies: ["Python"],
     links: [
-      { label: "GitHub", url: "https://github.com/saraokonkwo/climate-viz", type: "github" },
-      { label: "Live Demo", url: "https://climateviz.saraokonkwo.dev", type: "demo" },
+      { label: "GitHub", url: "https://github.com/muzammilahmad01/PakLawChatBot", type: "github" },
     ],
-    curatorNotes: "Climate Viz proves that data visualization can be both scientifically rigorous and emotionally compelling. The globe rendering handles millions of data points.",
-    collectionIds: ["data-viz"],
-    year: "2025",
-    featured: true,
-  },
-  {
-    id: "portfolio-grader",
-    title: "Portfolio Grader",
-    tagline: "AI-powered portfolio review tool",
-    description:
-      "An AI-powered tool that analyzes developer portfolios and provides actionable feedback. Uses LLMs to evaluate project descriptions, code quality signals, and presentation patterns. Generates detailed reports with improvement suggestions.",
-    developerId: "sara",
-    media: [{ type: "image", src: "", alt: "Portfolio Grader analysis report" }],
-    artifacts: [
-      { id: "pg-ai", label: "AI analysis", description: "LLM-powered portfolio evaluation" },
-      { id: "pg-report", label: "Report generator", description: "Detailed PDF reports with scores" },
-    ],
-    technologies: ["React", "Python", "OpenAI API", "FastAPI"],
-    links: [
-      { label: "GitHub", url: "https://github.com/saraokonkwo/portfolio-grader", type: "github" },
-    ],
-    curatorNotes: "Portfolio Grader is meta — it evaluates the kind of work that gets exhibited in museums like this one. The AI feedback is surprisingly nuanced.",
-    collectionIds: ["experiments", "data-viz"],
-    year: "2026",
-    featured: false,
-  },
-  {
-    id: "ml-playground",
-    title: "ML Playground",
-    tagline: "Browser-based machine learning experiments",
-    description:
-      "An interactive playground for running machine learning experiments in the browser. Features pre-trained model demos, custom training workflows, and real-time visualization of model internals. Supports TensorFlow.js and ONNX models.",
-    developerId: "sara",
-    media: [{ type: "image", src: "", alt: "ML Playground interface" }],
-    artifacts: [
-      { id: "ml-train", label: "Training viewer", description: "Real-time loss and accuracy graphs" },
-      { id: "ml-viz", label: "Model visualizer", description: "Layer-by-layer activation maps" },
-    ],
-    technologies: ["Python", "TensorFlow", "React", "WebAssembly", "FastAPI"],
-    links: [
-      { label: "GitHub", url: "https://github.com/saraokonkwo/ml-playground", type: "github" },
-    ],
-    curatorNotes: "ML Playground democratizes machine learning experimentation. Complex model training becomes accessible through visual, interactive interfaces.",
-    collectionIds: ["data-viz", "experiments"],
+    curatorNotes: "",
+    collectionIds: ["fullstack"],
     year: "2026",
     featured: true,
   },

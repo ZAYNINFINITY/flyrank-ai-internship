@@ -25,7 +25,7 @@ Recorded before Week 7 visual and interaction improvements.
 - Camera smoothing bumped from 0.09 to 0.14 (reduces re-renders from micro-corrections)
 
 ### Accessibility
-- "Text walls" toggle switches 3D → flat `SurfaceRenderer` (keyboard/AT full access)
+- "Accessible view" toggle switches 3D → flat `SurfaceRenderer` (keyboard/AT full access)
 - Inspect dialog: `aria-modal="true"`, focus on open, Escape closes
 - Keyboard `E` + prompt button for inspection (no mouse required)
 - Reduced-motion → 2D fallback via capability gate
@@ -64,7 +64,7 @@ Desktop Lighthouse via `npx lighthouse --preset=desktop`:
 
 **All 2D routes = 97-99 Performance**: Server-rendered, minimal client JS, no three.js chunk.
 
-**Accessibility = 95 across all routes**: The 5-point deduction is from the 3D overlay (no ARIA labels on 3D canvas elements, which is a Three.js limitation). The flat 2D path has full accessibility. "Text walls" toggle provides complete content access for screen readers.
+**Accessibility = 95 across all routes**: The 5-point deduction is from the 3D overlay (no ARIA labels on 3D canvas elements, which is a Three.js limitation). The flat 2D path has full accessibility. "Accessible view" toggle provides complete content access for screen readers.
 
 **SEO = 91 on Home, 100 elsewhere**: Home page has client-side rendering which impacts SEO crawlability. All other routes are server-rendered.
 
@@ -82,7 +82,7 @@ Desktop Lighthouse via `npx lighthouse --preset=desktop`:
 |------|--------|
 | Navigate to `/explore` | ✅ Tab through nav links |
 | Open exhibit page | ✅ Tab to card, Enter to navigate |
-| 3D museum — "Text walls" toggle | ✅ Tab to button, Enter to activate |
+| 3D museum — "Accessible view" toggle | ✅ Tab to button, Enter to activate |
 | 3D museum — inspect item | ✅ `E` key or Tab to prompt button |
 | Close inspect dialog | ✅ Escape key |
 | Navigate back to flat site | ✅ "Leave the room" link is focusable |
@@ -99,7 +99,7 @@ Desktop Lighthouse via `npx lighthouse --preset=desktop`:
 
 | Issue | Classification | Notes |
 |-------|---------------|-------|
-| 3D canvas has no ARIA labels | Known limitation | Three.js WebGL context is not keyboard-navigable; "Text walls" toggle provides full content access |
+| 3D canvas has no ARIA labels | Known limitation | Three.js WebGL context is not keyboard-navigable; "Accessible view" toggle provides full content access |
 | Home performance = 60 | Known limitation | 3D is progressive enhancement; 2D routes score 97-99 |
 | No physical device testing | Known limitation | Desktop + devtools mobile simulation only |
 | Lighthouse not in CI | Known limitation | Manual run only; CI integration deferred |

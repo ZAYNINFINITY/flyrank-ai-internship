@@ -85,7 +85,7 @@ The model was chosen for cost efficiency. The hard part was the tool schema, not
 The museum renders through a capability-gated seam:
 
 - **3D path** (powerful devices): Scroll-rail corridor via Three.js + R3F. Approach → reception → corridor → exhibit. Door triggers, collision, gyroscope mobile controls, click-to-inspect.
-- **2D path** (low-end / accessibility): Flat `SurfaceRenderer` with full ARIA support. "Text walls" toggle inside 3D switches between paths.
+- **2D path** (low-end / accessibility): Flat `SurfaceRenderer` with full ARIA support. "Accessible view" toggle inside 3D switches between paths.
 
 `lib/renderer/capability.ts` decides at mount time based on WebGL2 support, `prefers-reduced-motion`, memory, and pointer type. Both paths consume the same data layer.
 
@@ -124,11 +124,11 @@ npx playwright test
 | About | 97 | 95 | 100 |
 | Explore | 99 | 95 | 100 |
 
-Home Performance = 60 is honest — three.js bundle is heavy. 2D routes score 97-99. Accessibility = 95 because Three.js canvas has no ARIA labels; "Text walls" toggle provides full 2D accessible path.
+Home Performance = 60 is honest — three.js bundle is heavy. 2D routes score 97-99. Accessibility = 95 because Three.js canvas has no ARIA labels; "Accessible view" toggle provides full 2D accessible path.
 
 ## Known limitations
 
-- **3D canvas has no ARIA labels** — Three.js WebGL limitation. "Text walls" toggle provides full access.
+- **3D canvas has no ARIA labels** — Three.js WebGL limitation. "Accessible view" toggle provides full access.
 - **No physical device testing** — Desktop + devtools mobile simulation only.
 - **Lighthouse not in CI** — Manual run only.
 - **No external error tracking** — Manual monitoring.

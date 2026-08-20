@@ -17,13 +17,13 @@ Desktop Lighthouse via `npx lighthouse --preset=desktop` on deployed URL `https:
 
 **All 2D routes = 97-99 Performance**: Server-rendered, minimal client JS, no three.js chunk.
 
-**Accessibility = 95 across all routes**: The 5-point deduction is from the 3D overlay (no ARIA labels on 3D canvas elements, which is a Three.js limitation). The flat 2D path has full accessibility. "Text walls" toggle provides complete content access for screen readers.
+**Accessibility = 95 across all routes**: The 5-point deduction is from the 3D overlay (no ARIA labels on 3D canvas elements, which is a Three.js limitation). The flat 2D path has full accessibility. "Accessible view" toggle provides complete content access for screen readers.
 
 **SEO = 91 on Home, 100 elsewhere**: Home page has client-side rendering which impacts SEO crawlability. All other routes are server-rendered.
 
 ## Concrete Improvement Based on Audit
 
-The "Text walls" toggle was added specifically because the 3D canvas scored 95 (not 100) on accessibility. This toggle switches the entire museum experience from a Three.js WebGL scene to a flat `SurfaceRenderer` with full ARIA support, keyboard navigation, and screen reader access. It's not a degraded fallback — it's a parallel path that scores 100 on accessibility.
+The "Accessible view" toggle was added specifically because the 3D canvas scored 95 (not 100) on accessibility. This toggle switches the entire museum experience from a Three.js WebGL scene to a flat `SurfaceRenderer` with full ARIA support, keyboard navigation, and screen reader access. It's not a degraded fallback — it's a parallel path that scores 100 on accessibility.
 
 ## WAVE Audit (August 2026)
 

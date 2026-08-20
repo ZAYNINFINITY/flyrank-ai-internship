@@ -81,7 +81,7 @@
 - Lighthouse scores for all routes (in lighthouse-scores.md)
 - WAVE audit pass (0 errors)
 
-**Concrete improvement:** "Text walls" toggle — added because 3D canvas scored 95 (not 100) on accessibility. Toggle provides full 2D accessible path.
+**Concrete improvement:** "Accessible view" toggle — added because 3D canvas scored 95 (not 100) on accessibility. Toggle provides full 2D accessible path.
 
 ---
 

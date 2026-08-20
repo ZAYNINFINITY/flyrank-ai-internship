@@ -11,7 +11,7 @@
 | Layer | What it does |
 |-------|-------------|
 | **3D Museum** | Scroll-rail corridor with approach → reception → corridor → exhibit. Door triggers, collision, gyroscope mobile controls, click-to-inspect. Procedural geometry, no model downloads. |
-| **2D Fallback** | Automatic on low-end devices or with `prefers-reduced-motion`. Same data, same content, flat layout. "Text walls" toggle switches 3D → 2D. |
+| **2D Fallback** | Automatic on low-end devices or with `prefers-reduced-motion`. Same data, same content, flat layout. "Accessible view" toggle switches 3D → 2D. |
 | **AI Curator** | OpenRouter (Gemini Flash) with `exhibitLookup` tool. Pulls live data from repository layer. Streaming responses. Rate-limited (20 req/min/IP). |
 | **Data Architecture** | Multi-developer seed data (3 developers, 5 exhibits, 4 collections). Repository pattern with mock implementations. Swap to real DB in one line. |
 | **Accessibility** | WCAG 2.1 AA. Reduced-motion global override. Skip-to-content. Focus-visible. Keyboard `E` + prompt button for 3D inspection. ARIA on dialogs. |
@@ -35,7 +35,7 @@ Plinth's curator chat (`app/api/chat/route.ts`) uses OpenRouter (Gemini Flash) w
 
 ## Honest limitations
 
-- 3D canvas has no ARIA labels (Three.js limitation) — "Text walls" toggle provides full access
+- 3D canvas has no ARIA labels (Three.js limitation) — "Accessible view" toggle provides full access
 - Home Performance = 60 (three.js bundle) — 2D routes score 97-99
 - No physical device testing (devtools simulation only)
 - Lighthouse not in CI (manual run only)
@@ -43,4 +43,4 @@ Plinth's curator chat (`app/api/chat/route.ts`) uses OpenRouter (Gemini Flash) w
 
 ## One concrete improvement from audit
 
-Added "Text walls" toggle specifically because the 3D canvas scored 95 (not 100) on accessibility. The toggle provides a parallel 2D path that scores 100 — not a degraded fallback, but a first-class citizen.
+Added "Accessible view" toggle specifically because the 3D canvas scored 95 (not 100) on accessibility. The toggle provides a parallel 2D path that scores 100 — not a degraded fallback, but a first-class citizen.

@@ -45,7 +45,7 @@
 - [x] Skip-to-content link on all pages
 - [x] Focus-visible outlines on all interactive elements
 - [x] Keyboard `E` + prompt button for 3D inspection (no mouse required)
-- [x] "Text walls" toggle switches 3D → flat 2D (screen reader full access)
+- [x] "Accessible view" toggle switches 3D → flat 2D (screen reader full access)
 - [x] Inspect dialog: `aria-modal="true"`, focus on open, Escape closes
 
 ## Performance
@@ -72,8 +72,8 @@
 
 | Issue | Impact | Mitigation |
 |-------|--------|------------|
-| 3D canvas has no ARIA labels | Screen readers can't navigate 3D | "Text walls" toggle provides full 2D access |
+| 3D canvas has no ARIA labels | Screen readers can't navigate 3D | "Accessible view" toggle provides full 2D access |
 | Home Performance = 60 | Slow first paint on 3D home | Lazy-loaded, 2D routes score 97-99 |
 | No physical device testing | Untested on real phones/tablets | DevTools mobile simulation used |
 | Lighthouse not in CI | Manual audit only | CI integration deferred |
-| No rate limiting on chat API | Credit drain possible | In-memory rate limiter added (20 req/min/IP) |
+| No external error tracking (Sentry etc.) | No error aggregation in production | Manual monitoring via Vercel dashboard |

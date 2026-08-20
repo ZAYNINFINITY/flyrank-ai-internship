@@ -49,7 +49,21 @@ export async function populateCorridor(
   repo: ExhibitRepository,
   exhibits?: Exhibit[]
 ): Promise<Map<AnchorId, Placement>> {
-  const items = exhibits ?? (await repo.getAll());
+  const all = exhibits ?? (await repo.getAll());
+  // Corridor bays represent developers, not projects (each bay = "who is
+  // exhibiting here?"). Picking the first N exhibits in seed order would
+  // let one prolific developer fill most of the corridor if their projects
+  // happen to sort first — so instead we take the first exhibit per
+  // distinct developerId, preserving seed order, so each filled bay is a
+  // different person.
+  const seen = new Set<string>();
+  const items: Exhibit[] = [];
+  for (const exhibit of all) {
+    if (seen.has(exhibit.developerId)) continue;
+    seen.add(exhibit.developerId);
+    items.push(exhibit);
+  }
+
   const displayAnchors = getAnchorsByCapability(roomId, "display");
   let next = map;
 

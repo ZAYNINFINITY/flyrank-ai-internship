@@ -1,5 +1,6 @@
 import type { SurfaceLayout } from "@/lib/museum/queries";
 import type { Exhibit } from "@/lib/types/exhibit";
+import type { Developer } from "@/lib/types/developer";
 import { getDoor } from "./world";
 
 export type Rect = { minX: number; maxX: number; minZ: number; maxZ: number };
@@ -199,14 +200,41 @@ export function frameInspect(exhibit: Exhibit): InspectInfo {
   };
 }
 
+// Corridor frames represent DEVELOPERS first (see MuseumWallFrame) — the
+// inspect panel opened from a corridor frame should match that: who they
+// are and how many works they have, not which single project happens to
+// anchor their bay. Room-level frameInspect (above) is unchanged and still
+// used for exhibit-room content, which is genuinely exhibit-first.
+export function developerFrameInspect(
+  developer: Developer,
+  exhibit: Exhibit,
+  workCount: number
+): InspectInfo {
+  return {
+    title: developer.name,
+    body: [developer.role, `${workCount} ${workCount === 1 ? "work" : "works"} on display`]
+      .filter(Boolean)
+      .join(" · "),
+    source: "frame",
+    href: `/exhibit/e/${exhibit.id}`,
+    hrefLabel: "Enter exhibition",
+  };
+}
+
 export function buildInteractives(
   corridorLayout: SurfaceLayout[],
   roomLayout: SurfaceLayout[],
   exhibits: Exhibit[],
+  developers: Developer[],
   roomOrigin: { x: number; z: number },
   currentExhibit?: Exhibit
 ): InteractiveItem[] {
   const byId = new Map(exhibits.map((e) => [e.id, e]));
+  const developerById = new Map(developers.map((d) => [d.id, d]));
+  const workCountByDeveloper = new Map<string, number>();
+  for (const e of exhibits) {
+    workCountByDeveloper.set(e.developerId, (workCountByDeveloper.get(e.developerId) ?? 0) + 1);
+  }
   const items: InteractiveItem[] = [];
 
   for (const surface of corridorLayout) {
@@ -215,12 +243,15 @@ export function buildInteractives(
       if (!pos || !placement) continue;
       const exhibit = byId.get(placement.entityId);
       if (!exhibit) continue;
+      const developer = developerById.get(exhibit.developerId);
+      if (!developer) continue;
+      const workCount = workCountByDeveloper.get(developer.id) ?? 1;
       items.push({
         id: anchor.id,
         position: pos.position,
         range: 2.4,
-        prompt: "Inspect exhibit",
-        inspect: frameInspect(exhibit),
+        prompt: "Meet the exhibitor",
+        inspect: developerFrameInspect(developer, exhibit, workCount),
       });
     }
   }

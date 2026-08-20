@@ -14,6 +14,7 @@ import {
   mockExhibits,
   MockExhibitRepository,
 } from "@/lib/repository/mock-exhibit-repository";
+import { seedDevelopers } from "@/lib/seed/developers";
 import type { SurfaceLayout } from "@/lib/museum/queries";
 import type { RendererQuality } from "@/lib/renderer/capability";
 import { createPlacementMap, populateCorridor } from "@/lib/museum/placement";
@@ -40,7 +41,7 @@ const SOURCE_LABELS: Record<InspectInfo["source"], string> = {
   notes: "Curator's note",
   artifact: "Artifact on display",
   projection: "Media projection",
-  frame: "Corridor · exhibit wall",
+  frame: "Corridor · exhibitor frame",
   signage: "Wayfinding",
   curator: "Curator in the room",
 };
@@ -83,6 +84,7 @@ export function ExhibitRoom3D({
   const [inspect, setInspect] = useState<InspectInfo | null>(null);
   const [prompt, setPrompt] = useState<string | null>(null);
   const [corridorLayout, setCorridorLayout] = useState<SurfaceLayout[] | null>(null);
+  const [lightsOn, setLightsOn] = useState(true);
   const openDoors = useRef<Set<string>>(new Set());
   const containerRef = useRef<HTMLDivElement>(null);
   const [isTouch] = useState(
@@ -148,13 +150,16 @@ export function ExhibitRoom3D({
   const closeInspect = useCallback(() => setInspect(null), []);
 
   useEffect(() => {
-    if (!inspect) return;
+    if (!inspect && !showTextWalls) return;
     const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") closeInspect();
+      if (event.key === "Escape") {
+        closeInspect();
+        setShowTextWalls(false);
+      }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [inspect, closeInspect]);
+  }, [inspect, showTextWalls, closeInspect]);
 
   const handleInspect = useCallback((info: InspectInfo) => {
     setInspect(info);
@@ -162,32 +167,6 @@ export function ExhibitRoom3D({
 
   if (!exhibit || sceneFailed) {
     return <SurfaceRenderer layout={layout} entityComponents={defaultEntityRegistry} />;
-  }
-
-  if (showTextWalls) {
-    return (
-      <div>
-        <div className="mb-4 flex items-end justify-between gap-4 flex-wrap">
-          <div>
-            <p className="text-xs uppercase tracking-[0.25em] opacity-40">
-              Room · text walls
-            </p>
-            <p className="mt-1 text-sm opacity-60">
-              Flat version of the same room for low-power devices and
-              screen readers.
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={() => setShowTextWalls(false)}
-            className="border border-[var(--color-text)]/15 px-4 py-2 text-[11px] uppercase tracking-[0.2em] text-[var(--color-text)]/60 transition-all duration-500 hover:border-[var(--color-text)]/40 hover:text-[var(--color-text)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-          >
-            View the room in 3D
-          </button>
-        </div>
-        <SurfaceRenderer layout={layout} entityComponents={defaultEntityRegistry} />
-      </div>
-    );
   }
 
   // Rail spawn points: reception end (18) is the default front-door start;
@@ -207,6 +186,7 @@ export function ExhibitRoom3D({
             corridorLayout={corridorLayout}
             roomLayout={layout}
             exhibits={mockExhibits}
+            developers={seedDevelopers}
             exhibit={exhibit}
             spawn={spawn}
             quality={quality}
@@ -215,7 +195,8 @@ export function ExhibitRoom3D({
             onInspect={handleInspect}
             onDoorOpened={() => undefined}
             onReady={() => setSceneReady(true)}
-            enabled={!inspect}
+            enabled={!inspect && !showTextWalls}
+            lightsOn={lightsOn}
           />
         )}
       </SceneErrorBoundary>
@@ -261,13 +242,53 @@ export function ExhibitRoom3D({
 
       {/* Escape hatch for low-power devices / screen readers, tucked into a
           corner instead of a page-level button above the scene */}
-      <button
-        type="button"
-        onClick={() => setShowTextWalls(true)}
-        className="pointer-events-auto absolute right-4 top-4 min-h-[44px] rounded-sm border border-[#2a2a30]/20 bg-[#efe9da]/85 px-3 py-1.5 text-[10px] uppercase tracking-[0.2em] text-[#2a2a30]/70 shadow-sm backdrop-blur-sm transition-all duration-300 hover:border-[#2a2a30]/50 hover:text-[#2a2a30] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-      >
-        Text walls
-      </button>
+      <div className="pointer-events-auto absolute right-4 top-4 flex gap-2">
+        <button
+          type="button"
+          onClick={() => setLightsOn((prev) => !prev)}
+          className="min-h-[44px] rounded-sm border border-[#2a2a30]/20 bg-[#efe9da]/85 px-3 py-1.5 text-[10px] uppercase tracking-[0.2em] text-[#2a2a30]/70 shadow-sm backdrop-blur-sm transition-all duration-300 hover:border-[#2a2a30]/50 hover:text-[#2a2a30] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+          aria-label={lightsOn ? "Turn lights off" : "Turn lights on"}
+        >
+          {lightsOn ? "Lights on" : "Lights off"}
+        </button>
+        <button
+          type="button"
+          onClick={() => setShowTextWalls(true)}
+          className="min-h-[44px] rounded-sm border border-[#2a2a30]/12 bg-[#efe9da]/70 px-3 py-1.5 text-[10px] uppercase tracking-[0.2em] text-[#2a2a30]/50 shadow-sm backdrop-blur-sm transition-all duration-300 hover:border-[#2a2a30]/40 hover:text-[#2a2a30]/80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+          aria-label="Open accessible text view of this room"
+        >
+          Accessible view
+        </button>
+      </div>
+
+      {showTextWalls && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Accessible text view"
+          tabIndex={-1}
+          className="pointer-events-auto absolute inset-3 z-[60] overflow-y-auto rounded-sm border border-[#2a2a30]/15 bg-[#efe9da]/98 p-5 shadow-lg backdrop-blur-sm focus:outline-none sm:inset-8"
+        >
+          <div className="mb-4 flex items-start justify-between gap-4">
+            <div>
+              <p className="text-[10px] uppercase tracking-[0.25em] text-[#6f6c62]">
+                Accessible view
+              </p>
+              <p className="mt-1 text-sm text-[#2a2a30]/60">
+                The same room, laid out as text — for low-power devices and screen readers.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setShowTextWalls(false)}
+              className="min-h-[44px] shrink-0 rounded-sm border border-[#2a2a30]/20 px-3 py-1.5 text-[11px] uppercase tracking-[0.2em] text-[#2a2a30]/60 transition-all duration-200 hover:border-[#2a2a30]/50 hover:text-[#2a2a30] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            >
+              Back to 3D
+            </button>
+          </div>
+          <SurfaceRenderer layout={layout} entityComponents={defaultEntityRegistry} />
+        </div>
+      )}
 
       {prompt && !inspect && (
         <div className="pointer-events-none absolute inset-x-0 bottom-8 flex justify-center px-4">

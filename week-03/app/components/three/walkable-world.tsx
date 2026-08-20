@@ -6,6 +6,7 @@ import { Text } from "@react-three/drei";
 import * as THREE from "three";
 import type { SurfaceLayout } from "@/lib/museum/queries";
 import type { Exhibit } from "@/lib/types/exhibit";
+import type { Developer } from "@/lib/types/developer";
 import type { RendererQuality } from "@/lib/renderer/capability";
 import {
   buildDoors,
@@ -435,7 +436,13 @@ function Doorway({
 // lean toward the camera as it walks past (DoorWallSegment tilt), carrying
 // their frame with them so frames stay flush with the moving wall.
 
-type BayFrameData = { centerZ: number; exhibit: Exhibit };
+type BayFrameData = {
+  centerZ: number;
+  exhibit: Exhibit;
+  developer?: Developer;
+  workCount: number;
+  exhibitorNumber: number;
+};
 
 function BayWall({
   position,
@@ -593,14 +600,14 @@ function SawtoothSide({
             tiltDir={side === "west" ? -1 : 1}
             bayZ={seg.position[2]}
           >
-            {seg.frame && (
-              <Frame
+            {seg.frame && seg.frame.developer && (
+              <MuseumWallFrame
                 position={[0, 2.25, 0]}
                 ry={0}
                 revealZ={seg.frame.centerZ}
-                title={seg.frame.exhibit.title}
-                tagline={seg.frame.exhibit.tagline}
-                imageSrc={seg.frame.exhibit.media[0]?.src}
+                developer={seg.frame.developer}
+                workCount={seg.frame.workCount}
+                exhibitorNumber={seg.frame.exhibitorNumber}
               />
             )}
           </BayWall>
@@ -611,7 +618,7 @@ function SawtoothSide({
 }
 
 // ─── Wall-hung content ─────────────────────────────────────────
-function Frame({
+function FrameFlat({
   position,
   ry,
   title,
@@ -717,6 +724,258 @@ function Frame({
   );
 }
 
+// ─── Wall-hung content (physical, developer-first) ───────────────
+// MuseumWallFrame replaces the flat FrameFlat poster on the sawtooth bay
+// walls. Answers "who is exhibiting here?" (developer name/role/bio/work
+// count) rather than "what project is this?" — per the corridor's role in
+// the museum hierarchy (corridor = developers, exhibition room = their
+// work). Built as real layered geometry — backing plate, extruded outer
+// frame, recessed dark gap, mat, portrait, mounting screws, and a soft
+// contact-shadow halo — so it reads as a physically mounted object rather
+// than a card floating on the wall.
+const FRAME_W = 1.22;
+const FRAME_H = 1.72;
+const FRAME_DEPTH = 0.09;
+const FRAME_BAR = 0.06;
+const FRAME_MOUNT_OFFSET = 0.02;
+
+const AVATAR_TEXTURE_CACHE = new Map<string, THREE.Texture>();
+
+function initialsFor(name: string) {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return "?";
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
+
+function MuseumWallFrame({
+  position,
+  ry,
+  developer,
+  workCount,
+  exhibitorNumber,
+  revealZ,
+}: {
+  position: [number, number, number];
+  ry: number;
+  developer: Developer;
+  workCount: number;
+  exhibitorNumber: number;
+  revealZ?: number;
+}) {
+  const [texture, setTexture] = useState<THREE.Texture | null>(null);
+
+  useEffect(() => {
+    if (!developer.avatar) {
+      setTexture(null);
+      return;
+    }
+    const cached = AVATAR_TEXTURE_CACHE.get(developer.avatar);
+    if (cached) {
+      setTexture(cached);
+      return;
+    }
+    let alive = true;
+    const loader = new THREE.TextureLoader();
+    loader.load(
+      developer.avatar,
+      (tex) => {
+        tex.colorSpace = THREE.SRGBColorSpace;
+        AVATAR_TEXTURE_CACHE.set(developer.avatar, tex);
+        if (alive) setTexture(tex);
+      },
+      undefined,
+      () => {
+        if (alive) setTexture(null);
+      }
+    );
+    return () => {
+      alive = false;
+    };
+  }, [developer.avatar]);
+
+  const innerW = FRAME_W - FRAME_BAR * 2;
+  const innerH = FRAME_H - FRAME_BAR * 2;
+  const gapZ = FRAME_MOUNT_OFFSET + 0.015;
+  const matZ = gapZ + 0.018;
+  const contentZ = matZ + 0.008;
+  const frontZ = FRAME_MOUNT_OFFSET + FRAME_DEPTH;
+  const roleLabel = developer.role.toUpperCase();
+  const bioLine = developer.bio.length > 90 ? `${developer.bio.slice(0, 87)}…` : developer.bio;
+  const workLabel = `${workCount} ${workCount === 1 ? "WORK" : "WORKS"}`;
+
+  return (
+    <group position={position} rotation-y={ry}>
+      {/* Soft contact-shadow halo against the wall, faking AO under the
+          mounted object since the scene doesn't cast real shadows here. */}
+      <mesh position={[0, -0.02, 0.002]}>
+        <planeGeometry args={[FRAME_W + 0.22, FRAME_H + 0.24]} />
+        <meshBasicMaterial color="#000000" transparent opacity={0.1} />
+      </mesh>
+
+      {/* Backing plate — sits just proud of the wall (mount gap) */}
+      <mesh position={[0, 0, FRAME_MOUNT_OFFSET + 0.01]}>
+        <boxGeometry args={[FRAME_W, FRAME_H, 0.02]} />
+        <meshStandardMaterial color="#1a1a20" roughness={0.75} metalness={0.1} />
+      </mesh>
+
+      {/* Outer frame — four bars with real extruded depth, not thin strokes */}
+      <mesh position={[0, FRAME_H / 2 - FRAME_BAR / 2, FRAME_MOUNT_OFFSET + 0.02 + FRAME_DEPTH / 2]}>
+        <boxGeometry args={[FRAME_W, FRAME_BAR, FRAME_DEPTH]} />
+        <meshStandardMaterial color={PALETTE.frame} roughness={0.5} metalness={0.35} />
+      </mesh>
+      <mesh position={[0, -(FRAME_H / 2 - FRAME_BAR / 2), FRAME_MOUNT_OFFSET + 0.02 + FRAME_DEPTH / 2]}>
+        <boxGeometry args={[FRAME_W, FRAME_BAR, FRAME_DEPTH]} />
+        <meshStandardMaterial color={PALETTE.frame} roughness={0.5} metalness={0.35} />
+      </mesh>
+      <mesh position={[FRAME_W / 2 - FRAME_BAR / 2, 0, FRAME_MOUNT_OFFSET + 0.02 + FRAME_DEPTH / 2]}>
+        <boxGeometry args={[FRAME_BAR, innerH, FRAME_DEPTH]} />
+        <meshStandardMaterial color={PALETTE.frame} roughness={0.5} metalness={0.35} />
+      </mesh>
+      <mesh position={[-(FRAME_W / 2 - FRAME_BAR / 2), 0, FRAME_MOUNT_OFFSET + 0.02 + FRAME_DEPTH / 2]}>
+        <boxGeometry args={[FRAME_BAR, innerH, FRAME_DEPTH]} />
+        <meshStandardMaterial color={PALETTE.frame} roughness={0.5} metalness={0.35} />
+      </mesh>
+
+      {/* Recessed dark gap — set well back from the frame's outward face so
+          the mat reads as sunk into the frame, not laid on top of it */}
+      <mesh position={[0, 0, gapZ]}>
+        <planeGeometry args={[innerW, innerH]} />
+        <meshStandardMaterial color="#14141a" roughness={0.9} />
+      </mesh>
+
+      {/* Mat */}
+      <mesh position={[0, 0, matZ]}>
+        <planeGeometry args={[innerW - 0.06, innerH - 0.06]} />
+        {paperMaterial("#f7f0df", 0.95)}
+      </mesh>
+
+      {/* Portrait — real avatar if it loaded, otherwise a deliberate
+          monochrome initials plate (never a random placeholder circle) */}
+      <mesh position={[0, FRAME_H / 2 - 0.46, contentZ]}>
+        <planeGeometry args={[0.62, 0.62]} />
+        {texture ? (
+          <meshStandardMaterial map={texture} color="#ffffff" roughness={0.85} />
+        ) : (
+          <meshStandardMaterial color={PALETTE.accent} roughness={0.85} />
+        )}
+      </mesh>
+      {!texture && (
+        <Text
+          position={[0, FRAME_H / 2 - 0.46, contentZ + 0.005]}
+          fontSize={0.22}
+          color="#f7f0df"
+          anchorX="center"
+          anchorY="middle"
+        >
+          {initialsFor(developer.name)}
+        </Text>
+      )}
+
+      {/* Name — primary */}
+      <Text
+        position={[0, FRAME_H / 2 - 0.9, contentZ]}
+        fontSize={0.115}
+        color={PALETTE.ivory}
+        anchorX="center"
+        anchorY="middle"
+        maxWidth={innerW - 0.15}
+        overflowWrap="break-word"
+      >
+        {developer.name}
+      </Text>
+
+      {/* Role — secondary */}
+      <Text
+        position={[0, FRAME_H / 2 - 1.06, contentZ]}
+        fontSize={0.058}
+        letterSpacing={0.04}
+        color={PALETTE.dim}
+        anchorX="center"
+        anchorY="middle"
+        maxWidth={innerW - 0.15}
+        overflowWrap="break-word"
+      >
+        {roleLabel}
+      </Text>
+
+      {/* Short bio — 1-2 lines */}
+      <Text
+        position={[0, FRAME_H / 2 - 1.24, contentZ]}
+        fontSize={0.052}
+        color={PALETTE.dim}
+        anchorX="center"
+        anchorY="middle"
+        maxWidth={innerW - 0.2}
+        overflowWrap="break-word"
+        textAlign="center"
+      >
+        {bioLine}
+      </Text>
+
+      {/* Project-count badge — small pill */}
+      <mesh position={[0, -(FRAME_H / 2 - 0.16), contentZ - 0.003]}>
+        <planeGeometry args={[0.62, 0.16]} />
+        <meshBasicMaterial color={PALETTE.accent} transparent opacity={0.22} />
+      </mesh>
+      <Text
+        position={[0, -(FRAME_H / 2 - 0.16), contentZ]}
+        fontSize={0.058}
+        letterSpacing={0.06}
+        color={PALETTE.ivory}
+        anchorX="center"
+        anchorY="middle"
+      >
+        {workLabel}
+      </Text>
+
+      {/* Mounting hardware — small screws at the frame's outer corners */}
+      {[
+        [FRAME_W / 2 - 0.05, FRAME_H / 2 - 0.05],
+        [-(FRAME_W / 2 - 0.05), FRAME_H / 2 - 0.05],
+        [FRAME_W / 2 - 0.05, -(FRAME_H / 2 - 0.05)],
+        [-(FRAME_W / 2 - 0.05), -(FRAME_H / 2 - 0.05)],
+      ].map(([x, y], i) => (
+        <mesh key={i} position={[x, y, frontZ + 0.006]} rotation={[Math.PI / 2, 0, 0]}>
+          <cylinderGeometry args={[0.014, 0.014, 0.012, 8]} />
+          <meshStandardMaterial color={PALETTE.gold} metalness={0.4} roughness={0.5} />
+        </mesh>
+      ))}
+
+      {/* Caption plaque — small physical plate mounted below the frame */}
+      <group position={[0, -(FRAME_H / 2) - 0.16, FRAME_MOUNT_OFFSET + 0.008]}>
+        <mesh>
+          <boxGeometry args={[0.86, 0.22, 0.015]} />
+          <meshStandardMaterial color="#1a1a20" roughness={0.6} metalness={0.2} />
+        </mesh>
+        <Text
+          position={[0, 0.045, 0.012]}
+          fontSize={0.058}
+          color="#f0cf8b"
+          anchorX="center"
+          anchorY="middle"
+          maxWidth={0.78}
+          overflowWrap="break-word"
+        >
+          {developer.name.toUpperCase()}
+        </Text>
+        <Text
+          position={[0, -0.052, 0.012]}
+          fontSize={0.044}
+          letterSpacing={0.05}
+          color="#c9c2ae"
+          anchorX="center"
+          anchorY="middle"
+        >
+          {`EXHIBITOR ${String(exhibitorNumber).padStart(2, "0")}`}
+        </Text>
+      </group>
+
+      <SketchCard position={[0, -1.15, 0.02]} seed={developer.id} frameZ={revealZ} />
+    </group>
+  );
+}
+
 function Plaque({
   position,
   ry,
@@ -733,7 +992,7 @@ function Plaque({
   return (
     <group position={position} rotation-y={ry}>
       <mesh position={[0, 0, 0]}>
-        <boxGeometry args={[0.08, size[1], size[0]]} />
+        <boxGeometry args={[size[0], size[1], 0.08]} />
         {paperMaterial(PALETTE.paper, 0.95)}
       </mesh>
       <Text
@@ -768,33 +1027,214 @@ function LinearLight({
   position,
   rotation = [0, 0, 0],
   length = 4,
+  on = true,
 }: {
   position: [number, number, number];
   rotation?: [number, number, number];
   length?: number;
+  on?: boolean;
 }) {
   return (
     <group position={position} rotation={rotation}>
       <mesh>
         <boxGeometry args={[length, 0.035, 0.055]} />
-        <meshBasicMaterial color={PALETTE.gold} transparent opacity={0.5} />
+        <meshBasicMaterial color={PALETTE.gold} transparent opacity={on ? 0.5 : 0.12} />
       </mesh>
-      <pointLight intensity={1.6} distance={6} decay={2} color="#f0cf8b" />
+      {on && <pointLight intensity={1.6} distance={6} decay={2} color="#f0cf8b" />}
     </group>
   );
 }
 
-function MuseumLighting() {
+// ─── Visible light fixtures ─────────────────────────────────────
+// Modern pendant: black cord + dome shade + warm bulb + pointLight.
+// Three staggered across the reception ceiling.
+function PendantLight({
+  position,
+  on = true,
+}: {
+  position: [number, number, number];
+  on?: boolean;
+}) {
+  const emissiveI = on ? 0.8 : 0.05;
+  const shadeOpacity = on ? 0.92 : 0.7;
+  return (
+    <group position={position}>
+      {/* cord */}
+      <mesh position={[0, -0.3, 0]}>
+        <cylinderGeometry args={[0.006, 0.006, 0.6, 6]} />
+        <meshStandardMaterial color={PALETTE.frame} roughness={0.7} />
+      </mesh>
+      {/* shade — dome */}
+      <mesh position={[0, -0.62, 0]}>
+        <cylinderGeometry args={[0.04, 0.18, 0.2, 8, 1, true]} />
+        <meshStandardMaterial
+          color={PALETTE.frame}
+          roughness={0.55}
+          metalness={0.3}
+          transparent
+          opacity={shadeOpacity}
+          side={THREE.DoubleSide}
+        />
+      </mesh>
+      {/* shade rim */}
+      <mesh position={[0, -0.72, 0]}>
+        <torusGeometry args={[0.18, 0.008, 8, 24]} />
+        <meshStandardMaterial color={PALETTE.frame} roughness={0.5} metalness={0.3} />
+      </mesh>
+      {/* bulb */}
+      <mesh position={[0, -0.64, 0]}>
+        <sphereGeometry args={[0.05, 12, 12]} />
+        <meshStandardMaterial
+          color="#f4ecd9"
+          emissive="#f0cf8b"
+          emissiveIntensity={emissiveI}
+          roughness={0.4}
+        />
+      </mesh>
+      {on && (
+        <pointLight
+          position={[0, -0.7, 0]}
+          intensity={1.8}
+          distance={6}
+          decay={2}
+          color="#f0cf8b"
+        />
+      )}
+    </group>
+  );
+}
+
+// Museum track lighting: thin black rail + adjustable spot heads.
+// Two spots in the corridor aimed at the sawtooth exhibit walls.
+function TrackSpot({
+  position,
+  targetX,
+  on = true,
+}: {
+  position: [number, number, number];
+  targetX: number;
+  on?: boolean;
+}) {
+  const emissiveI = on ? 0.9 : 0.05;
+  // spot aims outward from corridor center toward the wall
+  const tiltZ = targetX > 0 ? -0.3 : 0.3;
+  return (
+    <group position={position}>
+      {/* rail */}
+      <mesh>
+        <boxGeometry args={[2.4, 0.03, 0.04]} />
+        <meshStandardMaterial color={PALETTE.frame} roughness={0.6} metalness={0.2} />
+      </mesh>
+      {/* spot head neck */}
+      <mesh position={[targetX * 0.6, -0.1, 0]} rotation={[0, 0, tiltZ]}>
+        <cylinderGeometry args={[0.012, 0.012, 0.14, 6]} />
+        <meshStandardMaterial color={PALETTE.frame} roughness={0.6} metalness={0.2} />
+      </mesh>
+      {/* spot head housing */}
+      <mesh position={[targetX * 0.6, -0.19, 0]}>
+        <cylinderGeometry args={[0.06, 0.04, 0.1, 8]} />
+        <meshStandardMaterial color={PALETTE.frame} roughness={0.5} metalness={0.3} />
+      </mesh>
+      {/* bulb */}
+      <mesh position={[targetX * 0.6, -0.24, 0]}>
+        <sphereGeometry args={[0.03, 10, 10]} />
+        <meshStandardMaterial
+          color="#f4ecd9"
+          emissive="#f0cf8b"
+          emissiveIntensity={emissiveI}
+          roughness={0.3}
+        />
+      </mesh>
+      {on && (
+        <spotLight
+          position={[targetX * 0.6, -0.25, 0]}
+          target-position={[targetX * 1.2, 1.5, 0]}
+          angle={0.5}
+          penumbra={0.6}
+          intensity={2.0}
+          distance={7}
+          decay={2}
+          color="#f0cf8b"
+        />
+      )}
+    </group>
+  );
+}
+
+// Recessed ceiling can: flush-mount housing + inset bulb + spotLight.
+// Two cans in the exhibit room aimed down at artifacts.
+function CeilingCan({
+  position,
+  on = true,
+}: {
+  position: [number, number, number];
+  on?: boolean;
+}) {
+  const emissiveI = on ? 0.7 : 0.05;
+  return (
+    <group position={position}>
+      {/* housing ring */}
+      <mesh>
+        <cylinderGeometry args={[0.1, 0.1, 0.04, 12]} />
+        <meshStandardMaterial color={PALETTE.frame} roughness={0.6} metalness={0.2} />
+      </mesh>
+      {/* inner baffle */}
+      <mesh position={[0, -0.01, 0]}>
+        <cylinderGeometry args={[0.07, 0.09, 0.03, 12]} />
+        <meshStandardMaterial color="#1a1a20" roughness={0.8} />
+      </mesh>
+      {/* bulb recessed */}
+      <mesh position={[0, -0.02, 0]}>
+        <sphereGeometry args={[0.035, 10, 10]} />
+        <meshStandardMaterial
+          color="#f4ecd9"
+          emissive="#f0cf8b"
+          emissiveIntensity={emissiveI}
+          roughness={0.3}
+        />
+      </mesh>
+      {on && (
+        <spotLight
+          position={[0, -0.04, 0]}
+          angle={0.45}
+          penumbra={0.5}
+          intensity={1.6}
+          distance={6}
+          decay={2}
+          color="#f0cf8b"
+        />
+      )}
+    </group>
+  );
+}
+
+function MuseumLighting({ on = true }: { on?: boolean }) {
   return (
     <group>
-      <LinearLight position={[0, HEIGHT - 0.08, 16.4]} length={7.2} />
-      <LinearLight position={[0, HEIGHT - 0.08, -2]} length={5.4} />
-      <LinearLight position={[0, HEIGHT - 0.08, -16.5]} length={6.2} />
-      {[4.75].map((x) =>
+      {/* Ceiling strip lights */}
+      <LinearLight position={[0, HEIGHT - 0.08, 16.4]} length={7.2} on={on} />
+      <LinearLight position={[0, HEIGHT - 0.08, -2]} length={5.4} on={on} />
+      <LinearLight position={[0, HEIGHT - 0.08, -16.5]} length={6.2} on={on} />
+
+      {/* Reception wall spots (existing — always on for ambient fill) */}
+      {on && [4.75].map((x) =>
         [14.8, 17, 19].map((z) => (
           <pointLight key={`${x}-${z}`} position={[x * 0.86, 2.7, z]} intensity={1.8} distance={4.5} decay={2} color="#f0cf8b" />
         ))
       )}
+
+      {/* ── NEW: Pendant cluster in reception ── */}
+      <PendantLight position={[-1.5, HEIGHT - 0.08, 16.4]} on={on} />
+      <PendantLight position={[0, HEIGHT - 0.08, 16.4]} on={on} />
+      <PendantLight position={[1.5, HEIGHT - 0.08, 16.4]} on={on} />
+
+      {/* ── NEW: Track spots in corridor ── */}
+      <TrackSpot position={[0, HEIGHT - 0.08, -2]} targetX={BAY_OUTER_X} on={on} />
+      <TrackSpot position={[0, HEIGHT - 0.08, -6]} targetX={-BAY_OUTER_X} on={on} />
+
+      {/* ── NEW: Recessed cans in exhibit room ── */}
+      <CeilingCan position={[-1.5, HEIGHT - 0.08, -16.5]} on={on} />
+      <CeilingCan position={[1.5, HEIGHT - 0.08, -16.5]} on={on} />
     </group>
   );
 }
@@ -809,7 +1249,8 @@ function ProjectionScreen({
   exhibit?: Exhibit;
 }) {
   const [texture, setTexture] = useState<THREE.Texture | null>(null);
-  const src = exhibit?.media[0]?.src;
+  const media = exhibit?.media[0];
+  const src = media?.src;
 
   useEffect(() => {
     if (!src) return;
@@ -840,7 +1281,7 @@ function ProjectionScreen({
         anchorX="center"
         anchorY="middle"
       >
-        GitHub profile image
+        {media?.alt || "Project preview"}
       </Text>
     </group>
   );
@@ -1513,6 +1954,7 @@ export type WalkableSceneProps = {
   corridorLayout: SurfaceLayout[];
   roomLayout: SurfaceLayout[];
   exhibits: Exhibit[];
+  developers: Developer[];
   exhibit: Exhibit;
   spawn: [number, number, number];
   quality: RendererQuality;
@@ -1522,6 +1964,7 @@ export type WalkableSceneProps = {
   onDoorOpened: (door: WorldDoor) => void;
   onReady?: () => void;
   enabled: boolean;
+  lightsOn?: boolean;
 };
 
 function WalkableWorldScene({
@@ -1529,6 +1972,7 @@ function WalkableWorldScene({
   corridorLayout,
   roomLayout,
   exhibits,
+  developers,
   exhibit,
   spawn,
   openDoors,
@@ -1536,6 +1980,7 @@ function WalkableWorldScene({
   onInspect,
   onDoorOpened,
   enabled,
+  lightsOn = true,
 }: WalkableSceneProps) {
   const byId = useMemo(() => new Map(exhibits.map((e) => [e.id, e])), [exhibits]);
   const roomOrigin = { x: 0, z: (FOOTPRINTS.exhibit.minZ + FOOTPRINTS.exhibit.maxZ) / 2 };
@@ -1557,21 +2002,52 @@ function WalkableWorldScene({
 
   // Corridor frames are the sawtooth bay centers: each frame hangs on the
   // angled wall of its own 4-unit bay, alternating sides as you walk south.
+  // Bays are numbered as EXHIBITOR 01, 02... in the order a visitor walks
+  // past them (highest Z — nearest reception — first), merged across both
+  // sides so numbering reads consistently regardless of which wall a given
+  // developer landed on.
+  const developerById = useMemo(() => new Map(developers.map((d) => [d.id, d])), [developers]);
+  const workCountByDeveloper = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const e of exhibits) {
+      counts.set(e.developerId, (counts.get(e.developerId) ?? 0) + 1);
+    }
+    return counts;
+  }, [exhibits]);
+
   const corridorBays = useMemo(() => {
-    const east: BayFrameData[] = [];
-    const west: BayFrameData[] = [];
+    const raw: Array<{ centerZ: number; exhibit: Exhibit; side: "east" | "west" }> = [];
     for (const surface of corridorLayout) {
       for (const { anchor, placement } of surface.anchors) {
         const spot = corridorFrameSpot(anchor.id);
         if (!spot || !placement) continue;
         const exhibitItem = byId.get(placement.entityId);
         if (!exhibitItem) continue;
-        const frame = { centerZ: spot.position[2], exhibit: exhibitItem };
-        (spot.position[0] > 0 ? east : west).push(frame);
+        raw.push({
+          centerZ: spot.position[2],
+          exhibit: exhibitItem,
+          side: spot.position[0] > 0 ? "east" : "west",
+        });
       }
     }
+    // Number bays in walking order (reception → exhibit room = high Z → low Z).
+    raw.sort((a, b) => b.centerZ - a.centerZ);
+
+    const east: BayFrameData[] = [];
+    const west: BayFrameData[] = [];
+    raw.forEach((item, i) => {
+      const developer = developerById.get(item.exhibit.developerId);
+      const frame: BayFrameData = {
+        centerZ: item.centerZ,
+        exhibit: item.exhibit,
+        developer,
+        workCount: developer ? workCountByDeveloper.get(developer.id) ?? 1 : 0,
+        exhibitorNumber: i + 1,
+      };
+      (item.side === "east" ? east : west).push(frame);
+    });
     return { east, west };
-  }, [corridorLayout, byId]);
+  }, [corridorLayout, byId, developerById, workCountByDeveloper]);
 
   return (
     <>
@@ -1579,9 +2055,9 @@ function WalkableWorldScene({
       <ambientLight intensity={0.55} />
       <hemisphereLight args={["#f0ede6", "#d2c4a8", 0.75]} />
       <directionalLight position={[4, 8, 3]} intensity={1.0} color="#fff6df" />
-      <pointLight position={[0, 3.2, 0]} intensity={3.0} distance={20} decay={2} color="#f0cf8b" />
-      <pointLight position={[0, 3.2, -14]} intensity={2.5} distance={18} decay={2} color="#e8e4dc" />
-      <MuseumLighting />
+      <pointLight position={[0, 3.2, 0]} intensity={lightsOn ? 3.0 : 0.3} distance={20} decay={2} color="#f0cf8b" />
+      <pointLight position={[0, 3.2, -14]} intensity={lightsOn ? 2.5 : 0.25} distance={18} decay={2} color="#e8e4dc" />
+      <MuseumLighting on={lightsOn} />
 
       <ApproachExterior />
       <GridFloor />
@@ -1713,6 +2189,7 @@ export function WalkableWorldCanvas({
   corridorLayout,
   roomLayout,
   exhibits,
+  developers,
   exhibit,
   spawn,
   quality,
@@ -1722,6 +2199,7 @@ export function WalkableWorldCanvas({
   onDoorOpened,
   onReady,
   enabled,
+  lightsOn = true,
 }: WalkableWorldCanvasProps) {
   const world = useMemo<WalkableWorld>(
     () => ({
@@ -1731,11 +2209,12 @@ export function WalkableWorldCanvas({
         corridorLayout,
         roomLayout,
         exhibits,
+        developers,
         { x: 0, z: (FOOTPRINTS.exhibit.minZ + FOOTPRINTS.exhibit.maxZ) / 2 },
         exhibit
       ),
     }),
-    [corridorLayout, roomLayout, exhibits, exhibit]
+    [corridorLayout, roomLayout, exhibits, developers, exhibit]
   );
 
   return (
@@ -1756,6 +2235,7 @@ export function WalkableWorldCanvas({
           corridorLayout={corridorLayout}
           roomLayout={roomLayout}
           exhibits={exhibits}
+          developers={developers}
           exhibit={exhibit}
           spawn={spawn}
           quality={quality}
@@ -1764,6 +2244,7 @@ export function WalkableWorldCanvas({
           onInspect={onInspect}
           onDoorOpened={onDoorOpened}
           enabled={enabled}
+          lightsOn={lightsOn}
         />
       </Suspense>
     </Canvas>

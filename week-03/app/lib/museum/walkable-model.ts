@@ -19,6 +19,11 @@ export type InspectInfo = {
   source: InspectSource;
   href?: string;
   hrefLabel?: string;
+  /** Optional portrait/preview image shown at the top of the inspect card
+   * — a developer's avatar, an exhibit's screenshot, or the curator's
+   * portrait. Omitted for text-only content (signage, curator's note,
+   * artifact labels) where no real image exists to show. */
+  image?: string;
 };
 
 export type WorldDoor = {
@@ -197,6 +202,7 @@ export function frameInspect(exhibit: Exhibit): InspectInfo {
     source: "frame",
     href: `/exhibit/e/${exhibit.id}`,
     hrefLabel: "Open exhibit",
+    image: exhibit.media[0]?.src || undefined,
   };
 }
 
@@ -218,6 +224,7 @@ export function developerFrameInspect(
     source: "frame",
     href: `/exhibit/e/${exhibit.id}`,
     hrefLabel: "Enter exhibition",
+    image: developer.avatar || undefined,
   };
 }
 
@@ -301,6 +308,7 @@ export function buildInteractives(
       title: "The Curator",
       body: "I guide visitors through the museum. Each exhibit tells the story behind what was built — the architecture, the decisions, and the craft.",
       source: "curator",
+      image: "/images/curator.png",
     },
   });
 

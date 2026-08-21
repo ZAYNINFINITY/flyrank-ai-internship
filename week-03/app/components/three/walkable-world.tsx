@@ -4,6 +4,9 @@ import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Text } from "@react-three/drei";
 import * as THREE from "three";
+import { TDSLoader } from "three/addons/loaders/TDSLoader.js";
+import { OBJLoader } from "three/addons/loaders/OBJLoader.js";
+import { MTLLoader } from "three/addons/loaders/MTLLoader.js";
 import type { SurfaceLayout } from "@/lib/museum/queries";
 import type { Exhibit } from "@/lib/types/exhibit";
 import type { Developer } from "@/lib/types/developer";
@@ -329,7 +332,7 @@ function RoomBox({
     <group>
       <mesh rotation-x={-Math.PI / 2}>
         <planeGeometry args={[widthX, widthZ]} />
-        {tileFloorMaterial(palette.floor, widthX, widthZ)}
+        <FloorSurface color={palette.floor} widthX={widthX} widthZ={widthZ} />
       </mesh>
       <mesh rotation-x={Math.PI / 2} position={[0, HEIGHT, 0]}>
         <planeGeometry args={[widthX, widthZ]} />
@@ -1445,6 +1448,133 @@ function ApproachFacade() {
   );
 }
 
+// ─── Entrance dressing — flanking pillars (grander than the door's own
+// posts, spanning the full facade width) and two physical mounted boards
+// (a real signboard instead of bare floating text, plus an about/menu
+// directory board) so the entrance reads as a designed museum front.
+function EntrancePillars() {
+  const approach = FOOTPRINTS.approach;
+  const pillarZ = approach.minZ + 0.12;
+  const xs = [approach.minX + 0.42, approach.maxX - 0.42];
+  return (
+    <>
+      {xs.map((x, i) => (
+        <group key={i} position={[x, 0, pillarZ]}>
+          <mesh position={[0, 0.12, 0]}>
+            <boxGeometry args={[0.44, 0.24, 0.44]} />
+            <meshStandardMaterial color={PALETTE.approachWall} roughness={0.85} />
+          </mesh>
+          <mesh position={[0, 1.9, 0]}>
+            <cylinderGeometry args={[0.16, 0.18, 3.4, 16]} />
+            <meshStandardMaterial color="#e4ddc9" roughness={0.7} />
+          </mesh>
+          <mesh position={[0, 3.68, 0]}>
+            <boxGeometry args={[0.46, 0.16, 0.46]} />
+            <meshStandardMaterial color={PALETTE.approachWall} roughness={0.85} />
+          </mesh>
+        </group>
+      ))}
+    </>
+  );
+}
+
+function EntranceSignboard() {
+  const approach = FOOTPRINTS.approach;
+  const z = approach.minZ + 0.09;
+  return (
+    <group position={[0, 3.05, z]}>
+      <mesh>
+        <boxGeometry args={[3.2, 1.0, 0.06]} />
+        <meshStandardMaterial color="#1a1a20" roughness={0.6} metalness={0.15} />
+      </mesh>
+      <mesh position={[0, 0, 0.035]}>
+        <planeGeometry args={[3.0, 0.82]} />
+        {paperMaterial("#f7f0df", 0.9)}
+      </mesh>
+      <Text position={[0, 0.16, 0.05]} fontSize={0.26} color={PALETTE.ivory} anchorX="center" anchorY="middle">
+        PLINTH MUSEUM
+      </Text>
+      <Text
+        position={[0, -0.16, 0.05]}
+        fontSize={0.1}
+        color={PALETTE.dim}
+        anchorX="center"
+        anchorY="middle"
+        maxWidth={2.6}
+      >
+        An open museum — any developer can exhibit here
+      </Text>
+    </group>
+  );
+}
+
+const INFO_BOARD_MENU: Array<[string, string]> = [
+  ["Reception Hall", "Curator & wayfinding"],
+  ["Developer Corridor", "Meet the exhibitors"],
+  ["Exhibition Rooms", "Explore individual work"],
+];
+
+function EntranceInfoBoard() {
+  const approach = FOOTPRINTS.approach;
+  const x = approach.minX + 0.03;
+  const z = approach.minZ + 3.4;
+  return (
+    <group position={[x, 1.55, z]} rotation-y={Math.PI / 2}>
+      <mesh>
+        <boxGeometry args={[1.5, 2.1, 0.05]} />
+        {paperMaterial(PALETTE.paper, 0.92)}
+      </mesh>
+      <Text
+        position={[0, 0.88, 0.03]}
+        fontSize={0.12}
+        letterSpacing={0.08}
+        color={PALETTE.dim}
+        anchorX="center"
+        anchorY="top"
+      >
+        ABOUT
+      </Text>
+      <Text
+        position={[0, 0.68, 0.03]}
+        fontSize={0.072}
+        lineHeight={1.35}
+        color={PALETTE.ivory}
+        anchorX="center"
+        anchorY="top"
+        maxWidth={1.3}
+        textAlign="center"
+        overflowWrap="break-word"
+      >
+        An open museum for developer work.
+      </Text>
+      <mesh position={[0, 0.24, 0.001]}>
+        <boxGeometry args={[1.2, 0.015, 0.01]} />
+        {inkMaterial(PALETTE.gold, 0.6)}
+      </mesh>
+      <Text
+        position={[0, 0.1, 0.03]}
+        fontSize={0.12}
+        letterSpacing={0.08}
+        color={PALETTE.dim}
+        anchorX="center"
+        anchorY="top"
+      >
+        MENU
+      </Text>
+      {INFO_BOARD_MENU.map(([label, sub], i) => (
+        <group key={label} position={[0, -0.16 - i * 0.3, 0.03]}>
+          <Text fontSize={0.1} color={PALETTE.ivory} anchorX="center" anchorY="top">
+            {label}
+          </Text>
+          <Text position={[0, -0.14, 0]} fontSize={0.065} color={PALETTE.dim} anchorX="center" anchorY="top">
+            {sub}
+          </Text>
+        </group>
+      ))}
+    </group>
+  );
+}
+
 function ApproachExterior() {
   const approach = FOOTPRINTS.approach;
   const widthX = approach.maxX - approach.minX;
@@ -1459,7 +1589,7 @@ function ApproachExterior() {
           of being the only geometry with void on either side of it. */}
       <mesh rotation-x={-Math.PI / 2} position={[0, 0, midZ]}>
         <planeGeometry args={[widthX, widthZ]} />
-        {tileFloorMaterial(PALETTE.approachFloor, widthX, widthZ)}
+        <FloorSurface color={PALETTE.approachFloor} widthX={widthX} widthZ={widthZ} />
       </mesh>
       <mesh rotation-x={-Math.PI / 2} position={[0, 0.012, midZ]}>
         <planeGeometry args={[2.4, widthZ]} />
@@ -1475,6 +1605,13 @@ function ApproachExterior() {
       {/* Planters flanking the entrance */}
       <Planter position={[-2.4, 0, approach.minZ + 2.1]} />
       <Planter position={[2.4, 0, approach.minZ + 2.1]} />
+
+      {/* Real tree models (TDSLoader) — placed near the back lamp posts,
+          inset from the flanking courtyard walls with a fixed safe margin
+          rather than a magic-number X, since the actual wall span depends
+          on FOOTPRINTS.approach. */}
+      <Tree position={[approach.minX + 0.9, 0, approach.maxZ - 3]} />
+      <Tree position={[approach.maxX - 0.9, 0, approach.maxZ - 3]} targetHeight={2.9} />
 
       {/* Shallow stone steps rising to the threshold */}
       {[0, 1, 2].map((i) => (
@@ -1508,6 +1645,7 @@ function ApproachExterior() {
       {/* Facade — a single plane with a real door-shaped hole cut into it
           (ApproachFacade, via ShapeGeometry), not two stretched halves. */}
       <ApproachFacade />
+      <EntrancePillars />
       <mesh position={[-(ENTRANCE_HALF + 0.09), 1.2, approach.minZ + 0.06]}>
         <boxGeometry args={[0.18, 2.4, 0.18]} />
         <meshStandardMaterial color={PALETTE.frame} roughness={0.85} />
@@ -1525,24 +1663,8 @@ function ApproachExterior() {
           opening — so opening it now looks straight through into
           reception instead of into a hidden solid wall. */}
       <EntranceDoor />
-      <Text
-        position={[0, 3.1, approach.minZ + 0.4]}
-        fontSize={0.32}
-        color={PALETTE.ivory}
-        anchorX="center"
-        anchorY="middle"
-      >
-        PLINTH MUSEUM
-      </Text>
-      <Text
-        position={[0, 2.82, approach.minZ + 0.4]}
-        fontSize={0.11}
-        color={PALETTE.dim}
-        anchorX="center"
-        anchorY="middle"
-      >
-        An open museum — any developer can exhibit here
-      </Text>
+      <EntranceSignboard />
+      <EntranceInfoBoard />
     </group>
   );
 }
@@ -1659,6 +1781,101 @@ function tileFloorMaterial(color: string, widthX: number, widthZ: number) {
   return (
     <meshStandardMaterial color="#ffffff" map={tex} roughness={0.85} metalness={0} />
   );
+}
+
+// ─── Real PBR floor (from the supplied asset pack) — falls back to the
+// procedural tile texture above until the maps finish loading, or if they
+// fail to load at all, so a missing/renamed file never leaves a room with
+// no floor material. Diffuse + roughness only, deliberately no normalMap:
+// a flipped normal-map green channel (OpenGL vs DirectX convention) is a
+// well-known way to render a surface fully unlit/black even under ambient
+// light, and that's a much better fit for "only the floor went solid
+// black" than any of the other geometry in the scene being affected too.
+const PBR_FLOOR_PATHS = {
+  map: "/models/floor-textures/Material _25_Base_Color.png",
+  roughnessMap: "/models/floor-textures/Material _25_Roughness.png",
+};
+
+let pbrFloorTexturesPromise: Promise<{
+  map: THREE.Texture;
+  roughnessMap: THREE.Texture;
+}> | null = null;
+
+function loadPbrFloorTextures() {
+  if (!pbrFloorTexturesPromise) {
+    const loader = new THREE.TextureLoader();
+    const load = (url: string) =>
+      new Promise<THREE.Texture>((resolve, reject) => loader.load(url, resolve, undefined, reject));
+    pbrFloorTexturesPromise = Promise.all([
+      load(PBR_FLOOR_PATHS.map),
+      load(PBR_FLOOR_PATHS.roughnessMap),
+    ]).then(([map, roughnessMap]) => {
+      map.colorSpace = THREE.SRGBColorSpace;
+      for (const t of [map, roughnessMap]) {
+        t.wrapS = THREE.RepeatWrapping;
+        t.wrapT = THREE.RepeatWrapping;
+      }
+      return { map, roughnessMap };
+    });
+  }
+  return pbrFloorTexturesPromise;
+}
+
+function FloorSurface({
+  color,
+  widthX,
+  widthZ,
+}: {
+  color: string;
+  widthX: number;
+  widthZ: number;
+}) {
+  const [pbr, setPbr] = useState<{
+    map: THREE.Texture;
+    roughnessMap: THREE.Texture;
+  } | null>(null);
+
+  useEffect(() => {
+    let alive = true;
+    loadPbrFloorTextures()
+      .then((tex) => {
+        if (alive) setPbr(tex);
+      })
+      .catch(() => {
+        if (alive) setPbr(null);
+      });
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  const repeatX = Math.max(1, widthX / 1.6);
+  const repeatZ = Math.max(1, widthZ / 1.6);
+
+  const maps = useMemo(() => {
+    if (!pbr) return null;
+    const map = pbr.map.clone();
+    const roughnessMap = pbr.roughnessMap.clone();
+    for (const t of [map, roughnessMap]) {
+      t.needsUpdate = true;
+      t.repeat.set(repeatX, repeatZ);
+    }
+    return { map, roughnessMap };
+  }, [pbr, repeatX, repeatZ]);
+
+  if (maps) {
+    return (
+      <meshStandardMaterial
+        map={maps.map}
+        roughnessMap={maps.roughnessMap}
+        color="#ffffff"
+        roughness={1}
+        metalness={0}
+      />
+    );
+  }
+
+  return tileFloorMaterial(color, widthX, widthZ);
 }
 
 // ─── Illustrated facade (sketched columns + pediment, not a flat wall) ──
@@ -1948,6 +2165,199 @@ function LampPost({ position }: { position: [number, number, number] }) {
   );
 }
 
+// ─── Real tree model (TDSLoader) — loaded once and cloned per placement.
+// Defensive by design: any load/parse failure resolves to "render nothing"
+// rather than throwing, since 3DS is the least predictable of the three
+// asset formats to load blind, and a missing tree shouldn't be able to
+// break the rest of the scene. Scale is derived from the model's own
+// bounding box rather than a guessed constant, since the 3DS file's native
+// units aren't known.
+let treeModelPromise: Promise<THREE.Group> | null = null;
+
+function loadTreeModel() {
+  if (!treeModelPromise) {
+    treeModelPromise = new Promise<THREE.Group>((resolve, reject) => {
+      const loader = new TDSLoader();
+      loader.load("/models/tree.3ds", resolve, undefined, reject);
+    });
+  }
+  return treeModelPromise;
+}
+
+const TREE_TEXTURE_CACHE = new Map<string, THREE.Texture>();
+function loadTreeTexture(url: string) {
+  let tex = TREE_TEXTURE_CACHE.get(url);
+  if (!tex) {
+    tex = new THREE.TextureLoader().load(url);
+    TREE_TEXTURE_CACHE.set(url, tex);
+  }
+  return tex;
+}
+
+function Tree({
+  position,
+  targetHeight = 3.2,
+}: {
+  position: [number, number, number];
+  targetHeight?: number;
+}) {
+  const [model, setModel] = useState<THREE.Group | null>(null);
+
+  useEffect(() => {
+    let alive = true;
+    loadTreeModel()
+      .then((source) => {
+        if (!alive) return;
+        const clone = source.clone(true);
+        const bark = loadTreeTexture("/models/tree-textures/bark_loo.jpg");
+        const leaf = loadTreeTexture("/models/tree-textures/blatt1.jpg");
+        const leafAlpha = loadTreeTexture("/models/tree-textures/blatt1_a.jpg");
+        bark.colorSpace = THREE.SRGBColorSpace;
+        leaf.colorSpace = THREE.SRGBColorSpace;
+
+        clone.traverse((child) => {
+          if (!(child instanceof THREE.Mesh)) return;
+          const name = child.name.toLowerCase();
+          const looksLikeLeaf =
+            name.includes("leaf") || name.includes("leaves") || name.includes("blatt");
+          child.material = looksLikeLeaf
+            ? new THREE.MeshStandardMaterial({
+                map: leaf,
+                alphaMap: leafAlpha,
+                transparent: true,
+                alphaTest: 0.4,
+                side: THREE.DoubleSide,
+                color: "#7c8f52",
+                roughness: 0.85,
+              })
+            : new THREE.MeshStandardMaterial({ map: bark, color: "#ffffff", roughness: 0.9 });
+        });
+
+        // Normalize scale + ground offset from the model's own bounding box.
+        const box = new THREE.Box3().setFromObject(clone);
+        const size = box.getSize(new THREE.Vector3());
+        const autoScale = size.y > 0.001 ? targetHeight / size.y : 1;
+        clone.scale.setScalar(autoScale);
+        clone.position.y -= box.min.y * autoScale;
+
+        setModel(clone);
+      })
+      .catch((err) => {
+        // Failed to load/parse — clear the cached promise so a future
+        // remount can retry (a texture 404 during dev shouldn't wedge this
+        // permanently for the whole session), and leave the spot empty.
+        console.warn("[Tree] failed to load, skipping:", err);
+        treeModelPromise = null;
+        if (alive) setModel(null);
+      });
+    return () => {
+      alive = false;
+    };
+  }, [targetHeight]);
+
+  if (!model) return null;
+
+  return <primitive object={model} position={position} />;
+}
+
+// ─── Wall-plank accent (OBJLoader + MTLLoader) — same defensive pattern as
+// Tree. The exported .mtl only carries two flat placeholder colors (one an
+// odd purple, not an actual wood tone), so materials are overridden after
+// load rather than trusted as-is.
+let plankModelPromise: Promise<THREE.Group> | null = null;
+
+function loadPlankModel() {
+  if (!plankModelPromise) {
+    plankModelPromise = new Promise<THREE.Group>((resolve, reject) => {
+      const mtlLoader = new MTLLoader();
+      mtlLoader.setPath("/models/");
+      mtlLoader.load(
+        "planks.mtl",
+        (materials) => {
+          materials.preload();
+          const objLoader = new OBJLoader();
+          objLoader.setMaterials(materials);
+          objLoader.setPath("/models/");
+          objLoader.load("planks.obj", resolve, undefined, reject);
+        },
+        undefined,
+        reject
+      );
+    });
+  }
+  return plankModelPromise;
+}
+
+function WoodPlankAccent({
+  position,
+  ry = 0,
+  targetWidth = 2.4,
+}: {
+  position: [number, number, number];
+  ry?: number;
+  targetWidth?: number;
+}) {
+  const [model, setModel] = useState<THREE.Group | null>(null);
+
+  useEffect(() => {
+    let alive = true;
+    loadPlankModel()
+      .then((source) => {
+        if (!alive) return;
+        const clone = source.clone(true);
+        clone.traverse((child) => {
+          if (!(child instanceof THREE.Mesh)) return;
+          child.material = new THREE.MeshStandardMaterial({
+            color: "#6b4a30",
+            roughness: 0.75,
+            metalness: 0,
+          });
+        });
+
+        // The raw model is exported lying flat — its bounding box is
+        // ~800 x 24 x 463 (that ~24 is thickness), i.e. a floor-plank
+        // layout, not a vertical wall panel. A pure Y-axis spin can't fix
+        // that (it only turns a flat object in place, still flat) — it
+        // needs to be physically tipped upright: rotate -90° about X so
+        // the thin axis becomes depth-against-the-wall instead of "up",
+        // with the original X staying as horizontal width and the
+        // original Z becoming vertical height.
+        const rawBox = new THREE.Box3().setFromObject(clone);
+        const rawSize = rawBox.getSize(new THREE.Vector3());
+        const widthSpan = Math.max(rawSize.x, 0.001);
+        const autoScale = targetWidth / widthSpan;
+
+        clone.rotation.x = -Math.PI / 2;
+        clone.updateMatrixWorld(true);
+
+        const rig = new THREE.Group();
+        rig.add(clone);
+        rig.scale.setScalar(autoScale);
+        rig.updateMatrixWorld(true);
+
+        // Re-measure after tipping upright to find the true floor offset
+        // (relying on hand-derived arithmetic here would be one more place
+        // to get the axis swap wrong).
+        const tippedBox = new THREE.Box3().setFromObject(rig);
+        rig.position.y -= tippedBox.min.y;
+
+        setModel(rig);
+      })
+      .catch((err) => {
+        console.warn("[Planks] failed to load, skipping:", err);
+        plankModelPromise = null;
+        if (alive) setModel(null);
+      });
+    return () => {
+      alive = false;
+    };
+  }, [targetWidth]);
+
+  if (!model) return null;
+
+  return <primitive object={model} position={position} rotation-y={ry} />;
+}
+
 // ─── Scene assembly ────────────────────────────────────────────
 export type WalkableSceneProps = {
   world: WalkableWorld;
@@ -2161,8 +2571,28 @@ function WalkableWorldScene({
 
       {/* Reception furnishing */}
       <Bench position={[-3.6, 0, 15.6]} ry={Math.PI / 2} />
+      <Bench position={[3.6, 0, 15.6]} ry={-Math.PI / 2} />
       <PottedPlant position={[4.3, 0, 14.2]} scale={1.4} />
       <PottedPlant position={[-4.3, 0, 19.2]} scale={1.4} />
+      <PottedPlant position={[-4.3, 0, 14.5]} scale={1.3} />
+      <PottedPlant position={[4.3, 0, 17.6]} scale={1.3} />
+      {/* Real tree models in reception too, not just the exterior approach —
+          placed in the two corners furthest from the door-to-door walking
+          path and the existing bench/planter clusters. Shorter than the
+          exterior trees (targetHeight 2.6 vs 3.2/2.9) so they sit
+          comfortably under the 3.6-unit interior ceiling with clearance. */}
+      <Tree position={[-4.6, 0, 13.6]} targetHeight={2.6} />
+      <Tree position={[4.6, 0, 19.4]} targetHeight={2.6} />
+      {/* Center runner — anchors the otherwise-empty middle of the room,
+          running door to door in the direction visitors actually walk. */}
+      <mesh rotation-x={-Math.PI / 2} position={[0, 0.014, 16.5]}>
+        <planeGeometry args={[1.7, 5.6]} />
+        <meshStandardMaterial color={PALETTE.accent} roughness={0.92} metalness={0} />
+      </mesh>
+      {/* Wall-plank accent (OBJLoader+MTLLoader) — reuses the x=-4.3 wall
+          line already proven safe by the PottedPlant above, at a different
+          Z so it doesn't overlap either existing prop. */}
+      <WoodPlankAccent position={[-4.3, 0.15, 16.5]} ry={Math.PI / 2} />
 
       {/* Exhibit room furnishing */}
       <PottedPlant position={[-4.3, 0, -19.3]} scale={1.2} />

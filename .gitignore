@@ -24,6 +24,9 @@ yarn-error.log*
 .DS_Store
 Thumbs.db
 
+# Raw 3D source files (app uses copies in public/models/)
+week-03/app/assets/
+
 # Misc
 *.log
 .cache/

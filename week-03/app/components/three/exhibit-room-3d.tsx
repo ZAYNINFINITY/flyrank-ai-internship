@@ -148,6 +148,17 @@ export function ExhibitRoom3D({
   }, []);
 
   const closeInspect = useCallback(() => setInspect(null), []);
+  const [cardRevealed, setCardRevealed] = useState(false);
+
+  useEffect(() => {
+    if (!inspect) {
+      setCardRevealed(false);
+      return;
+    }
+    setCardRevealed(false);
+    const frame = requestAnimationFrame(() => setCardRevealed(true));
+    return () => cancelAnimationFrame(frame);
+  }, [inspect]);
 
   useEffect(() => {
     if (!inspect && !showTextWalls) return;
@@ -353,46 +364,69 @@ export function ExhibitRoom3D({
 
       {inspect && inspect.source !== "curator" && (
         <div
-          ref={inspectRef}
-          role="dialog"
-          aria-modal="true"
-          aria-label="Inspect"
-          tabIndex={-1}
-          className="absolute inset-x-3 bottom-3 rounded-sm border border-[#2a2a30]/15 bg-[#efe9da]/95 p-5 shadow-lg backdrop-blur-sm sm:inset-x-auto sm:right-4 sm:bottom-4 sm:left-auto sm:w-[22rem] focus:outline-none"
+          className="pointer-events-none absolute inset-x-3 bottom-3 flex justify-center sm:inset-x-auto sm:right-4 sm:bottom-4 sm:left-auto sm:justify-end"
+          style={{ perspective: "1200px" }}
         >
-          <p className="text-[10px] uppercase tracking-[0.25em] text-[#6f6c62]">
-            {SOURCE_LABELS[inspect.source]}
-          </p>
-          <h4 className="mt-1 font-heading text-lg tracking-tight text-[#2a2a30]">
-            {inspect.title}
-          </h4>
-          <p className="mt-2 text-sm leading-relaxed text-[#2a2a30]/70">
-            {inspect.body}
-          </p>
-          <div className="mt-4 flex flex-wrap items-center justify-between gap-4">
-            {inspect.href && (
-              <Link
-                href={inspect.href}
-                className="inline-flex min-h-[44px] items-center text-xs uppercase tracking-[0.2em] text-[#2a2a30]/60 transition-opacity duration-200 hover:text-[#2a2a30] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-              >
-                {inspect.hrefLabel ?? "Continue"} &rarr;
-              </Link>
+          <div
+            key={inspect.title + inspect.source}
+            ref={inspectRef}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Inspect"
+            tabIndex={-1}
+            className="pointer-events-auto w-full overflow-hidden rounded-sm border border-[#2a2a30]/15 bg-[#efe9da]/95 shadow-lg backdrop-blur-sm transition-[transform,opacity] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] focus:outline-none sm:w-[22rem]"
+            style={{
+              transformStyle: "preserve-3d",
+              transform: cardRevealed ? "rotateY(0deg) scale(1)" : "rotateY(-90deg) scale(0.92)",
+              opacity: cardRevealed ? 1 : 0,
+            }}
+          >
+            {inspect.image && (
+              <div className="h-32 w-full overflow-hidden border-b border-[#2a2a30]/12 bg-[#2a2a30]/5">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={inspect.image}
+                  alt=""
+                  className="h-full w-full object-cover"
+                />
+              </div>
             )}
-            {portfolioRoute && !inspect.href && (
-              <Link
-                href={portfolioRoute}
-                className="inline-flex min-h-[44px] items-center text-xs uppercase tracking-[0.2em] text-[#2a2a30]/60 transition-opacity duration-200 hover:text-[#2a2a30] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-              >
-                Open full exhibit &rarr;
-              </Link>
-            )}
-            <button
-              type="button"
-              onClick={closeInspect}
-              className="rounded-sm border border-[#2a2a30]/20 px-3 py-1.5 text-[11px] uppercase tracking-[0.2em] text-[#2a2a30]/60 transition-all duration-200 hover:border-[#2a2a30]/50 hover:text-[#2a2a30] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-            >
-              Close
-            </button>
+            <div className="p-5">
+              <p className="text-[10px] uppercase tracking-[0.25em] text-[#6f6c62]">
+                {SOURCE_LABELS[inspect.source]}
+              </p>
+              <h4 className="mt-1 font-heading text-lg tracking-tight text-[#2a2a30]">
+                {inspect.title}
+              </h4>
+              <p className="mt-2 text-sm leading-relaxed text-[#2a2a30]/70">
+                {inspect.body}
+              </p>
+              <div className="mt-4 flex flex-wrap items-center justify-between gap-4">
+                {inspect.href && (
+                  <Link
+                    href={inspect.href}
+                    className="inline-flex min-h-[44px] items-center text-xs uppercase tracking-[0.2em] text-[#2a2a30]/60 transition-opacity duration-200 hover:text-[#2a2a30] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                  >
+                    {inspect.hrefLabel ?? "Continue"} &rarr;
+                  </Link>
+                )}
+                {portfolioRoute && !inspect.href && (
+                  <Link
+                    href={portfolioRoute}
+                    className="inline-flex min-h-[44px] items-center text-xs uppercase tracking-[0.2em] text-[#2a2a30]/60 transition-opacity duration-200 hover:text-[#2a2a30] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                  >
+                    Open full exhibit &rarr;
+                  </Link>
+                )}
+                <button
+                  type="button"
+                  onClick={closeInspect}
+                  className="rounded-sm border border-[#2a2a30]/20 px-3 py-1.5 text-[11px] uppercase tracking-[0.2em] text-[#2a2a30]/60 transition-all duration-200 hover:border-[#2a2a30]/50 hover:text-[#2a2a30] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}

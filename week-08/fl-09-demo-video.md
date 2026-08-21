@@ -11,6 +11,7 @@ A scene-by-scene script for recording a 2-3 minute demo video of Plinth. The vid
 - **Tool:** Any screen recorder (OBS, QuickTime, Windows Game Bar `Win+G`)
 - **Flags:** `--enable-unsafe-swiftshader --use-angle=swiftshader-webgl` if no GPU available
 - **Duration target:** 2-3 minutes
+- **Auto-recorded demo:** `week-08/demo-video.mp4` (35 seconds, 9 routes, 597KB)
 
 ## Scene script
 

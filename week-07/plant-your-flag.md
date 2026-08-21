@@ -32,5 +32,5 @@ Vercel Analytics is available on the Pro plan. Free tier analytics (Google Analy
 ## Evidence
 
 - Vercel dashboard: `plinth` project active
-- Live URL: `https://plinth.vercel.app` (or assigned Vercel subdomain)
+- Live URL: `https://plinth-cyan.vercel.app` (or assigned Vercel subdomain)
 - Screenshot of analytics: pending installation

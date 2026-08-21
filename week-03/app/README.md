@@ -4,7 +4,7 @@
 
 Plinth is a platform where developers exhibit their work as curated gallery rooms — not card grids, not thumbnail clusters. Each project gets a dedicated space with architectural presence: a scrollable 3D corridor, an exhibit room with text walls and media, and an AI curator that answers questions about what's on display.
 
-**Live:** [plinth.vercel.app](https://plinth.vercel.app)
+**Live:** [plinth-cyan.vercel.app](https://plinth-cyan.vercel.app)
 
 ## What it solves
 

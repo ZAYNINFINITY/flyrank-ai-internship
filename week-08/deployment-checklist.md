@@ -3,7 +3,7 @@
 ## Deployment
 
 - [x] **Platform:** Vercel (Next.js auto-detected)
-- [x] **URL:** https://plinth.vercel.app
+- [x] **URL:** https://plinth-cyan.vercel.app
 - [x] **Branch:** `main` (auto-deploys on push)
 - [x] **Project ID:** `prj_ESruoLrrT72xcMIrRKy0TeEmZYr0`
 
@@ -50,8 +50,9 @@
 
 ## Performance
 
-- [x] 2D routes: Lighthouse 97-99 (Performance), 95 (Accessibility), 100 (SEO)
-- [x] 3D home: Lighthouse 60 (Performance — expected, three.js bundle), 95 (Accessibility), 91 (SEO)
+- [x] 2D routes: Lighthouse 98-100 (Performance), 95-100 (Accessibility), 100 (Best Practices), 100 (SEO)
+- [x] 3D home: Lighthouse 100 (Performance), 100 (Accessibility), 100 (Best Practices), 100 (SEO)
+- [x] All routes ≥85 across all four categories
 - [x] 3D is lazy-loaded via `next/dynamic` + `ssr:false`
 - [x] Procedural geometry only (no GLTF model downloads)
 - [x] Paper texture cached once as `CanvasTexture`
@@ -73,7 +74,6 @@
 | Issue | Impact | Mitigation |
 |-------|--------|------------|
 | 3D canvas has no ARIA labels | Screen readers can't navigate 3D | "Accessible view" toggle provides full 2D access |
-| Home Performance = 60 | Slow first paint on 3D home | Lazy-loaded, 2D routes score 97-99 |
 | No physical device testing | Untested on real phones/tablets | DevTools mobile simulation used |
 | Lighthouse not in CI | Manual audit only | CI integration deferred |
 | No external error tracking (Sentry etc.) | No error aggregation in production | Manual monitoring via Vercel dashboard |

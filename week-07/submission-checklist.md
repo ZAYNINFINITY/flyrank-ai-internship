@@ -21,7 +21,7 @@ Copy this per assignment. No code files — just evidence, links, and proof.
 - `fe-aa2-homepage-mobile.png`
 - `fe-aa2-entrance-mobile.png`
 
-**LINK:** https://plinth.vercel.app
+**LINK:** https://plinth-cyan.vercel.app
 
 **Repo links:**
 - https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-07/week-7-submission-summary.md
@@ -42,7 +42,7 @@ Copy this per assignment. No code files — just evidence, links, and proof.
 **Screenshots (IMG):**
 - `break-your-own-site-explore.png`
 
-**LINK:** https://plinth.vercel.app/explore
+**LINK:** https://plinth-cyan.vercel.app/explore
 
 **Repo links:**
 - https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-07/break-your-own-site.md
@@ -57,7 +57,7 @@ Copy this per assignment. No code files — just evidence, links, and proof.
 
 **Screenshots (IMG):** none (deployment screenshot pending manual capture)
 
-**LINK:** https://plinth.vercel.app
+**LINK:** https://plinth-cyan.vercel.app
 
 **Repo links:**
 - https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-07/plant-your-flag.md
@@ -73,7 +73,7 @@ Copy this per assignment. No code files — just evidence, links, and proof.
 **Screenshots (IMG):**
 - `fe-10-audit-about.png`
 
-**LINK:** https://plinth.vercel.app/about
+**LINK:** https://plinth-cyan.vercel.app/about
 
 **Repo links:**
 - https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-07/AUDIT.md
@@ -86,7 +86,7 @@ Copy this per assignment. No code files — just evidence, links, and proof.
 
 | # | Assignment | MD to attach | Screenshots | Live |
 |---|---|---|---|---|
-| 1 | FE-AA2 3D Experience | `week-7-submission-summary.md` + `fe-aa2-3d-room.md` + `fe-aa2-perf-note.md` | 4 (`fe-aa2-*`) | plinth.vercel.app |
+| 1 | FE-AA2 3D Experience | `week-7-submission-summary.md` + `fe-aa2-3d-room.md` + `fe-aa2-perf-note.md` | 4 (`fe-aa2-*`) | plinth-cyan.vercel.app |
 | 2 | Break Your Own Site | `break-your-own-site.md` | 1 (`break-your-own-site-explore.png`) | /explore |
-| 3 | Plant Your Flag | `plant-your-flag.md` | — | plinth.vercel.app |
+| 3 | Plant Your Flag | `plant-your-flag.md` | — | plinth-cyan.vercel.app |
 | 4 | FE-10 Audit | `AUDIT.md` + `phone-audit.md` | 1 (`fe-10-audit-about.png`) | /about |

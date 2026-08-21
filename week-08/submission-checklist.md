@@ -22,7 +22,7 @@
 
 ### 2. Live Application
 
-**LINK:** https://plinth.vercel.app
+**LINK:** https://plinth-cyan.vercel.app
 
 **Key routes to verify:**
 - `/` — 3D museum homepage (or 2D fallback on low-end devices)
@@ -116,7 +116,7 @@
 | # | Deliverable | File | Live |
 |---|-------------|------|------|
 | 1 | Project Brief | `project-brief.md` | — |
-| 2 | Live App | — | plinth.vercel.app |
+| 2 | Live App | — | plinth-cyan.vercel.app |
 | 3 | README | `README.md` | — |
 | 4 | Testing Evidence | `test-results.png` | — |
 | 5 | Performance Audit | `lighthouse-scores.md` + `AUDIT.md` | — |

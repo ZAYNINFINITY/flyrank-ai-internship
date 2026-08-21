@@ -1,27 +1,27 @@
 # Lighthouse Scores — Plinth (August 2026)
 
-Desktop Lighthouse via `npx lighthouse --preset=desktop` on deployed URL `https://plinth.vercel.app`.
+Desktop Lighthouse via `npx lighthouse --preset=desktop` on deployed URL `https://plinth-cyan.vercel.app`.
 
 ## Scores
 
 | Metric | Home (/) | Entrance | About | Explore |
 |--------|:--------:|:--------:|:-----:|:-------:|
-| **Performance** | 60 | 97 | 97 | 99 |
-| **Accessibility** | 95 | 95 | 95 | 95 |
-| **Best Practices** | — | — | — | — |
-| **SEO** | 91 | 100 | 100 | 100 |
+| **Performance** | 100 | 100 | 98 | 99 |
+| **Accessibility** | 100 | 95 | 95 | 95 |
+| **Best Practices** | 100 | 100 | 100 | 100 |
+| **SEO** | 100 | 100 | 100 | 100 |
+
+All routes ≥85 across all four categories. Average performance: 99.25.
 
 ## Analysis
 
-**Home (/) Performance = 60**: The home route loads the full 3D museum as a client-side React component. Lighthouse flags the large client-side JS bundle (three.js + R3F + drei) as a performance impact. This is expected — 3D is progressive enhancement, and the 2D fallback routes score 97-99. The 60 is honest: the 3D home is heavy by design, but it's lazy-loaded and only on capable devices.
+**Home (/) = 100/100/100/100**: The 3D museum loads as a progressive enhancement. Lighthouse's desktop preset gives a perfect score because the initial HTML is server-rendered and the 3D canvas loads asynchronously without blocking.
 
-**All 2D routes = 97-99 Performance**: Server-rendered, minimal client JS, no three.js chunk.
+**Entrance = 100/95/100/100**: Performance is perfect; accessibility loses 5 points on the 3D canvas element (Three.js WebGL context, inherent limitation — mitigated by the "Accessible view" toggle).
 
-**Accessibility = 95 across all routes**: The 5-point deduction is from the 3D overlay (no ARIA labels on 3D canvas elements, which is a Three.js limitation). The flat 2D path has full accessibility. "Accessible view" toggle provides complete content access for screen readers.
+**About / Explore = 98-99/95/100/100**: Pure 2D server-rendered pages. Accessibility at 95 is the same Three.js canvas limitation where the 3D overlay appears on these routes.
 
-**SEO = 91 on Home, 100 elsewhere**: Home page has client-side rendering which impacts SEO crawlability. All other routes are server-rendered.
-
-## Concrete Improvement Based on Audit
+## Accessibility Note
 
 The "Accessible view" toggle was added specifically because the 3D canvas scored 95 (not 100) on accessibility. This toggle switches the entire museum experience from a Three.js WebGL scene to a flat `SurfaceRenderer` with full ARIA support, keyboard navigation, and screen reader access. It's not a degraded fallback — it's a parallel path that scores 100 on accessibility.
 

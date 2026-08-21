@@ -4,7 +4,7 @@
 
 **Plinth** — an open digital museum where developers exhibit their work as curated gallery rooms. Not a card grid, not a thumbnail cluster. Each project gets a dedicated space with architectural presence: a scrollable 3D corridor, an exhibit room with text walls and media, and an AI curator that answers questions about what's on display.
 
-**Live URL:** https://plinth.vercel.app
+**Live URL:** https://plinth-cyan.vercel.app
 
 ## What's included
 

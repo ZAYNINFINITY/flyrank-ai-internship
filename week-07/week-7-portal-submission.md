@@ -4,7 +4,7 @@ Copy-paste ready resources for each Week 7 assignment. Attach the files / paste 
 
 **Intern:** Zain Ul Abideen · **Track:** Frontend AI Engineering
 **Repository:** https://github.com/ZAYNINFINITY/flyrank-ai-internship (branch `main`)
-**Live deployment:** https://plinth.vercel.app
+**Live deployment:** https://plinth-cyan.vercel.app
 **Master packet:** https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-07/week-7-submission-summary.md
 
 ---
@@ -41,7 +41,7 @@ Copy-paste ready resources for each Week 7 assignment. Attach the files / paste 
 - https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-07/screenshots/fe-aa2-entrance-mobile.png
 
 **Commits:** `e5db12b` (sawtooth corridor) · `bc7dd98` (itom structure) · `bd3607c` (Phase 2+3A) · `22b319e` (gyroscope, facade fix, mobile polish)
-**Live:** https://plinth.vercel.app (3D museum renders on WebGL2-capable devices)
+**Live:** https://plinth-cyan.vercel.app (3D museum renders on WebGL2-capable devices)
 
 ---
 
@@ -54,7 +54,7 @@ Copy-paste ready resources for each Week 7 assignment. Attach the files / paste 
 - https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-07/screenshots/break-your-own-site-explore.png
 
 **Commits:** `22b319e` (all breakage fixes shipped)
-**Live:** https://plinth.vercel.app/explore
+**Live:** https://plinth-cyan.vercel.app/explore
 
 ---
 
@@ -66,7 +66,7 @@ Copy-paste ready resources for each Week 7 assignment. Attach the files / paste 
 - https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-07/plant-your-flag.md
 
 **Commits:** `22b319e` (deployment on main)
-**Live:** https://plinth.vercel.app
+**Live:** https://plinth-cyan.vercel.app
 
 ---
 
@@ -89,7 +89,7 @@ Copy-paste ready resources for each Week 7 assignment. Attach the files / paste 
 - https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-07/screenshots/fe-10-audit-about.png
 
 **Commits:** `36db6c4` (submission packet with Lighthouse scores)
-**Live:** https://plinth.vercel.app/about
+**Live:** https://plinth-cyan.vercel.app/about
 
 ---
 

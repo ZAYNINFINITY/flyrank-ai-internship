@@ -36,7 +36,7 @@
 ### 3. Repository with Complete README
 
 **Repo link:**
-- https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/README.md
+- https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-03/app/README.md
 
 **What the README covers:**
 - Project brief and what Plinth solves

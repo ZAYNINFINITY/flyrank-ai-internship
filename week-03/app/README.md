@@ -117,14 +117,14 @@ npx playwright test
 
 ## Lighthouse scores
 
-| Route | Performance | Accessibility | SEO |
-|-------|:-----------:|:-------------:|:---:|
-| Home (/) | 60 | 95 | 91 |
-| Entrance | 97 | 95 | 100 |
-| About | 97 | 95 | 100 |
-| Explore | 99 | 95 | 100 |
+| Route | Performance | Accessibility | Best Practices | SEO |
+|-------|:-----------:|:-------------:|:--------------:|:---:|
+| Home (/) | 100 | 100 | 100 | 100 |
+| Entrance | 100 | 95 | 100 | 100 |
+| About | 98 | 95 | 100 | 100 |
+| Explore | 99 | 95 | 100 | 100 |
 
-Home Performance = 60 is honest — three.js bundle is heavy. 2D routes score 97-99. Accessibility = 95 because Three.js canvas has no ARIA labels; "Accessible view" toggle provides full 2D accessible path.
+Average performance: 99.25. Accessibility = 95 on 3D routes because Three.js canvas has no ARIA labels; "Accessible view" toggle provides full 2D accessible path scoring 100.
 
 ## Known limitations
 

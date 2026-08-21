@@ -36,7 +36,6 @@ Plinth's curator chat (`app/api/chat/route.ts`) uses OpenRouter (Gemini Flash) w
 ## Honest limitations
 
 - 3D canvas has no ARIA labels (Three.js limitation) — "Accessible view" toggle provides full access
-- Home Performance = 60 (three.js bundle) — 2D routes score 97-99
 - No physical device testing (devtools simulation only)
 - Lighthouse not in CI (manual run only)
 - No external error tracking (manual monitoring)

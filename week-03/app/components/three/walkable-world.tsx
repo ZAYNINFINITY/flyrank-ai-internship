@@ -26,6 +26,8 @@ import {
 import { getPaperTexture } from "@/lib/three/paper-texture";
 import { RevealMaterial } from "@/lib/three/reveal-material";
 import { WalkablePlayer, type GlanceTarget } from "./walkable-player";
+import { EntranceSky, SeasonalWeather, type TimeOfDay, type Season } from "./entrance-environment";
+import { MuseumCat } from "./museum-cat";
 
 // Itom's corridor runs 3.5 units tall, noticeably cozier than a generic
 // 4-unit box — that proportion reads as "designed" rather than cavernous.
@@ -1629,6 +1631,9 @@ function ApproachExterior() {
         <meshStandardMaterial color={PALETTE.accent} roughness={0.92} metalness={0} />
       </mesh>
 
+      {/* Museum cat — sits on the welcome mat, alive and breathing */}
+      <MuseumCat position={[0.7, 0, approach.minZ + 2.55]} />
+
       {/* Flanking courtyard walls — without these the approach reads as an
           open void either side of the path instead of a bounded space.
           Taller than the interior rooms so it still reads as "outside" the
@@ -1816,6 +1821,11 @@ function loadPbrFloorTextures() {
         t.wrapT = THREE.RepeatWrapping;
       }
       return { map, roughnessMap };
+    }).catch((err) => {
+      // Reset the cached promise so the next mount retries instead of
+      // permanently reusing a rejected promise.
+      pbrFloorTexturesPromise = null;
+      throw err;
     });
   }
   return pbrFloorTexturesPromise;
@@ -2375,6 +2385,8 @@ export type WalkableSceneProps = {
   onReady?: () => void;
   enabled: boolean;
   lightsOn?: boolean;
+  timeOfDay?: TimeOfDay;
+  season?: Season;
 };
 
 function WalkableWorldScene({
@@ -2391,6 +2403,8 @@ function WalkableWorldScene({
   onDoorOpened,
   enabled,
   lightsOn = true,
+  timeOfDay = "noon",
+  season = "summer",
 }: WalkableSceneProps) {
   const byId = useMemo(() => new Map(exhibits.map((e) => [e.id, e])), [exhibits]);
   const roomOrigin = { x: 0, z: (FOOTPRINTS.exhibit.minZ + FOOTPRINTS.exhibit.maxZ) / 2 };
@@ -2461,7 +2475,9 @@ function WalkableWorldScene({
 
   return (
     <>
-      <fog attach="fog" args={[PALETTE.paper, 18, 55]} />
+      <EntranceSky time={timeOfDay} />
+      <SeasonalWeather season={season} />
+
       <ambientLight intensity={0.55} />
       <hemisphereLight args={["#f0ede6", "#d2c4a8", 0.75]} />
       <directionalLight position={[4, 8, 3]} intensity={1.0} color="#fff6df" />
@@ -2630,6 +2646,8 @@ export function WalkableWorldCanvas({
   onReady,
   enabled,
   lightsOn = true,
+  timeOfDay = "noon",
+  season = "summer",
 }: WalkableWorldCanvasProps) {
   const world = useMemo<WalkableWorld>(
     () => ({
@@ -2675,6 +2693,8 @@ export function WalkableWorldCanvas({
           onDoorOpened={onDoorOpened}
           enabled={enabled}
           lightsOn={lightsOn}
+          timeOfDay={timeOfDay}
+          season={season}
         />
       </Suspense>
     </Canvas>

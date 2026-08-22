@@ -110,11 +110,10 @@ export function detachWalkableKeyboard() {
 }
 
 export function attachWalkablePointer(target: HTMLElement) {
-  void target;
-  window.addEventListener("wheel", onWheel, { passive: false });
+  target.addEventListener("wheel", onWheel, { passive: false });
   window.addEventListener("mousemove", onMouseMove);
   return () => {
-    window.removeEventListener("wheel", onWheel);
+    target.removeEventListener("wheel", onWheel);
     window.removeEventListener("mousemove", onMouseMove);
   };
 }

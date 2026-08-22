@@ -5,7 +5,7 @@
 A custom `THREE.ShaderMaterial` subclass that creates a brush-stroke sketch-to-paint reveal effect. When the camera approaches an exhibit frame, the sketch layer dissolves from bottom to top with a noisy brush edge, revealing the painted content underneath.
 
 **Source:** `lib/three/reveal-material.ts` (77 lines)
-**Adapted from:** MIT-licensed [itomdev.com](https://github.com/ITomPoland/portfolio-itom) technique, customized for Plinth's museum context.
+**Adapted from:** MIT-licensed [itomdev.com](https://github.com/ITomPoland/portfolio-itom) technique, customized for Foyer's museum context.
 
 ## How it works
 
@@ -42,7 +42,7 @@ This means exhibits "paint themselves" as you walk toward them — the sketch di
 
 ## Why it matters
 
-This is the signature visual effect of Plinth's museum. Without it, exhibits are static textured planes. With it, the museum feels alive — each piece reveals itself as you approach, creating a sense of discovery that a card grid or thumbnail cluster can never match.
+This is the signature visual effect of Foyer's museum. Without it, exhibits are static textured planes. With it, the museum feels alive — each piece reveals itself as you approach, creating a sense of discovery that a card grid or thumbnail cluster can never match.
 
 ## Evidence
 

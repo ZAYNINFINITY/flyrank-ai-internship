@@ -2,11 +2,11 @@
 
 ## What this is
 
-A scene-by-scene script for recording a 2-3 minute demo video of Plinth. The video should show the real live app, not slides or mockups.
+A scene-by-scene script for recording a 2-3 minute demo video of Foyer. The video should show the real live app, not slides or mockups.
 
 ## Recording setup
 
-- **URL:** https://plinth-cyan.vercel.app
+- **URL:** https://foyer-cyan.vercel.app
 - **Browser:** Chrome (desktop, 1920x1080)
 - **Tool:** Any screen recorder (OBS, QuickTime, Windows Game Bar `Win+G`)
 - **Flags:** `--enable-unsafe-swiftshader --use-angle=swiftshader-webgl` if no GPU available
@@ -17,10 +17,10 @@ A scene-by-scene script for recording a 2-3 minute demo video of Plinth. The vid
 
 ### Scene 1 — Landing (0:00 - 0:20)
 
-**Show:** `plinth-cyan.vercel.app/` loads. The 3D museum entrance appears — courtyard walls, lamp posts, "PLINTH MUSEUM" signage, the door with cutout.
+**Show:** `foyer-cyan.vercel.app/` loads. The 3D museum entrance appears — courtyard walls, lamp posts, "FOYER MUSEUM" signage, the door with cutout.
 
 **Say (voiceover or text overlay):**
-> "Plinth is an open digital museum where developers exhibit their work. Not a card grid — a spatial experience."
+> "Foyer is an open digital museum where developers exhibit their work. Not a card grid — a spatial experience."
 
 **Action:** Let the entrance render fully. Mouse hover over the door to show it responds.
 
@@ -83,10 +83,10 @@ A scene-by-scene script for recording a 2-3 minute demo video of Plinth. The vid
 
 ### Scene 7 — End card (2:40 - 3:00)
 
-**Show:** Back to the 3D museum entrance. Text overlay: "Plinth — Open digital museum for developers. plinth-cyan.vercel.app"
+**Show:** Back to the 3D museum entrance. Text overlay: "Foyer — Open digital museum for developers. foyer-cyan.vercel.app"
 
 **Say:**
-> "Plinth. Built with React, Three.js, and AI. Open source."
+> "Foyer. Built with React, Three.js, and AI. Open source."
 
 **Action:** Fade to black or end recording.
 

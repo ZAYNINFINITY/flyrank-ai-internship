@@ -4,7 +4,7 @@
 **Track:** Frontend AI Engineering
 **Intern:** Zain Ul Abideen
 **Phase:** Build (Week 5)
-**Deliverable:** https://plinth-cyan.vercel.app/assistant
+**Deliverable:** https://foyer-cyan.vercel.app/assistant
 
 ---
 

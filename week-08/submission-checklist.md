@@ -22,7 +22,7 @@
 
 ### 2. Live Application
 
-**LINK:** https://plinth-cyan.vercel.app
+**LINK:** https://foyer-cyan.vercel.app
 
 **Key routes to verify:**
 - `/` — 3D museum homepage (or 2D fallback on low-end devices)
@@ -39,7 +39,7 @@
 - https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-03/app/README.md
 
 **What the README covers:**
-- Project brief and what Plinth solves
+- Project brief and what Foyer solves
 - Getting started (one command: `npm install && npm run dev`)
 - Architecture overview (what each part does)
 - AI integration explained (OpenRouter + curator + exhibitLookup tool)
@@ -116,7 +116,7 @@
 | # | Deliverable | File | Live |
 |---|-------------|------|------|
 | 1 | Project Brief | `project-brief.md` | — |
-| 2 | Live App | — | plinth-cyan.vercel.app |
+| 2 | Live App | — | foyer-cyan.vercel.app |
 | 3 | README | `README.md` | — |
 | 4 | Testing Evidence | `test-results.png` | — |
 | 5 | Performance Audit | `lighthouse-scores.md` + `AUDIT.md` | — |

@@ -3,7 +3,7 @@
 > **LATEST CONTINUATION — August 17, 2026.**
 > The current working tree is no longer the committed paper/sketch pass described
 > later in this document. A new rescue pass is in progress under `week-03/app`
-> that moves Plinth toward a **public 3D museum**, closer to the
+> that moves Foyer toward a **public 3D museum**, closer to the
 > user's latest direction: no website wrapper, no personal-only portfolio, no
 > broken hallway labels.
 
@@ -131,11 +131,11 @@ applied an **itom design pass** on top. All of it is verified and committed.
 **v2 player (built by Claude/Cursor, verified 10/10):** the WASD/pointer-lock
 controller was replaced by a **scroll-rail**: scroll/touch-drag glides the camera
 along the corridor spine with mouse parallax and doors that auto-open on
-approach. Arrival beat: fullscreen "Approaching / Plinth Museum" intro overlay
+approach. Arrival beat: fullscreen "Approaching / Foyer Museum" intro overlay
 that fades only once the scene is ready, then an exterior gate shot as you walk
 back toward the approach. Curator figure stands in reception (inspect → prompt →
 `/assistant`). `?via=door-exhibit-from-corridor` validated via
-`lib/museum/via-entry.ts` → spawn `z≈-9.5`. `window.__plinth` and
+`lib/museum/via-entry.ts` → spawn `z≈-9.5`. `window.__foyer` and
 `room-scene-3d.tsx` were removed. 54/54 tests, AUDIT.md + fe-aa2-3d-room.md +
 submission docs written.
 
@@ -145,7 +145,7 @@ fog-to-ink), but itomdev.com is **bright warm paper** (`#fafafa/#f5f5f5`
 sketchbook, faint notebook grid, vignette ~0.03, RevealMaterial sketch→paint
 shader). Reference source confirmed via **MIT-licensed repo
 `github.com/ITomPoland/portfolio-itom`** (code reusable; its personal art assets
-are NOT — keep Plinth procedural). Applied:
+are NOT — keep Foyer procedural). Applied:
 
 - `walkable-world.tsx`: PALETTE flipped to paper (`corridorWall #efe9da`,
   ink text `#2a2a30`, accent `#c96a3a`), fog `[paper,26,85]`, clear color paper,
@@ -211,13 +211,13 @@ arrival-intro uniform paper (expected).
 The itom corridor's signature is its **sawtooth walls**: straight filler runs at
 the outer wall line interrupted by 4-unit recessed bays, each with one **angled
 wall** that holds the door and **leans toward the camera as you walk past**.
-Ported faithfully (MIT) and adapted to Plinth so it reads inspired, not copied:
+Ported faithfully (MIT) and adapted to Foyer so it reads inspired, not copied:
 
 - **Geometry** (`SawtoothSide` in `walkable-world.tsx`) — direct port of
   `CorridorWalls.jsx` segment walk (high Z → low Z): `filler → angled bay →
   connector`, per bay. `baseRotation = -atan2(dz, dx)` with
   `dx = innerX - outerX`, `dz = -4`; `finalRotation = isLeft ? baseRotation :
-  baseRotation + PI`. Plinth dims: `BAY_OUTER_X 3.0`, `BAY_INNER_X 1.6`,
+  baseRotation + PI`. Foyer dims: `BAY_OUTER_X 3.0`, `BAY_INNER_X 1.6`,
   `BAY_HALF_SPAN 2`, corridor run `fromZ 13 → toZ -13`.
 - **Bays follow the exhibits, not hardcoded** — each corridor frame is a bay
   center (`corridorBays` memo built from `corridorLayout` →
@@ -258,7 +258,7 @@ sawtooth screenshot series in `week-07/screenshots/`
 
 ## 1. Mission
 
-Build the Week-07 capstone for **Plinth** ("a room for every project you've
+Build the Week-07 capstone for **Foyer** ("a room for every project you've
 shipped" — gallery-style exhibit pages for developers, MERN/Next intern project).
 Feature ID **FE-AA2**: the exhibit room renders as a **live 3D space** on capable
 devices, with a flat text-walls 2D renderer as fallback.
@@ -312,7 +312,7 @@ Implementation directions (choose pragmatically, iterate with user):
 - **Intro:** paper-tear / page-flip intro animation over the canvas.
 - **Atmosphere:** CSS radial vignette overlay, faint grain, soft fog
   (`<fog>`), desaturated palette.
-- **Typography:** handwritten-style webfont for labels/frames (match Plinth's
+- **Typography:** handwritten-style webfont for labels/frames (match Foyer's
   existing font stack where possible; troika `Text` supports any loaded font).
 
 **Validation gate:** show the user a short video/screenshot and ask "is this the
@@ -482,7 +482,7 @@ Wall heights 4.2, wall thickness 0.1.
 | File | What it does |
 |---|---|
 | `components/three/walkable-input.ts` | Module-level input store shared between DOM handlers (outside canvas) and the frame loop (inside). `inputState = { move:{x,z}, look:{dx,dy}, locked, activate, sprint, joystick:{active,x,y,originX,originY} }`. `MOVE_KEYS` (w/a/s/d + arrows + uppercase). `attachWalkableKeyboard`/`detachWalkableKeyboard` (WASD→pressed set, `e`→activate, Shift→sprint, preventDefault on move keys). `attachWalkablePointer(lockTarget)` returns a cleanup; pointer-lock `mousemove` accumulates `look`; click toggles pointer lock (queries `document.querySelector("canvas")`). `createWalkableTouch(container)` → `{ onPointerDown, onPointerMove, onPointerUp, isJoystickActive }` typed with **DOM** `globalThis.PointerEvent` (left 40% = joystick, right side = look; `computeMove()` merges joystick into `move`). `resetWalkableInput()` on unmount. |
-| `components/three/walkable-player.tsx` | `WalkablePlayer` — first-person controller. Constants: `PLAYER_RADIUS 0.4, EYE_HEIGHT 1.7, WALK_SPEED 4.4, SPRINT_SPEED 6.6, LOOK_SENSITIVITY 0.0022, PITCH_LIMIT 1.15`. Each frame: look (yaw -= dx·sens, pitch -= dy·sens, clamped, Euler YXZ applied to camera quaternion), move (`forward=(sin yaw, -cos yaw)`, `right=(cos yaw, sin yaw)`, normalized, speed·dt, `resolveCollision`), then proximity (door first: within 3.2 → `Open — {toLabel}`; else nearest item within range + facing dot>0.3 → its prompt). `activate` consumed → open door (add id to `openDoors` ref) or `onInspect(item.inspect)`. Exposes **`window.__plinth`** debug hook `{ camera(), doors() }` — **remove before shipping**. |
+| `components/three/walkable-player.tsx` | `WalkablePlayer` — first-person controller. Constants: `PLAYER_RADIUS 0.4, EYE_HEIGHT 1.7, WALK_SPEED 4.4, SPRINT_SPEED 6.6, LOOK_SENSITIVITY 0.0022, PITCH_LIMIT 1.15`. Each frame: look (yaw -= dx·sens, pitch -= dy·sens, clamped, Euler YXZ applied to camera quaternion), move (`forward=(sin yaw, -cos yaw)`, `right=(cos yaw, sin yaw)`, normalized, speed·dt, `resolveCollision`), then proximity (door first: within 3.2 → `Open — {toLabel}`; else nearest item within range + facing dot>0.3 → its prompt). `activate` consumed → open door (add id to `openDoors` ref) or `onInspect(item.inspect)`. Exposes **`window.__foyer`** debug hook `{ camera(), doors() }` — **remove before shipping**. |
 | `components/three/walkable-world.tsx` | Scene + Canvas host. `WalkableWorldCanvas` (props = `Omit<WalkableSceneProps,"world">`) builds the world model via `useMemo` (solids + doors + interactives). Scene: `<Canvas dpr=[1,maxDpr] fov 72 near 0.1 far 60 camera.position=spawn>`, clear color `#0b0d1c`, ambient 0.55 + directional + 3 colored point lights (corridor blue, exhibit violet, reception teal). Components: `RoomBox` (floor/ceiling + walls split around gap rects), `Frame` (corridor exhibit: dark box border + troika Text title/tagline), `Plaque` (title/notes/signage: border + Text), `ProjectionScreen` (loads exhibit `media[0].src` via `THREE.TextureLoader` + onLoad setState), `ArtifactPlinth` (box base + emissive octahedron), `DoorPanel` (group at hinge; panel offset ±0.8 by hinge sign; `useFrame` lerp rotation.y toward `swing` when open). Palette: navy corridor `#2b3160` walls, violet room `#262147`, teal reception `#1e3242`, ivory text `#eceaf4`, accent `#3555ff`, gold handle `#c9a227`. |
 | `lib/museum/walkable-model.ts` | Pure world model + helpers (no React). Types: `Rect {minX,maxX,minZ,maxZ}`, `InspectSource` (`"title"|"notes"|"artifact"|"projection"|"frame"|"signage"`), `InspectInfo {title,body,source}`, `WorldDoor {id,label,position,hingeX,hingeZ,swing,rect,toLabel}`, `InteractiveItem {id,position,range,prompt,inspect}`, `WalkableWorld {solids,doors,interactives}`. `FOOTPRINTS` (reception/corridor/exhibit rects). `buildSolids()` — wall rects minus door gaps (`DOOR_GAP = {-0.8..0.8, z:0..0}`); walls: north/south split around gap, east/west full; exhibit north solid. `buildDoors()` — the two walkable doors (rect = wallRect spanning the gap + thickness). `CORRIDOR_FRAMES` + `corridorFrameSpot(id)`. `ROOM_SPOTS` + `frameInspect(exhibit)`. `buildInteractives(corridorLayout, roomLayout, exhibits, roomOrigin, currentExhibit?)` — corridor frames (byId by real exhibit id) + room content (falls back to `currentExhibit` because signage entityIds are `pos-it-title`-style) + hardcoded reception signage item. `resolveCollision(x,z,radius,solids)` 2-pass circle-vs-AABB. `nearestItem(x,z,fx,fz,items)` range + facing dot > 0.3. `nearestDoor(x,z,doors)` range 3.2 (no facing check). |
 | `components/three/exhibit-room-3d.tsx` | Host component (rewired; v1 orbit code removed). Props: `{ layout: SurfaceLayout[], exhibitId, portfolioRoute?, quality: RendererQuality, arrivedVia?: string|null }`. `arrivedVia === "door-exhibit-from-corridor" ? spawn (-9.5) : spawn (9)`. Builds corridor layout via `populateCorridor(createPlacementMap(),"main-corridor",new MockExhibitRepository(),mockExhibits).then(getSurfaceLayout…)` into state. Wires input effects (keyboard + pointer lock + touch handlers on the container div), `SceneErrorBoundary`, prompt pill overlay, inspect dialog (`SOURCE_LABELS` includes frame/signage), "View as text walls" toggle, mobile hint via lazy `useState(() => matchMedia("(pointer: coarse)").matches)` (repo lint bans setState-in-effect). Player `enabled={!inspect}`; opening inspect exits pointer lock. |
@@ -514,7 +514,7 @@ Wall heights 4.2, wall thickness 0.1.
    WebGL) runs this scene slowly; the small frame-time clamp capped walk speed to
    ~1 u/s. Now `const dt = Math.min(delta, 0.2)`. Keep the clamp ≥0.2 or remove it.
 2. **Mount latency 6–8 s on SwiftShader** (shader compile + troika font setup). Any
-   Playwright assertion must wait for `window.__plinth` or the canvas and then
+   Playwright assertion must wait for `window.__foyer` or the canvas and then
    re-poll; the verification script uses a `waitFor` helper with 25–30 s timeouts.
 3. **Lazy 3D chunk ≈ 995 KB raw** (~276 KB gzip / 227 KB brotli, v1 measured). Loaded
    only after capability check passes, via `next/dynamic` + `ssr:false` in
@@ -582,7 +582,7 @@ Wall heights 4.2, wall thickness 0.1.
   (that was v1's portal behavior).
 - **Toggle:** "View as text walls" → flat `SurfaceRenderer` (fully keyboard/AT
   accessible); back button remounts the 3D scene.
-- **`window.__plinth`** debug hook: `{ camera():{x,y,z,yaw}, doors():string[] }` —
+- **`window.__foyer`** debug hook: `{ camera():{x,y,z,yaw}, doors():string[] }` —
   used by Playwright; remove before shipping.
 
 ---
@@ -601,7 +601,7 @@ Wall heights 4.2, wall thickness 0.1.
 6. **Unit tests for `walkable-model.ts`** — buildSolids wall/gap output,
    resolveCollision edge cases, nearestItem facing rule, buildInteractives
    content + `currentExhibit` fallback. (capability has tests; model has none.)
-7. **Remove `window.__plinth`** debug hook before shipping.
+7. **Remove `window.__foyer`** debug hook before shipping.
 8. **FE-10 remediation** — only contrast-token a11y failures on 6 baseline pages;
    write `AUDIT.md`; Survive-the-Crit packet + Week-07 submission mirroring
    `week-06/submission-summary.md` format; commit + deploy + live verify.
@@ -840,7 +840,7 @@ pixels: `if (all(greaterThan(color.rgb, vec3(0.95)))) discard;`
     <div className="absolute inset-0 flex items-center justify-center motion-safe:animate-[fade-out_0.8s_ease_0.8s_forwards]">
       <div className="text-center">
         <p className="text-[10px] uppercase tracking-[0.35em] text-[#6f6c62]">Approaching</p>
-        <p className="mt-2 font-heading text-xl tracking-tight text-[#2a2a30]">Plinth Museum</p>
+        <p className="mt-2 font-heading text-xl tracking-tight text-[#2a2a30]">Foyer Museum</p>
       </div>
     </div>
   </div>

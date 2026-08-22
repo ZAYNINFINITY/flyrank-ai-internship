@@ -28,7 +28,7 @@ A **walkable 3D museum corridor** using React Three Fiber. Visitors glide throug
 - `week-07/fe-aa2-3d-room.md` — full feature doc
 - `week-07/fe-aa2-perf-note.md` — performance analysis
 - `week-07/screenshots/` — 64 screenshots (local + deployed)
-- Live: Vercel deployment at `plinth` project
+- Live: Vercel deployment at `foyer` project
 
 ---
 

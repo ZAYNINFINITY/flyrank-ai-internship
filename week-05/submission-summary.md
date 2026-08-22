@@ -4,7 +4,7 @@
 **Track:** Frontend AI Engineering
 **Program:** FlyRank AI Internship
 **Repository:** https://github.com/ZAYNINFINITY/flyrank-ai-internship (branch `main`)
-**Live deployment:** https://plinth-cyan.vercel.app
+**Live deployment:** https://foyer-cyan.vercel.app
 **Week status:** Complete & frozen
 **Submission:** All completed Week 5 dashboard assignments, accompanied by a comprehensive submission packet (evidence documents, screenshots, and project documentation). One Week 5 dashboard item remains TBD and is **not** part of this submission.
 
@@ -12,7 +12,7 @@
 
 ## Week 5 Overview
 
-Week 5 turns the standalone Plinth rooms into a working museum with a live AI layer. The museum spatial system added a real world graph and renderer (entrance → reception → galleries → collections → exhibit rooms); the AI communication layer wired the Curator assistant, streaming chat route, and repository injection; FE-07 added model-driven tool calls with structured output; FE-08 added classified chat error states with SDK-native recovery; Phase C tied everything into one navigable museum; and all evidence, screenshots, and project documentation were synchronized for submission.
+Week 5 turns the standalone Foyer rooms into a working museum with a live AI layer. The museum spatial system added a real world graph and renderer (entrance → reception → galleries → collections → exhibit rooms); the AI communication layer wired the Curator assistant, streaming chat route, and repository injection; FE-07 added model-driven tool calls with structured output; FE-08 added classified chat error states with SDK-native recovery; Phase C tied everything into one navigable museum; and all evidence, screenshots, and project documentation were synchronized for submission.
 
 **Quality gates:** `npx eslint .` → 0 errors (3 pre-existing warnings); `npm run build` → green, 17 routes.
 
@@ -70,11 +70,11 @@ Week 5 turns the standalone Plinth rooms into a working museum with a live AI la
 
 ### Live deployment
 
-- https://plinth-cyan.vercel.app/entrance
-- https://plinth-cyan.vercel.app/reception
-- https://plinth-cyan.vercel.app/gallery
-- https://plinth-cyan.vercel.app/collection
-- https://plinth-cyan.vercel.app/exhibit/e/pos-it
+- https://foyer-cyan.vercel.app/entrance
+- https://foyer-cyan.vercel.app/reception
+- https://foyer-cyan.vercel.app/gallery
+- https://foyer-cyan.vercel.app/collection
+- https://foyer-cyan.vercel.app/exhibit/e/pos-it
 
 ---
 
@@ -111,7 +111,7 @@ Week 5 turns the standalone Plinth rooms into a working museum with a live AI la
 
 ### Live deployment
 
-- https://plinth-cyan.vercel.app/assistant
+- https://foyer-cyan.vercel.app/assistant
 
 ---
 
@@ -146,7 +146,7 @@ Week 5 turns the standalone Plinth rooms into a working museum with a live AI la
 
 ### Live deployment
 
-- https://plinth-cyan.vercel.app/assistant
+- https://foyer-cyan.vercel.app/assistant
 
 ---
 
@@ -182,7 +182,7 @@ Week 5 turns the standalone Plinth rooms into a working museum with a live AI la
 
 ### Live deployment
 
-- https://plinth-cyan.vercel.app/assistant
+- https://foyer-cyan.vercel.app/assistant
 
 ---
 
@@ -228,7 +228,7 @@ Week 5 turns the standalone Plinth rooms into a working museum with a live AI la
 
 ### Live deployment
 
-- https://plinth-cyan.vercel.app (home CTA, nav, filtered gallery, cross-links, dashboard)
+- https://foyer-cyan.vercel.app (home CTA, nav, filtered gallery, cross-links, dashboard)
 
 ---
 
@@ -356,7 +356,7 @@ Supporting documentation (evidence docs, screenshots, project memory, this packe
 
 ## Live Deployment
 
-- https://plinth-cyan.vercel.app
+- https://foyer-cyan.vercel.app
 - Verified live: home "Enter the Museum", `/entrance`, `/reception`, `/gallery?collection=`, exhibit rooms, `/assistant`, `/dashboard`, `/login`.
 
 ## Build Status

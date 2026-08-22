@@ -17,7 +17,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Plinth — Open digital museum for developers",
+  title: "Foyer — Open digital museum for developers",
   description:
     "An open-source platform where developers exhibit their work as curated collections. Not a card grid — a gallery.",
 };

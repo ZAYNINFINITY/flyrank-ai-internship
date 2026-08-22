@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 /**
- * Primary Plinth museum flow, end to end.
+ * Primary Foyer museum flow, end to end.
  *
  * Home → Enter the Museum → Entrance → Reception Hall door → Reception →
  * Curator Studio door → Curator chat → Send.
@@ -60,7 +60,7 @@ test.describe("primary museum flow", () => {
     // ── Home (3D museum-as-homepage or flat fallback) ─────
     await page.goto("/");
     const flatEnter = page.getByRole("link", { name: "Enter the Museum" });
-    const textWalls = page.getByRole("button", { name: "Text walls" });
+    const textWalls = page.getByRole("button", { name: "Accessible view" });
     await expect(flatEnter.or(textWalls)).toBeVisible({ timeout: 45000 });
 
     if (await flatEnter.isVisible()) {
@@ -84,7 +84,7 @@ test.describe("primary museum flow", () => {
     // ── Reception ─────────────────────────────────────────
     await expect(page).toHaveURL(/\/reception/);
     await expect(
-      page.getByRole("heading", { name: /welcome to plinth/i }),
+      page.getByRole("heading", { name: /welcome to foyer/i }),
     ).toBeVisible();
 
     const receptionExits = page.getByRole("region", { name: "Exits" });

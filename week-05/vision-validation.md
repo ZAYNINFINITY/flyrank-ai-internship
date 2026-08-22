@@ -1,10 +1,10 @@
-# Plinth — Architecture & Design Vision
+# Foyer — Architecture & Design Vision
 
 > **Status: Internal architecture and design vision document.**
 >
 > This document is **not** an internship deliverable, implementation milestone, or roadmap replacement.
 >
-> - It captures the long-term direction of Plinth.
+> - It captures the long-term direction of Foyer.
 > - It is based on reviewing the current architecture and studying itomdev.com as an interaction reference.
 > - It does **not** modify the current implementation plan.
 > - It does **not** authorize refactoring.
@@ -14,9 +14,9 @@
 
 ## 1. Purpose & Status
 
-Plinth currently exists as a 2D museum where developer projects are experienced as exhibits inside interconnected rooms. That implementation is real, working, and has been built incrementally across the internship weeks.
+Foyer currently exists as a 2D museum where developer projects are experienced as exhibits inside interconnected rooms. That implementation is real, working, and has been built incrementally across the internship weeks.
 
-This document captures where Plinth is heading *after* the internship. It records the guiding statement, the intended content-model destination, and the architectural direction agreed for how the experience should evolve — without changing anything that is currently planned or built.
+This document captures where Foyer is heading *after* the internship. It records the guiding statement, the intended content-model destination, and the architectural direction agreed for how the experience should evolve — without changing anything that is currently planned or built.
 
 It is a reference for future decisions, not a work order. Anything proposed here is deliberately non-committed: it becomes real work only when a future milestone explicitly picks it up.
 
@@ -37,7 +37,7 @@ What exists today (repository-verified):
 
 ## 3. Interaction Reference: itomdev.com
 
-itomdev.com was studied as an **inspiration and interaction reference** for the *kind of user experience* Plinth wants — not as something to reproduce, and not as a source of implementation details to copy. Plinth remains a 2D experience with its own architecture and identity.
+itomdev.com was studied as an **inspiration and interaction reference** for the *kind of user experience* Foyer wants — not as something to reproduce, and not as a source of implementation details to copy. Foyer remains a 2D experience with its own architecture and identity.
 
 What it demonstrates about experience design:
 
@@ -47,7 +47,7 @@ What it demonstrates about experience design:
 - **Diegetic affordances.** Interactivity is signalled *within the world* (an element visibly reacting on hover) instead of relying on UI chrome like "click here" labels.
 - **Teaching through discovery.** New interaction patterns are hinted inside the experience and reinforced by rewarding completion — guidance that doubles as acknowledgment of exploration.
 
-None of these are architectural prescriptions. They are the user-experience qualities Plinth's direction should keep moving toward: **the museum should feel like a place you walk through, where the content lives inside the space rather than on top of it.**
+None of these are architectural prescriptions. They are the user-experience qualities Foyer's direction should keep moving toward: **the museum should feel like a place you walk through, where the content lives inside the space rather than on top of it.**
 
 ---
 
@@ -72,9 +72,9 @@ None of these are architectural prescriptions. They are the user-experience qual
 
 ## 5. Long-Term Vision
 
-> **Plinth is not a portfolio with an interactive UI.**
+> **Foyer is not a portfolio with an interactive UI.**
 >
-> **Plinth is an interactive storytelling platform where software projects are experienced as places rather than viewed as cards.**
+> **Foyer is an interactive storytelling platform where software projects are experienced as places rather than viewed as cards.**
 
 The museum is the first experience built on that platform — **not the platform itself**. The portfolio is simply the first content domain.
 
@@ -98,7 +98,7 @@ The museum should **never own a separate copy** of the portfolio data. Instead:
 - The museum simply renders that content through spatial experiences.
 - Future experience domains (office, laboratory, campus, gallery, studio, company headquarters, research center, and so on) reuse the exact same content model.
 
-This is the foundation that eventually allows Plinth to become a reusable storytelling platform instead of a one-off museum application — where different creators and organizations can replace the content while preserving the same immersive experience.
+This is the foundation that eventually allows Foyer to become a reusable storytelling platform instead of a one-off museum application — where different creators and organizations can replace the content while preserving the same immersive experience.
 
 ---
 

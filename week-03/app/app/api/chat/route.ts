@@ -12,8 +12,8 @@ const openrouter = createOpenAICompatible({
   baseURL: "https://openrouter.ai/api/v1",
   apiKey: process.env.OPENROUTER_API_KEY,
   headers: {
-    "HTTP-Referer": "https://plinth-cyan.vercel.app",
-    "X-Title": "Plinth",
+"HTTP-Referer": "https://foyer-cyan.vercel.app",
+  "X-Title": "Foyer",
   },
 });
 

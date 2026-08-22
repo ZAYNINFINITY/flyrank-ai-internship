@@ -5,7 +5,7 @@ with a text-walls 2D fallback for everything else.
 
 ## Architecture
 
-Plinth's pipeline remains `World Graph → Queries/Placement → Renderer`.
+Foyer's pipeline remains `World Graph → Queries/Placement → Renderer`.
 The same `SurfaceLayout[]` drives flat and 3D renderers. FE-AA2 added a switchable
 renderer seam (`exhibit-walls.tsx`) rather than replacing the world model.
 

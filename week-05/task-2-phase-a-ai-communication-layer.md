@@ -4,7 +4,7 @@
 **Track:** Frontend AI Engineering
 **Intern:** Zain Ul Abideen
 **Phase:** Build (Week 5, builds on FE-06 streaming baseline)
-**Deliverable:** https://plinth-cyan.vercel.app/assistant
+**Deliverable:** https://foyer-cyan.vercel.app/assistant
 
 ---
 
@@ -82,7 +82,7 @@ User types message on /assistant
 
 ## Links
 
-- **Preview URL:** https://plinth-cyan.vercel.app/assistant
+- **Preview URL:** https://foyer-cyan.vercel.app/assistant
 - **Route handler:** https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-03/app/app/api/chat/route.ts
 - **Chat panel:** https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-03/app/components/ai/chat-panel.tsx
 - **Repository seam:** https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-03/app/lib/repository/index.ts

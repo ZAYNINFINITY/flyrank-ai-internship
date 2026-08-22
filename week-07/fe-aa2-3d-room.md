@@ -34,7 +34,7 @@ Week 7 delivers the **walkable museum corridor** as progressive enhancement, not
 
 ## Scene architecture
 
-- **Approach exterior**: courtyard walls, lamp posts (4), planters (2), stone steps, welcome mat, facade with real ShapeGeometry door cutout, "PLINTH MUSEUM" signage
+- **Approach exterior**: courtyard walls, lamp posts (4), planters (2), stone steps, welcome mat, facade with real ShapeGeometry door cutout, "FOYER MUSEUM" signage
 - **Reception hall**: information signage, curator billboard sprite, bench, potted plants
 - **Sawtooth corridor**: angled bay walls (itom-inspired) with 4 exhibit frames, camera auto-glance toward wall pieces
 - **Exhibit room**: title wall, media projection, artifact plinths, curator notes

@@ -26,7 +26,7 @@ const ExhibitRoom3D = dynamic(
 // corridor door) reveals every other exhibit hanging on the corridor walls.
 const HOME_EXHIBIT_ID = "pos-it";
 
-// This is the front door of Plinth. No hero text, no "Enter the Museum"
+// This is the front door of Foyer. No hero text, no "Enter the Museum"
 // button, no marketing beats to scroll past first — the museum itself IS
 // the homepage, the same way itom's site puts you straight into the space
 // instead of behind a landing page. Low-power / no-WebGL devices still get
@@ -49,7 +49,7 @@ export default function HomePage() {
       <main className="flex min-h-[100dvh] flex-col items-center justify-center gap-8 px-6 text-center">
         <div>
           <h1 className="font-heading text-[28px] text-text md:text-[36px]">
-            Plinth Museum
+            Foyer Museum
           </h1>
           <p className="mt-3 max-w-[420px] font-body text-[15px] leading-relaxed text-text/60">
             A digital museum of developer projects. Your device is showing

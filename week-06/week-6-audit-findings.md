@@ -17,7 +17,7 @@
 | Unit tests (`npm test`) | ✅ 29/29 (3 consecutive runs) | ✅ 29/29 (all Week 6 runs) |
 | Production build (`npm run build`) | green | ✅ passed |
 | E2E (`npm run test:e2e`) | 1/1 passed (Chromium) | ✅ passed |
-| Deployment | https://plinth-cyan.vercel.app returns 200; `/playground/motion-lab` live | — |
+| Deployment | https://foyer-cyan.vercel.app returns 200; `/playground/motion-lab` live | — |
 
 **Overall:** Submission-ready. Both audit findings — the `--motion-ease-*` bug and the timing-fragile test — were **fixed and verified** (commit `c6def02`); see §2 and §3 for before/after. CI green on all Week 6 commits, working tree clean.
 
@@ -30,7 +30,7 @@
 - Implementation verified: `components/primitives/motion-button.tsx`, `lib/motion/tokens.ts`, keyframes in `app/globals.css`, used in home CTA (`app/page.tsx`) and Curator Send (`components/ai/chat-panel.tsx`).
 - 8 dedicated tests in `motion-button.test.tsx` (idle, disabled, busy+disabled, controlled success/error, async cycle, failure→error, interruptible guard).
 - **Gap before this audit:** no dedicated evidence doc and no screenshots. **Resolved now:** 4 live screenshots captured from `/playground/motion-lab` (idle / loading / success / error) and the Week 6 submission packet documents the assignment.
-- Live review page: https://plinth-cyan.vercel.app/playground/motion-lab (force buttons verified working).
+- Live review page: https://foyer-cyan.vercel.app/playground/motion-lab (force buttons verified working).
 - Commit: `e77f609`.
 
 ### ⚠ Finding (genuine bug, **RESOLVED**): `--motion-ease-*` custom properties were never defined
@@ -41,9 +41,9 @@ Verified in the live browser (computed styles on `/playground/motion-lab`):
 
 | State | Before fix | After fix (`c6def02`) |
 |---|---|---|
-| loading spinner | ✅ `plinth-spin` ran | ✅ `plinth-spin` runs |
-| success pop | ❌ `animation-name: none` — pop never ran | ✅ `plinth-pop` 0.32s, `cubic-bezier(0.05,0.7,0.1,1)` |
-| error shake | ❌ `animation-name: none` — shake never ran | ✅ `plinth-shake` 0.5s, `cubic-bezier(0.36,0.07,0.19,0.97)` |
+| loading spinner | ✅ `foyer-spin` ran | ✅ `foyer-spin` runs |
+| success pop | ❌ `animation-name: none` — pop never ran | ✅ `foyer-pop` 0.32s, `cubic-bezier(0.05,0.7,0.1,1)` |
+| error shake | ❌ `animation-name: none` — shake never ran | ✅ `foyer-shake` 0.5s, `cubic-bezier(0.36,0.07,0.19,0.97)` |
 | label crossfade | ⚠️ default `ease` | ✅ `cubic-bezier(0.2,0.8,0.2,1)` (standard) |
 
 Why it was broken: `var()` with no fallback referencing an undefined custom property makes the declaration *guaranteed-invalid* — so the entire `animation` shorthand was dropped (→ `none`), and the transition easing fell back to the default. The state feedback itself was unaffected (labels, icons, and tint swaps still happened) — the "choreography" (pop/shake) was what was inert.

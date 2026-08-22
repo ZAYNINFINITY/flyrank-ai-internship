@@ -1,8 +1,8 @@
 # Phase 8 — Explain It Like You Built It
 
-**Week 6 assignment · Plinth Museum World Graph & Spatial Navigation**
+**Week 6 assignment · Foyer Museum World Graph & Spatial Navigation**
 
-One-liner: **Plinth doesn't have pages that look like a museum. It has a museum that happens to be a website.** Every screen you walk through is a *room* in a data model, and the page is just that room being drawn.
+One-liner: **Foyer doesn't have pages that look like a museum. It has a museum that happens to be a website.** Every screen you walk through is a *room* in a data model, and the page is just that room being drawn.
 
 This document explains how the museum's world graph and spatial navigation work, based on the implementation as it exists today.
 
@@ -12,7 +12,7 @@ This document explains how the museum's world graph and spatial navigation work,
 
 A normal site is a list of routes. Page A links to page B, and the only thing linking them is a hand-written `<a>`. There is no model of *place* — the URL is the only source of "where am I."
 
-Plinth's claim is **"A room for every project you've shipped."** If the metaphor is going to be real — not a marketing gloss on a standard grid — then moving between projects should feel like moving between rooms. That needs three things ordinary routing doesn't give you for free:
+Foyer's claim is **"A room for every project you've shipped."** If the metaphor is going to be real — not a marketing gloss on a standard grid — then moving between projects should feel like moving between rooms. That needs three things ordinary routing doesn't give you for free:
 
 1. **A model of space** — rooms, walls, doors, and how they connect.
 2. **A visitor** — you are somewhere, and you came from somewhere.
@@ -30,7 +30,7 @@ The graph is a hierarchy of *places*, defined in `app/lib/museum/world.ts`:
 Building ── Floor ── Wing ── Room ── Surface ── Anchor
 ```
 
-- **Building** — `plinth-museum`, containing two floors.
+- **Building** — `foyer-museum`, containing two floors.
 - **Floor** — `Ground Floor` (level 0) and `Lower Floor` (level -1), each holding wings.
 - **Wing** — groups of rooms (Entrance Wing, Main Wing, East Wing, Studio Wing).
 - **Room** — the level a visitor actually occupies. A room has a `name`, a `kind` (hall / corridor / exhibit / studio / outside), a `lighting` preset, `surfaces`, and `doors`.

@@ -4,14 +4,14 @@ Copy-paste ready resources for each Week 6 assignment. Attach the files / paste 
 
 **Intern:** Zain Ul Abideen · **Track:** Frontend AI Engineering
 **Repository:** https://github.com/ZAYNINFINITY/flyrank-ai-internship (branch `main`)
-**Live deployment:** https://plinth-cyan.vercel.app
+**Live deployment:** https://foyer-cyan.vercel.app
 **Master packet:** https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-06/week-6-submission-summary.md
 
 ---
 
 ## Assignment 1 — FE-AA1: Buttons with a Brain
 
-**Summary:** A `MotionButton` primitive that owns its async state machine — idle → loading → success/error → idle — with `aria-busy`, an interruptible async cycle (spam-clicks never double-fire), compositor-friendly `transform`/`opacity`-only motion (pop, spin, shake via the `plinth-*` keyframes), and reduced-motion support. Live demo page forces each state with the exact production component.
+**Summary:** A `MotionButton` primitive that owns its async state machine — idle → loading → success/error → idle — with `aria-busy`, an interruptible async cycle (spam-clicks never double-fire), compositor-friendly `transform`/`opacity`-only motion (pop, spin, shake via the `foyer-*` keyframes), and reduced-motion support. Live demo page forces each state with the exact production component.
 
 **Implementation files (main):**
 - https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-03/app/components/primitives/motion-button.tsx
@@ -35,7 +35,7 @@ Copy-paste ready resources for each Week 6 assignment. Attach the files / paste 
 - https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-06/screenshots/fe-aa1-motion-error.png
 
 **Commits:** `e77f609` (implementation) · `c6def02` (post-audit fix: `--motion-ease-*` tokens defined, pop/shake now animate)
-**Live:** https://plinth-cyan.vercel.app/playground/motion-lab
+**Live:** https://foyer-cyan.vercel.app/playground/motion-lab
 
 ---
 
@@ -63,7 +63,7 @@ Copy-paste ready resources for each Week 6 assignment. Attach the files / paste 
 
 **Commits:** `e77f609` · `34a5f94` · `c6def02` (deterministic async-cycle test)
 **CI runs (all green):** [31317092875](https://github.com/ZAYNINFINITY/flyrank-ai-internship/actions/runs/31317092875) · [31320432472](https://github.com/ZAYNINFINITY/flyrank-ai-internship/actions/runs/31320432472) · [31328347815](https://github.com/ZAYNINFINITY/flyrank-ai-internship/actions/runs/31328347815) · [31426007202](https://github.com/ZAYNINFINITY/flyrank-ai-internship/actions/runs/31426007202)
-**Live:** https://plinth-cyan.vercel.app
+**Live:** https://foyer-cyan.vercel.app
 
 ---
 

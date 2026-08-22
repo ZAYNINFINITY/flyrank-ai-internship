@@ -15,7 +15,7 @@
 | Connect an MCP server | Done | Magic UI MCP server connected and used |
 | 3 tool-using tasks | Done | `listRegistryItems`, `searchRegistryItems`, `getRegistryItem` |
 | 600-900 word explainer | Done | Section 4 + 4a (~850 words combined) |
-| Connection to Plinth | Done | Section 5 + 5a |
+| Connection to Foyer | Done | Section 5 + 5a |
 | Screenshots / evidence | Done | Screenshots captured (see Section 8) |
 
 ---
@@ -114,7 +114,7 @@ For transport, MCP supports STDIO for local servers (fast, no network overhead) 
 
 The ecosystem is growing fast. Anthropic's Claude was first, but now VS Code Copilot, Cursor, ChatGPT, and many others support MCP. Companies like Vercel, Sentry, and Cloudflare host production MCP servers. There are 247+ components in the Magic UI registry alone, each accessible through MCP.
 
-The key insight: MCP doesn't replace AI frameworks. It complements them. The AI SDK (in your Plinth stack) handles model orchestration and streaming; MCP handles tool integration and context. Together they form a complete agent infrastructure.
+The key insight: MCP doesn't replace AI frameworks. It complements them. The AI SDK (in your Foyer stack) handles model orchestration and streaming; MCP handles tool integration and context. Together they form a complete agent infrastructure.
 
 ### Transport Layer Deep Dive
 
@@ -156,13 +156,13 @@ The protocol also supports **MCP Apps** (sandboxed iframe UIs rendered alongside
 
 ---
 
-## 5. Connection to Plinth
+## 5. Connection to Foyer
 
-Plinth's roadmap (Milestone 5: Curator Intelligence) calls for MCP integration. Here's the concrete plan:
+Foyer's roadmap (Milestone 5: Curator Intelligence) calls for MCP integration. Here's the concrete plan:
 
-| MCP Concept | Plinth Equivalent |
+| MCP Concept | Foyer Equivalent |
 |-------------|-------------------|
-| **MCP Host** | Plinth itself (the Next.js app acts as the host) |
+| **MCP Host** | Foyer itself (the Next.js app acts as the host) |
 | **MCP Client** | `lib/mcp/client.ts` — connects to curator servers |
 | **MCP Server** | GitHub server (project data), filesystem server (documentation), database server (mock data) |
 | **Tools** | Curator actions: search exhibits, recommend paths, fetch project stats |
@@ -172,10 +172,10 @@ Plinth's roadmap (Milestone 5: Curator Intelligence) calls for MCP integration. 
 The Curator Agent (built in Milestone 5) will be an MCP client that connects to:
 
 1. **GitHub MCP Server** — fetches real repo stats, READMEs, commit history for live exhibits
-2. **Plinth Museum Server** — custom MCP server exposing museum data as resources (exhibits, collections, visitor history) and tools (recommend paths, search exhibits, track visitor)
+2. **Foyer Museum Server** — custom MCP server exposing museum data as resources (exhibits, collections, visitor history) and tools (recommend paths, search exhibits, track visitor)
 3. **Documentation Server** — filesystem MCP server serving project documentation as read-only resources
 
-This turns Plinth from a static museum into a living, context-aware experience. The curator can answer "What should I look at next?" by combining visitor context (resource) with collection data (resource) and path-finding logic (tool).
+This turns Foyer from a static museum into a living, context-aware experience. The curator can answer "What should I look at next?" by combining visitor context (resource) with collection data (resource) and path-finding logic (tool).
 
 ### 5a. Curator Conversation Flow (End-to-End)
 
@@ -184,29 +184,29 @@ Here's how a visitor interaction would work through the MCP stack:
 ```
 Visitor: "What should I look at next, I liked the ScrollStreak exhibit?"
 
-1. Plinth (MCP Host) receives the question
+1. Foyer (MCP Host) receives the question
 2. Client (lib/mcp/client.ts) sends a resources/read request
-   to the Plinth Museum Server for visitor context
+   to the Foyer Museum Server for visitor context
 3. Server responds with visitor history resource
 4. Client sends tools/call to recommend_exhibit
    with: { tags: ["scrollstreak", "chrome-extension"], limit: 3 }
 5. Server queries exhibit metadata, returns recommendations
 6. Client sends resources/read to Documentation Server
    for the recommended exhibit's docs
-7. Plinth renders: recommendation + exhibit preview + call-to-action
+7. Foyer renders: recommendation + exhibit preview + call-to-action
 ```
 
-This flow uses all three MCP primitives: resources (visitor context, exhibit docs), tools (recommendation logic), and the host (Plinth's curator UI). Each step is a standard MCP call — no custom API endpoints needed.
+This flow uses all three MCP primitives: resources (visitor context, exhibit docs), tools (recommendation logic), and the host (Foyer's curator UI). Each step is a standard MCP call — no custom API endpoints needed.
 
 ### 5b. lib/mcp/client.ts Implementation Pattern
 
 ```typescript
-// lib/mcp/client.ts — future MCP client for Plinth Curator
+// lib/mcp/client.ts — future MCP client for Foyer Curator
 import { Client } from '@modelcontextprotocol/sdk/client/index.js'
 import { transport } from './transport' // STDIO or HTTP
 
 const curatorClient = new Client(
-  { name: 'plinth-curator-client', version: '0.1.0' },
+  { name: 'foyer-curator-client', version: '0.1.0' },
   { capabilities: {} }
 )
 
@@ -217,7 +217,7 @@ const { tools, resources, prompts } = await curatorClient.discover()
 
 // Fetching context (resource)
 const visitorCtx = await curatorClient.readResource({
-  uri: 'plinth://visitors/current'
+  uri: 'foyer://visitors/current'
 })
 
 // Getting recommendation (tool)
@@ -230,7 +230,7 @@ const recommendation = await curatorClient.callTool({
 })
 ```
 
-This pattern cleanly separates the MCP integration from Plinth's business logic. The Curator Agent only needs to know the MCP protocol — it doesn't care whether the museum server is running locally via STDIO or deployed remotely via HTTP.
+This pattern cleanly separates the MCP integration from Foyer's business logic. The Curator Agent only needs to know the MCP protocol — it doesn't care whether the museum server is running locally via STDIO or deployed remotely via HTTP.
 
 ---
 
@@ -241,22 +241,22 @@ This pattern cleanly separates the MCP integration from Plinth's business logic.
 ```json
 {
   "mcpServers": {
-    "plinth-curator": {
+    "foyer-curator": {
       "command": "node",
-      "args": ["path/to/plinth-mcp-server/index.js"]
+      "args": ["path/to/foyer-mcp-server/index.js"]
     }
   }
 }
 ```
 
-### Option B: In Plinth codebase (Next.js route)
+### Option B: In Foyer codebase (Next.js route)
 
 ```typescript
-// app/api/mcp/route.ts — future MCP endpoint for Plinth
+// app/api/mcp/route.ts — future MCP endpoint for Foyer
 import { Server } from '@modelcontextprotocol/sdk/server/index.js'
 
 const server = new Server(
-  { name: 'plinth-curator', version: '0.1.0' },
+  { name: 'foyer-curator', version: '0.1.0' },
   { capabilities: { tools: {}, resources: {} } }
 )
 

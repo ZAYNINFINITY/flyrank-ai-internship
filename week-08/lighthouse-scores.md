@@ -1,6 +1,6 @@
-# Lighthouse Scores — Plinth (August 2026)
+# Lighthouse Scores — Foyer (August 2026)
 
-Desktop Lighthouse via `npx lighthouse --preset=desktop` on deployed URL `https://plinth-cyan.vercel.app`.
+Desktop Lighthouse via `npx lighthouse --preset=desktop` on deployed URL `https://foyer-cyan.vercel.app`.
 
 ## Scores
 

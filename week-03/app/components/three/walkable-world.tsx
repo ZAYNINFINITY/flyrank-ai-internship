@@ -40,7 +40,7 @@ const DOOR_POST = 0.14;
 const DOOR_LINTEL_Y = 2.72;
 
 // ITOM-INSPIRED SAWTOOTH CORRIDOR — recessed angled wall bays, ported from
-// the MIT itom corridor (github.com/ITomPoland/portfolio-itom) to Plinth's
+// the MIT itom corridor (github.com/ITomPoland/portfolio-itom) to Foyer's
 // dimensions. Each bay: a straight filler at the outer wall line, one angled
 // wall across a 4-unit span (outer→inner as Z decreases), and a small
 // connector closing the low-Z end. Frames hang on the angled walls exactly
@@ -1494,7 +1494,7 @@ function EntranceSignboard() {
         {paperMaterial("#f7f0df", 0.9)}
       </mesh>
       <Text position={[0, 0.16, 0.05]} fontSize={0.26} color={PALETTE.ivory} anchorX="center" anchorY="middle">
-        PLINTH MUSEUM
+        FOYER MUSEUM
       </Text>
       <Text
         position={[0, -0.16, 0.05]}
@@ -2526,7 +2526,7 @@ function WalkableWorldScene({
           south: { minX: -ENTRANCE_HALF, maxX: ENTRANCE_HALF, minZ: 19.95, maxZ: 20.05 },
         }}
         // The exterior approach builds its own grand door frame (taller
-        // posts, wide lintel, PLINTH MUSEUM signage) — skip RoomBox's
+        // posts, wide lintel, FOYER MUSEUM signage) — skip RoomBox's
         // standard doorway frame here so the two don't double up.
         omitDoorwayFrame={["south"]}
         palette={{ wall: PALETTE.receptionWall, floor: PALETTE.receptionFloor, ceiling: PALETTE.receptionCeiling }}

@@ -36,7 +36,7 @@ export function Nav() {
           href="/"
           className="font-heading text-sm font-medium text-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
         >
-          Plinth
+          Foyer
         </Link>
 
         {/* Desktop nav */}
@@ -75,7 +75,7 @@ export function Nav() {
               className="font-heading text-sm font-medium text-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
               onClick={() => setIsOpen(false)}
             >
-              Plinth
+              Foyer
             </Link>
             <button
               ref={closeButtonRef}

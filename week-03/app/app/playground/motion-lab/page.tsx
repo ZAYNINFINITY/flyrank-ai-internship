@@ -5,7 +5,7 @@ import { MotionButton } from "@/components/primitives/motion-button";
 import { motionTokens } from "@/lib/motion/tokens";
 
 /**
- * Motion Lab — reviewers' window into Plinth's interaction language.
+ * Motion Lab — reviewers' window into Foyer's interaction language.
  *
  * This page imports the exact production <MotionButton> primitive. Nothing is
  * duplicated here: the demo only adds controls to force each lifecycle state
@@ -23,7 +23,7 @@ export default function MotionLabPage() {
         Motion Lab
       </h1>
       <p style={{ fontSize: "0.875rem", opacity: 0.5, marginBottom: "40px" }}>
-        Plinth&apos;s interaction language — the same{" "}
+        Foyer&apos;s interaction language — the same{" "}
         <code>MotionButton</code> used in production (Curator Send, home CTA).
         Every state is a choreographed transform/opacity transition, never a
         snap. Reduced-motion removes the movement but keeps the feedback.

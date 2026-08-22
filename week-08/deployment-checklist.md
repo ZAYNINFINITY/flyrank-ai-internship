@@ -1,9 +1,9 @@
-# Deployment Checklist — Plinth (Capstone)
+# Deployment Checklist — Foyer (Capstone)
 
 ## Deployment
 
 - [x] **Platform:** Vercel (Next.js auto-detected)
-- [x] **URL:** https://plinth-cyan.vercel.app
+- [x] **URL:** https://foyer-cyan.vercel.app
 - [x] **Branch:** `main` (auto-deploys on push)
 - [x] **Project ID:** `prj_ESruoLrrT72xcMIrRKy0TeEmZYr0`
 
@@ -23,7 +23,7 @@
 - [x] `npx eslint .` passes (0 errors, 2 pre-existing warnings)
 - [x] `npx vitest run` — 74/74 tests pass
 - [x] No `console.log` in production code
-- [x] No `window.__plinth` debug hooks
+- [x] No `window.__foyer` debug hooks
 
 ## Error States Verified
 

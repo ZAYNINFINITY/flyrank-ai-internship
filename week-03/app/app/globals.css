@@ -68,18 +68,18 @@ h1, h2, h3, h4, h5, h6 {
   --motion-ease-shake: cubic-bezier(0.36, 0.07, 0.19, 0.97);
 }
 
-@keyframes plinth-spin {
+@keyframes foyer-spin {
   to { transform: rotate(360deg); }
 }
 
-@keyframes plinth-shake {
+@keyframes foyer-shake {
   10%, 90% { transform: translateX(-1px); }
   20%, 80% { transform: translateX(2px); }
   30%, 50%, 70% { transform: translateX(-4px); }
   40%, 60% { transform: translateX(4px); }
 }
 
-@keyframes plinth-pop {
+@keyframes foyer-pop {
   0% { transform: scale(0.5); opacity: 0; }
   60% { transform: scale(1.08); }
   100% { transform: scale(1); opacity: 1; }

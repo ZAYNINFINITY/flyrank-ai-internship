@@ -4,7 +4,7 @@
 **Track:** Frontend AI Engineering
 **Intern:** Zain Ul Abideen
 **Phase:** Build (Week 5)
-**Deliverable:** https://plinth-cyan.vercel.app/assistant
+**Deliverable:** https://foyer-cyan.vercel.app/assistant
 
 ---
 
@@ -142,7 +142,7 @@ The error state was verified via temporary failure injection (tool `execute` thr
 
 ## Links
 
-- **Preview URL:** https://plinth-cyan.vercel.app/assistant
+- **Preview URL:** https://foyer-cyan.vercel.app/assistant
 - **Route handler:** `week-03/app/app/api/chat/route.ts`
 - **Tool:** `week-03/app/lib/ai/tools/exhibit.ts`
 - **Repository seam:** `week-03/app/lib/repository/index.ts`

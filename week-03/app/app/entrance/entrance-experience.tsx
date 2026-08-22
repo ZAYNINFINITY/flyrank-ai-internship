@@ -3,7 +3,7 @@ export function EntranceExperience() {
     <div className="flex flex-col items-center justify-center min-h-[50dvh] text-center px-6">
       <div className="max-w-md">
         <p className="text-xs uppercase tracking-[0.35em] opacity-30 mb-6">
-          Plinth Museum
+          Foyer Museum
         </p>
         <h1 className="font-heading text-4xl md:text-6xl tracking-tight">
           Enter the Collection

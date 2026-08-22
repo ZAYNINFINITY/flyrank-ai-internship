@@ -4,7 +4,7 @@
 **Track:** Frontend AI Engineering
 **Program:** FlyRank AI Internship
 **Repository:** https://github.com/ZAYNINFINITY/flyrank-ai-internship (branch `main`)
-**Live deployment:** https://plinth-cyan.vercel.app
+**Live deployment:** https://foyer-cyan.vercel.app
 **Week status:** Complete & frozen
 **Submission:** All three available Week 6 assignments — FE-AA1 (Buttons with a Brain), FE-09 (Testing Pass), and Explain It Like You Built It — accompanied by implementation, tests, evidence documents, screenshots, and a green CI pipeline.
 
@@ -12,7 +12,7 @@
 
 ## Week 6 Overview
 
-Week 6 hardens the Plinth capstone. FE-AA1 gives the app a real interaction language: a `MotionButton` primitive whose state machine (idle → loading → success/error → idle) is choreographed entirely with compositor-friendly `transform`/`opacity` transitions, with an interruptible async cycle, `aria-busy`, and reduced-motion support. FE-09 locks the regression baseline: 29 component tests across 5 files, one real Playwright e2e walk of the museum, and a GitHub Actions CI workflow that verifies lint, types, tests, build, and the browser flow on every push. Explain It Like You Built It documents the museum world graph and spatial navigation in plain language.
+Week 6 hardens the Foyer capstone. FE-AA1 gives the app a real interaction language: a `MotionButton` primitive whose state machine (idle → loading → success/error → idle) is choreographed entirely with compositor-friendly `transform`/`opacity` transitions, with an interruptible async cycle, `aria-busy`, and reduced-motion support. FE-09 locks the regression baseline: 29 component tests across 5 files, one real Playwright e2e walk of the museum, and a GitHub Actions CI workflow that verifies lint, types, tests, build, and the browser flow on every push. Explain It Like You Built It documents the museum world graph and spatial navigation in plain language.
 
 **Quality gates (verified locally and in CI):** ESLint → 0 errors (3 pre-existing warnings); `npm run typecheck` → clean; `npm test` → 29/29 locally (3 consecutive runs) and 29/29 in CI; `npm run build` → green; `npm run test:e2e` → 1/1 passed locally and in CI.
 
@@ -23,13 +23,13 @@ Week 6 hardens the Plinth capstone. FE-AA1 gives the app a real interaction lang
 **Status:** Complete (post-fix, verified live)
 **Summary:** A button primitive that communicates its full lifecycle — idle, hover/focus, loading, success, error — instead of a silent `<button>`. "With a brain" = the button owns its async state machine: it disables itself and sets `aria-busy` while loading, swaps to success/error labels, shakes on error, resets after a configurable feedback window, and is interruptible (spam-clicks never double-fire). Everything animates via `transform` + `opacity` only (no layout thrash), and reduced-motion collapses the movement while keeping the feedback. The primitive is intentionally not tied to the current website's look — the variant system plus shared motion tokens are designed to survive the future museum presentation pass unchanged.
 
-> **Post-audit fix (`c6def02`, verified live):** the success "pop" and error "shake" keyframe animations reference `var(--motion-ease-enter)` / `var(--motion-ease-shake)`, which were not defined in `app/globals.css` — so the `animation` shorthand was dropped (computed `animation-name: none`) and the choreography was inert. The three `--motion-ease-*` custom properties are now defined in `:root` (synced with `lib/motion/tokens.ts`); computed styles on the live site now show `plinth-pop 0.32s cubic-bezier(0.05,0.7,0.1,1)` and `plinth-shake 0.5s cubic-bezier(0.36,0.07,0.19,0.97)`. Full detail: [`week-6-audit-findings.md`](week-6-audit-findings.md) §2.
+> **Post-audit fix (`c6def02`, verified live):** the success "pop" and error "shake" keyframe animations reference `var(--motion-ease-enter)` / `var(--motion-ease-shake)`, which were not defined in `app/globals.css` — so the `animation` shorthand was dropped (computed `animation-name: none`) and the choreography was inert. The three `--motion-ease-*` custom properties are now defined in `:root` (synced with `lib/motion/tokens.ts`); computed styles on the live site now show `foyer-pop 0.32s cubic-bezier(0.05,0.7,0.1,1)` and `foyer-shake 0.5s cubic-bezier(0.36,0.07,0.19,0.97)`. Full detail: [`week-6-audit-findings.md`](week-6-audit-findings.md) §2.
 
 ### Implementation files (main)
 
 - [`week-03/app/components/primitives/motion-button.tsx`](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-03/app/components/primitives/motion-button.tsx) — the state-machine button primitive (controlled + uncontrolled modes, `aria-busy`, interruptible guard, spinner/check/alert icons)
 - [`week-03/app/lib/motion/tokens.ts`](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-03/app/lib/motion/tokens.ts) — shared motion tokens: `MotionState`, `MOTION_FEEDBACK_DURATION_MS`, easing & duration constants
-- [`week-03/app/app/globals.css`](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-03/app/app/globals.css) — `plinth-pop`, `plinth-spin`, `plinth-shake` keyframes + the `--motion-ease-*` custom properties (defined in `:root`, synced with `lib/motion/tokens.ts`) + reduced-motion collapse
+- [`week-03/app/app/globals.css`](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-03/app/app/globals.css) — `foyer-pop`, `foyer-spin`, `foyer-shake` keyframes + the `--motion-ease-*` custom properties (defined in `:root`, synced with `lib/motion/tokens.ts`) + reduced-motion collapse
 
 ### Where it's used in production
 
@@ -55,7 +55,7 @@ Week 6 hardens the Plinth capstone. FE-AA1 gives the app a real interaction lang
 
 ### Live deployment
 
-- https://plinth-cyan.vercel.app/playground/motion-lab (verified live, all four states forceable)
+- https://foyer-cyan.vercel.app/playground/motion-lab (verified live, all four states forceable)
 
 ---
 

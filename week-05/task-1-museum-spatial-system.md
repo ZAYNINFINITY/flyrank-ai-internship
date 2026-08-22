@@ -1,10 +1,10 @@
-# Task 1 / Museum Spatial System — Plinth Museum World
+# Task 1 / Museum Spatial System — Foyer Museum World
 
 **Assignment:** Museum spatial system — world graph, renderer, and navigable rooms
 **Track:** Frontend AI Engineering
 **Intern:** Zain Ul Abideen
 **Phase:** Build (Week 5)
-**Deliverable:** https://plinth-cyan.vercel.app/entrance · /reception · /gallery · /collection
+**Deliverable:** https://foyer-cyan.vercel.app/entrance · /reception · /gallery · /collection
 
 ---
 
@@ -97,7 +97,7 @@ Visitor requests /reception
 
 ## Links
 
-- **Preview URL:** https://plinth-cyan.vercel.app/entrance
+- **Preview URL:** https://foyer-cyan.vercel.app/entrance
 - **World graph:** https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-03/app/lib/museum/world.ts
 - **Renderer:** https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-03/app/components/renderer/world-renderer.tsx
 - **Visitor state:** https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-03/app/lib/museum/visitor.ts

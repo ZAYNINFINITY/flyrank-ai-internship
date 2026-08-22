@@ -1,14 +1,14 @@
-# Send the Link — Sharing Plinth
+# Send the Link — Sharing Foyer
 
 ## Live URLs
 
 | URL | What it shows |
 |-----|---------------|
-| https://plinth-cyan.vercel.app | 3D museum homepage (requires WebGL2) |
-| https://plinth-cyan.vercel.app/explore | Grid of all exhibits (2D, works everywhere) |
-| https://plinth-cyan.vercel.app/about | About the museum |
-| https://plinth-cyan.vercel.app/exhibit/zayn | Zain's exhibit page |
-| https://plinth-cyan.vercel.app/assistant | AI curator chat |
+| https://foyer-cyan.vercel.app | 3D museum homepage (requires WebGL2) |
+| https://foyer-cyan.vercel.app/explore | Grid of all exhibits (2D, works everywhere) |
+| https://foyer-cyan.vercel.app/about | About the museum |
+| https://foyer-cyan.vercel.app/exhibit/zayn | Zain's exhibit page |
+| https://foyer-cyan.vercel.app/assistant | AI curator chat |
 
 ## Where to share
 
@@ -17,10 +17,10 @@
 Add to `github.com/ZAYNINFINITY` pinned repos or profile README:
 
 ```
-### Plinth
+### Foyer
 An open digital museum for developers. 3D walkable corridor with sketch-to-paint reveal shader, AI curator powered by Gemini, WCAG 2.1 AA accessible fallback.
 
-🔗 [Live](https://plinth-cyan.vercel.app) | [Source](https://github.com/ZAYNINFINITY/flyrank-ai-internship)
+🔗 [Live](https://foyer-cyan.vercel.app) | [Source](https://github.com/ZAYNINFINITY/flyrank-ai-internship)
 ```
 
 ### Portfolio site (zainportfoli0.netlify.app)
@@ -28,14 +28,14 @@ An open digital museum for developers. 3D walkable corridor with sketch-to-paint
 Add a project card in the projects section:
 
 ```
-Plinth — Open Digital Museum
+Foyer — Open Digital Museum
 A spatial exhibition platform where developers showcase their work in a 3D museum
 with AI-guided tours. Built with React, Three.js, and Gemini.
 ```
 
 ### LinkedIn post
 
-> Just shipped my capstone project: Plinth — an open digital museum for developers.
+> Just shipped my capstone project: Foyer — an open digital museum for developers.
 >
 > Instead of a card grid, projects get a dedicated space in a 3D walkable corridor. A sketch-to-paint reveal shader dissolves pencil sketches into finished pieces as you approach. An AI curator answers questions about what's on display.
 >
@@ -43,12 +43,12 @@ with AI-guided tours. Built with React, Three.js, and Gemini.
 >
 > Built during 8-week AI Frontend Engineering internship @ FlyRank.
 >
-> Live: https://plinth-cyan.vercel.app
+> Live: https://foyer-cyan.vercel.app
 
 ### Twitter/X thread
 
 **Tweet 1:**
-> Shipped: Plinth — an open digital museum for developers.
+> Shipped: Foyer — an open digital museum for developers.
 >
 > Not a portfolio. Not a card grid. A spatial experience where your projects get their own room.
 
@@ -63,13 +63,13 @@ with AI-guided tours. Built with React, Three.js, and Gemini.
 **Tweet 4:**
 > Accessibility wasn't an afterthought. 2D fallback scores 100 on Lighthouse accessibility. Same data, same content, flat layout.
 >
-> Live: https://plinth-cyan.vercel.app
+> Live: https://foyer-cyan.vercel.app
 
 ## Copy-paste links
 
 | Context | Link to use |
 |---------|-------------|
-| General sharing | https://plinth-cyan.vercel.app |
+| General sharing | https://foyer-cyan.vercel.app |
 | For developers (show code) | https://github.com/ZAYNINFINITY/flyrank-ai-internship |
-| For recruiters (show about) | https://plinth-cyan.vercel.app/about |
-| For AI demo | https://plinth-cyan.vercel.app/assistant |
+| For recruiters (show about) | https://foyer-cyan.vercel.app/about |
+| For AI demo | https://foyer-cyan.vercel.app/assistant |

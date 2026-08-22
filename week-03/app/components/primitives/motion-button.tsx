@@ -16,7 +16,7 @@ import {
 type MotionButtonVariant = "solid" | "outline" | "ghost";
 
 /**
- * Plinth's interaction primitive.
+ * Foyer's interaction primitive.
  *
  * A button that communicates its full lifecycle — idle, hover/focus, loading,
  * success, error — with choreographed, compositor-friendly transitions
@@ -135,7 +135,7 @@ export function MotionButton({
         variant === "outline" && "border border-text/25 text-text",
         variant === "ghost" && "border border-text/10 text-text/70",
         activeState === "error" &&
-          "animate-[plinth-shake_500ms_var(--motion-ease-shake)]",
+          "animate-[foyer-shake_500ms_var(--motion-ease-shake)]",
         className,
       )}
       {...props}
@@ -182,9 +182,9 @@ export function MotionButton({
             className={cn(
               "inline-flex items-center gap-2",
               activeState === "success" &&
-                "animate-[plinth-pop_320ms_var(--motion-ease-enter)]",
+                "animate-[foyer-pop_320ms_var(--motion-ease-enter)]",
               activeState === "loading" &&
-                "animate-[plinth-spin_600ms_linear_infinite]",
+                "animate-[foyer-spin_600ms_linear_infinite]",
             )}
           >
             {activeIcon}

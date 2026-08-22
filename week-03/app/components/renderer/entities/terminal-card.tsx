@@ -10,7 +10,7 @@ export function TerminalCard({ entityId, anchor }: EntityComponentProps) {
         <span className="ml-2 uppercase tracking-[0.15em]">{anchor.label}</span>
       </div>
       <p className="opacity-50">
-        <span className="text-green-400/60">$</span> plinth --exhibit {entityId}
+        <span className="text-green-400/60">$</span> foyer --exhibit {entityId}
       </p>
       <p className="mt-1 opacity-30">Loading exhibit data...</p>
     </div>

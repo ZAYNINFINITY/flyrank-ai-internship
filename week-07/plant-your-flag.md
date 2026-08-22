@@ -2,7 +2,7 @@
 
 ## Custom domain
 
-**Status**: Deployed on Vercel at `plinth` project (ID: `prj_ESruoLrrT72xcMIrRKy0TeEmZYr0`)
+**Status**: Deployed on Vercel at `foyer` project (ID: `prj_ESruoLrrT72xcMIrRKy0TeEmZYr0`)
 
 - Vercel provides automatic HTTPS on the `.vercel.app` subdomain
 - Custom domain not yet configured (budget constraint)
@@ -19,7 +19,7 @@ Vercel Analytics is available on the Pro plan. Free tier analytics (Google Analy
 | Item | Status |
 |------|--------|
 | HTTPS | ✅ Vercel automatic |
-| Page title | ✅ "Plinth — Open digital museum for developers" |
+| Page title | ✅ "Foyer — Open digital museum for developers" |
 | Meta description | ✅ "An open-source platform where developers exhibit their work as curated collections." |
 | Social share preview | ✅ Inherits from layout metadata |
 | Favicon | ✅ Next.js generated `/icon` |
@@ -31,6 +31,6 @@ Vercel Analytics is available on the Pro plan. Free tier analytics (Google Analy
 
 ## Evidence
 
-- Vercel dashboard: `plinth` project active
-- Live URL: `https://plinth-cyan.vercel.app` (or assigned Vercel subdomain)
+- Vercel dashboard: `foyer` project active
+- Live URL: `https://foyer-cyan.vercel.app` (or assigned Vercel subdomain)
 - Screenshot of analytics: pending installation

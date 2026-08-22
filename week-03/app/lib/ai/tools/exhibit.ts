@@ -16,7 +16,7 @@ export const exhibitLookupSchema = z
       .optional()
       .describe("Free-text search across title, tagline, description, technologies, and developer id"),
   })
-  .describe("Look up project exhibits in the Plinth museum");
+  .describe("Look up project exhibits in the Foyer museum");
 
 export type ExhibitLookupInput = z.infer<typeof exhibitLookupSchema>;
 
@@ -28,7 +28,7 @@ export type ExhibitLookupInput = z.infer<typeof exhibitLookupSchema>;
 export function createExhibitLookupTool(repo: ExhibitRepository) {
   return tool({
     description:
-      "Search the Plinth museum collection. Returns project exhibits by id, collection, or free-text query.",
+      "Search the Foyer museum collection. Returns project exhibits by id, collection, or free-text query.",
     inputSchema: exhibitLookupSchema,
     async execute({ id, collection, query }) {
       if (id) {

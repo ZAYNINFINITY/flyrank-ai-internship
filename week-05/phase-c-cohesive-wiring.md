@@ -1,16 +1,16 @@
 # Phase C — Cohesive Museum Wiring
 
-**Assignment:** Cohesive museum wiring (Phase C) — tie the standalone Plinth rooms into one navigable museum
+**Assignment:** Cohesive museum wiring (Phase C) — tie the standalone Foyer rooms into one navigable museum
 **Track:** Frontend AI Engineering
 **Intern:** Zain Ul Abideen
 **Phase:** C (Week 5, builds on FE-05/FE-06/FE-07/FE-08 + the museum spatial system)
-**Deliverable:** https://plinth-cyan.vercel.app
+**Deliverable:** https://foyer-cyan.vercel.app
 
 ---
 
 ## What Changed
 
-Phase A/B left Plinth as separate, working rooms (entrance, reception, gallery,
+Phase A/B left Foyer as separate, working rooms (entrance, reception, gallery,
 collections, exhibit rooms, assistant) that a visitor could only reach by
 knowing each URL. Phase C wires them into a single coherent museum without
 rebuilding anything: it **reuses the world graph, route map, navigation
@@ -85,7 +85,7 @@ snapshots + DOM checks per page). Also re-checked on the live dev server.
 | --- | --- | --- |
 | T1 | Home CTA | "Enter the Museum" present on home; click → `/entrance`; nav shows Museum/Explore/About/Sign in |
 | T2 | Entrance | Renders "You are here: Entrance"; door `↓ Back Outside` (`/?via=...`) and `↑ Ahead Reception Hall` (`/reception?via=door-entrance-to-reception`) |
-| T3 | Reception | "Welcome to Plinth"; doors to Entrance / Main Corridor / Collections Wing / Curator Studio |
+| T3 | Reception | "Welcome to Foyer"; doors to Entrance / Main Corridor / Collections Wing / Curator Studio |
 | T4 | Corridor (unfiltered) | `/gallery` → "Main Corridor", 4 exhibits (POS-it, Collaborative Workspace, ZSE Store, ScrollStreak) |
 | T5 | Filter: journey | `/gallery?collection=journey` → heading **"Journey"**, only journey exhibits (Forms & Validation, API Design Patterns, Auth & OAuth Integration, Testing Patterns) |
 | T6 | Filter: visual-design | `/gallery?collection=visual-design` → filtered corridor renders |

@@ -1,8 +1,8 @@
-# Plan to Keep Building — Plinth Post-Capstone Roadmap
+# Plan to Keep Building — Foyer Post-Capstone Roadmap
 
-## Where Plinth is today
+## Where Foyer is today
 
-Plinth is a working prototype that proves the concept: developers can exhibit their work in a spatial museum experience, not a card grid. The core loop works — 3D corridor, exhibit frames with reveal shader, AI curator, accessible fallback, 74 tests, deployed on Vercel.
+Foyer is a working prototype that proves the concept: developers can exhibit their work in a spatial museum experience, not a card grid. The core loop works — 3D corridor, exhibit frames with reveal shader, AI curator, accessible fallback, 74 tests, deployed on Vercel.
 
 What it is NOT yet: a platform where other developers can actually sign up, create exhibits, and publish their work. That's the gap between "demo" and "product."
 
@@ -18,7 +18,7 @@ What it is NOT yet: a platform where other developers can actually sign up, crea
 | Image uploads | Cloudinary or S3 for exhibit images and media |
 | Real exhibits | Add 5-10 real projects from the developer community |
 
-**Why this matters:** Right now Plinth has 3 developers and 5 exhibits. Real data makes it a real museum.
+**Why this matters:** Right now Foyer has 3 developers and 5 exhibits. Real data makes it a real museum.
 
 ## Phase 2 — Public launch (2-3 weeks)
 
@@ -27,7 +27,7 @@ What it is NOT yet: a platform where other developers can actually sign up, crea
 | Task | What it means |
 |------|---------------|
 | Public profiles | `/exhibit/[username]` shows a developer's full exhibit page |
-| Custom URLs | Developers get `plinth.dev/[username]` or custom domains |
+| Custom URLs | Developers get `foyer.dev/[username]` or custom domains |
 | Share cards | Open Graph meta tags so shared links render rich preview cards |
 | Search + browse | `/explore` with filters: technology, collection, developer |
 | Notifications | Email digest when new exhibits are added to collections you follow |
@@ -61,7 +61,7 @@ The hardest part was not the 3D or the AI — it was the seam between them. Maki
 
 ## Success signal
 
-Plinth is ready to keep building when:
+Foyer is ready to keep building when:
 - [ ] A stranger can sign up, create an exhibit, and share it without asking me for help
 - [ ] The museum has 10+ real developers with real projects
 - [ ] The AI curator can answer questions about any exhibit in the museum

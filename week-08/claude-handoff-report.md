@@ -1,10 +1,10 @@
-# Claude Handoff Report — Plinth Museum Polish Pass
+# Claude Handoff Report — Foyer Museum Polish Pass
 
 **Date:** August 22, 2026
-**Project:** Plinth — Open Digital Museum for Developers
+**Project:** Foyer — Open Digital Museum for Developers
 **Repo:** https://github.com/ZAYNINFINITY/flyrank-ai-internship
 **App root:** `week-03/app/`
-**Live:** https://plinth-cyan.vercel.app
+**Live:** https://foyer-cyan.vercel.app
 **Dev server:** `npm run dev` → localhost:3000
 
 ---
@@ -152,7 +152,7 @@ Entrance (ApproachExterior, z=20-28):
   → Steps, lamp posts, trees, planters
   → Facade with door-shaped hole
   → EntranceDoor (auto-opens on approach)
-  → PLINTH MUSEUM signboard
+  → FOYER MUSEUM signboard
   → Info board (ABOUT/MENU)
 
 Reception (z=13-20):

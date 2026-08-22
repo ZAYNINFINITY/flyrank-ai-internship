@@ -1,9 +1,9 @@
 export type MotionState = "idle" | "loading" | "success" | "error";
 
 /**
- * Plinth's motion language.
+ * Foyer's motion language.
  *
- * Every animated surface in Plinth (buttons today, doors/exhibits/room
+ * Every animated surface in Foyer (buttons today, doors/exhibits/room
  * transitions later) reads from these tokens so the whole museum shares one
  * timing and easing vocabulary. The values here mirror the CSS custom
  * properties defined in app/globals.css (--motion-*). Keeping both in sync is
@@ -31,9 +31,9 @@ export const motionTokens = {
     shake: "cubic-bezier(0.36, 0.07, 0.19, 0.97)",
   },
   animation: {
-    spin: "plinth-spin 600ms linear infinite",
-    shake: "plinth-shake 500ms var(--motion-ease-shake)",
-    pop: "plinth-pop 320ms var(--motion-ease-enter)",
+    spin: "foyer-spin 600ms linear infinite",
+    shake: "foyer-shake 500ms var(--motion-ease-shake)",
+    pop: "foyer-pop 320ms var(--motion-ease-enter)",
   },
 } as const;
 

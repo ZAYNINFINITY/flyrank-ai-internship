@@ -290,8 +290,8 @@ export function buildInteractives(
     range: 2.4,
     prompt: "Read signage",
     inspect: {
-      title: "Plinth Museum",
-      body: "Welcome to Plinth — an open museum for digital work. Walk the corridor to explore exhibits, or step into the exhibit room for a deeper look.",
+      title: "Foyer Museum",
+      body: "Welcome to Foyer — an open museum for digital work. Walk the corridor to explore exhibits, or step into the exhibit room for a deeper look.",
       source: "signage",
     },
   });

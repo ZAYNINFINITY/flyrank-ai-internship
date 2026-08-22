@@ -31,7 +31,7 @@ function renderExhibitOutput(output: unknown) {
 }
 
 /**
- * Single reusable chat surface for Plinth.
+ * Single reusable chat surface for Foyer.
  * Used by /assistant today and by the Curator in later milestones.
  */
 export function ChatPanel({

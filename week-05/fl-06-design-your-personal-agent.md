@@ -11,7 +11,7 @@
 
 ## 1. Who is the human in the loop?
 
-**User:** Zain Ul Abideen — CS student at PAF-IAST, MERN stack developer, FlyRank AI internship week 5-6, currently shipping the Plinth museum and preparing his Week 5 submission.
+**User:** Zain Ul Abideen — CS student at PAF-IAST, MERN stack developer, FlyRank AI internship week 5-6, currently shipping the Foyer museum and preparing his Week 5 submission.
 
 **What I actually have going on (so the agent can ground itself in real life):**
 

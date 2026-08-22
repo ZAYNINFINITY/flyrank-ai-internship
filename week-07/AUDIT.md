@@ -35,7 +35,7 @@ Recorded before Week 7 visual and interaction improvements.
 - Gyroscope permission prompt on iOS (user gesture required)
 
 ### SEO
-- Title: "Plinth — Open digital museum for developers"
+- Title: "Foyer — Open digital museum for developers"
 - Description: "An open-source platform where developers exhibit their work as curated collections. Not a card grid — a gallery."
 - Static routes (`/about`, `/explore`, `/collection`) are server-rendered
 - Social preview inherits from layout metadata
@@ -44,7 +44,7 @@ Recorded before Week 7 visual and interaction improvements.
 ### Best Practices
 - ESLint: 0 errors (2 pre-existing warnings in `world.ts` / `queries.ts`)
 - TypeScript: clean (`npx tsc --noEmit` passes)
-- No `window.__plinth` debug hook (removed)
+- No `window.__foyer` debug hook (removed)
 - No console.log in production code
 
 ## After (Lighthouse scores, August 19, 2026)

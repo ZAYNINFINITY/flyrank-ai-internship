@@ -235,7 +235,7 @@ export function ExhibitRoom3D({
         >
           <div className="text-center">
             <p className="text-[10px] uppercase tracking-[0.35em] text-[#6f6c62]">Approaching</p>
-            <p className="mt-2 font-heading text-xl tracking-tight text-[#2a2a30]">Plinth Museum</p>
+            <p className="mt-2 font-heading text-xl tracking-tight text-[#2a2a30]">Foyer Museum</p>
           </div>
         </div>
       )}
@@ -258,7 +258,7 @@ export function ExhibitRoom3D({
           other overlay element, instead of text floating bare on the canvas */}
       <div className="pointer-events-none absolute left-4 top-4 flex flex-col gap-0.5 rounded-sm border border-[#2a2a30]/15 bg-[#efe9da]/85 px-3 py-2 shadow-sm backdrop-blur-sm">
         <p className="text-[10px] uppercase tracking-[0.25em] text-[#2a2a30]/80">
-          Plinth
+          Foyer
         </p>
         <p className="text-[10px] uppercase tracking-[0.2em] text-[#2a2a30]/50">
           {isTouch ? "Swipe to move · Tap to inspect" : "Scroll to move · Click to inspect"}

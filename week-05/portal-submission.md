@@ -4,7 +4,7 @@ Copy-paste ready resources for each Week 5 assignment. Attach the files / paste 
 
 **Intern:** Zain Ul Abideen · **Track:** Frontend AI Engineering
 **Repository:** https://github.com/ZAYNINFINITY/flyrank-ai-internship (branch `main`)
-**Live deployment:** https://plinth-cyan.vercel.app
+**Live deployment:** https://foyer-cyan.vercel.app
 **Master packet:** https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-05/submission-summary.md
 
 ---
@@ -34,7 +34,7 @@ Copy-paste ready resources for each Week 5 assignment. Attach the files / paste 
 - https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-03/app/app/exhibit/e/%5Bid%5D/page.tsx
 
 **Commit:** `3b295b5`
-**Live:** https://plinth-cyan.vercel.app/entrance · https://plinth-cyan.vercel.app/reception · https://plinth-cyan.vercel.app/gallery · https://plinth-cyan.vercel.app/collection
+**Live:** https://foyer-cyan.vercel.app/entrance · https://foyer-cyan.vercel.app/reception · https://foyer-cyan.vercel.app/gallery · https://foyer-cyan.vercel.app/collection
 
 ---
 
@@ -54,7 +54,7 @@ Copy-paste ready resources for each Week 5 assignment. Attach the files / paste 
 - https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-03/app/lib/repository/mock-exhibit-repository.ts
 
 **Commits:** `defa39e`, `ba83c8d` (foundation `fd493e4`)
-**Live:** https://plinth-cyan.vercel.app/assistant
+**Live:** https://foyer-cyan.vercel.app/assistant
 
 ---
 
@@ -74,7 +74,7 @@ Copy-paste ready resources for each Week 5 assignment. Attach the files / paste 
 - https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-05/screenshots/fe-07-output-error.png
 
 **Commits:** `defa39e`, `ba83c8d`, `0ad266d`, `8790d6b`
-**Live:** https://plinth-cyan.vercel.app/assistant
+**Live:** https://foyer-cyan.vercel.app/assistant
 
 ---
 
@@ -92,7 +92,7 @@ Copy-paste ready resources for each Week 5 assignment. Attach the files / paste 
 - https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-05/screenshots/fe-08-offline-error.png
 
 **Commits:** `30959f8`, `2f34caf`
-**Live:** https://plinth-cyan.vercel.app/assistant
+**Live:** https://foyer-cyan.vercel.app/assistant
 
 ---
 
@@ -120,7 +120,7 @@ Copy-paste ready resources for each Week 5 assignment. Attach the files / paste 
 - https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-05/screenshots/phase-c-longform-crosslinks.png
 
 **Commit:** `bef109e`
-**Live:** https://plinth-cyan.vercel.app
+**Live:** https://foyer-cyan.vercel.app
 
 ---
 
@@ -141,7 +141,7 @@ Copy-paste ready resources for each Week 5 assignment. Attach the files / paste 
 
 Hi team, a few notes on this submission:
 
-1. **Personal website vs capstone:** My personal website (`zainportfoli0.netlify.app`, built with Hugo on Netlify) is separate from my capstone project — the Plinth museum (`plinth-cyan.vercel.app`). This submission is about the personal website going live with the required links and DNS understanding. The capstone museum is submitted under its own Week 5 FE assignments.
+1. **Personal website vs capstone:** My personal website (`zainportfoli0.netlify.app`, built with Hugo on Netlify) is separate from my capstone project — the Foyer museum (`foyer-cyan.vercel.app`). This submission is about the personal website going live with the required links and DNS understanding. The capstone museum is submitted under its own Week 5 FE assignments.
 2. **Links verified live:** LinkedIn, GitHub, and CV (`/files/resume.pdf`, 200 OK) are all working links on the site. Contact is available via email.
 3. **Booking link:** ✅ live — "Book a Call" button on the About section points to https://cal.com/zayn-oj26mm (verified live 2026-08-04, deployed from `portfolio-web` commit `dcb71eb`).
 4. **DNS walkthrough:** Included in the attached doc — explains the CNAME record for `zain.flyrank.ai` → `zainportfoli0.netlify.app`, the resolver flow, and what I will do when the subdomain is provisioned.
@@ -151,7 +151,7 @@ Hi team, a few notes on this submission:
 
 ## Assignment 7 — Ship the Ugly One
 
-**Summary:** Shipped the live museum (https://plinth-cyan.vercel.app) — every sitemap page reachable, real projects as exhibits, fully explainable. A real reviewer (a friend) explored the portfolio; overall impression **8/10**. A separate honest "Still Ugly" self-review lists the known visual-depth gaps (column-based rooms, border-link doors, flat atmosphere, etc.) as the roadmap for later polish.
+**Summary:** Shipped the live museum (https://foyer-cyan.vercel.app) — every sitemap page reachable, real projects as exhibits, fully explainable. A real reviewer (a friend) explored the portfolio; overall impression **8/10**. A separate honest "Still Ugly" self-review lists the known visual-depth gaps (column-based rooms, border-link doors, flat atmosphere, etc.) as the roadmap for later polish.
 
 **Attach:**
 - https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-05/ship-the-ugly-one.md

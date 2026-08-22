@@ -1,16 +1,16 @@
-# Ship the Ugly One — Plinth (Week 5)
+# Ship the Ugly One — Foyer (Week 5)
 
 **Assignment:** Ship the Ugly One
 **Track:** General AI Fluency
 **Intern:** Zain Ul Abideen
 **When:** Week 5 · **Workload:** 4h · **Phase:** Build
-**Deliverable:** https://plinth-cyan.vercel.app — live, every sitemap page reachable
+**Deliverable:** https://foyer-cyan.vercel.app — live, every sitemap page reachable
 
 ---
 
 ## Live URL & reachability
 
-- **Live:** https://plinth-cyan.vercel.app
+- **Live:** https://foyer-cyan.vercel.app
 - **Every sitemap page reachable and navigable:** `/`, `/explore`, `/about`, `/entrance`, `/reception`, `/gallery`, `/collection`, `/exhibit/e/[id]`, `/exhibit/[username]`, `/assistant`, `/dashboard`, `/login`, `/health` — verified end-to-end (17 routes in the production build; Phase C T1–T12 walked the full museum via Playwright).
 - **Real work in, no placeholders:** four real projects as museum exhibits (POS-it, Collaborative Workspace, ZSE Store, ScrollStreak), each with its own exhibit room and long-form project page.
 - **Explainable:** architecture is documented in `docs/architecture.md`, `docs/REPOSITORY_STATE.md`, and the week-05 task/evidence docs; I built it with AI as my build partner and can explain every piece (world graph, renderer, repository seam, AI route).

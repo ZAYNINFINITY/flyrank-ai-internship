@@ -4,7 +4,7 @@ export function ReceptionExperience() {
   return (
     <div className="flex flex-col items-center justify-center min-h-[60dvh] text-center px-6">
       <h1 className="font-heading text-3xl md:text-5xl tracking-tight">
-        Welcome to Plinth
+        Welcome to Foyer
       </h1>
       <p className="mt-6 max-w-md text-sm md:text-base opacity-60 leading-relaxed">
         A digital museum of developer projects. Each room holds an exhibit —

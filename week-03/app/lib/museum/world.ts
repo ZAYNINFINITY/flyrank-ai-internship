@@ -142,8 +142,8 @@ const lowerFloor: Floor = {
 };
 
 export const building: Building = {
-  id: "plinth-museum",
-  name: "Plinth Museum",
+  id: "foyer-museum",
+  name: "Foyer Museum",
   floors: [groundFloor, lowerFloor],
 };
 

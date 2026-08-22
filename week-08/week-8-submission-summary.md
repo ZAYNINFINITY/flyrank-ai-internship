@@ -2,9 +2,9 @@
 
 ## What was built
 
-**Plinth** — an open digital museum where developers exhibit their work as curated gallery rooms. Not a card grid, not a thumbnail cluster. Each project gets a dedicated space with architectural presence: a scrollable 3D corridor, an exhibit room with text walls and media, and an AI curator that answers questions about what's on display.
+**Foyer** — an open digital museum where developers exhibit their work as curated gallery rooms. Not a card grid, not a thumbnail cluster. Each project gets a dedicated space with architectural presence: a scrollable 3D corridor, an exhibit room with text walls and media, and an AI curator that answers questions about what's on display.
 
-**Live URL:** https://plinth-cyan.vercel.app
+**Live URL:** https://foyer-cyan.vercel.app
 
 ## What's included
 
@@ -31,7 +31,7 @@
 
 ## How AI fits
 
-Plinth's curator chat (`app/api/chat/route.ts`) uses OpenRouter (Gemini Flash) with a custom `exhibitLookup` tool. The model can query any exhibit by ID, collection, or keyword. The tool resolves data through the `ExhibitRepository` interface — swapping mock for real DB is a one-line change. Tool lifecycle states (streaming → available → error) render as distinct UI. The model was chosen for cost efficiency; the tool schema was the hard part, not the prompt.
+Foyer's curator chat (`app/api/chat/route.ts`) uses OpenRouter (Gemini Flash) with a custom `exhibitLookup` tool. The model can query any exhibit by ID, collection, or keyword. The tool resolves data through the `ExhibitRepository` interface — swapping mock for real DB is a one-line change. Tool lifecycle states (streaming → available → error) render as distinct UI. The model was chosen for cost efficiency; the tool schema was the hard part, not the prompt.
 
 ## Honest limitations
 

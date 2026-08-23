@@ -1099,7 +1099,7 @@ function PendantLight({
       {on && (
         <pointLight
           position={[0, -0.7, 0]}
-          intensity={1.8}
+          intensity={1.1}
           distance={6}
           decay={2}
           color="#f0cf8b"
@@ -1221,10 +1221,14 @@ function MuseumLighting({ on = true }: { on?: boolean }) {
       <LinearLight position={[0, HEIGHT - 0.08, -2]} length={5.4} on={on} />
       <LinearLight position={[0, HEIGHT - 0.08, -16.5]} length={6.2} on={on} />
 
-      {/* Reception wall spots (existing — always on for ambient fill) */}
+      {/* Reception wall spots — dimmed from 1.8 (was blowing out the
+          real PBR floor texture to near-white; the corridor's 2 TrackSpots
+          at similar intensity don't have this problem because there's
+          only 2 of them instead of 3 pendants + 3 of these stacked in a
+          smaller room). */}
       {on && [4.75].map((x) =>
         [14.8, 17, 19].map((z) => (
-          <pointLight key={`${x}-${z}`} position={[x * 0.86, 2.7, z]} intensity={1.8} distance={4.5} decay={2} color="#f0cf8b" />
+          <pointLight key={`${x}-${z}`} position={[x * 0.86, 2.7, z]} intensity={1.0} distance={4.5} decay={2} color="#f0cf8b" />
         ))
       )}
 
@@ -1608,13 +1612,6 @@ function ApproachExterior() {
       <Planter position={[-2.4, 0, approach.minZ + 2.1]} />
       <Planter position={[2.4, 0, approach.minZ + 2.1]} />
 
-      {/* Real tree models (TDSLoader) — placed near the back lamp posts,
-          inset from the flanking courtyard walls with a fixed safe margin
-          rather than a magic-number X, since the actual wall span depends
-          on FOOTPRINTS.approach. */}
-      <Tree position={[approach.minX + 0.9, 0, approach.maxZ - 3]} />
-      <Tree position={[approach.maxX - 0.9, 0, approach.maxZ - 3]} targetHeight={2.9} />
-
       {/* Shallow stone steps rising to the threshold */}
       {[0, 1, 2].map((i) => (
         <mesh key={i} position={[0, 0.03 + i * 0.055, approach.minZ + 1.55 - i * 0.22]}>
@@ -1650,6 +1647,15 @@ function ApproachExterior() {
       {/* Facade — a single plane with a real door-shaped hole cut into it
           (ApproachFacade, via ShapeGeometry), not two stretched halves. */}
       <ApproachFacade />
+      {/* Ceiling cap — the approach previously had zero ceiling geometry
+          (every other room shares RoomBox, which does render one), so it
+          opened straight into the sky-dome background right above the
+          walls. This grounds it as a real covered foyer space instead of
+          walls floating in an unbounded void. */}
+      <mesh rotation-x={Math.PI / 2} position={[0, APPROACH_HEIGHT, midZ]}>
+        <planeGeometry args={[widthX, widthZ]} />
+        {paperMaterial(PALETTE.approachWall, 0.96)}
+      </mesh>
       <EntrancePillars />
       <mesh position={[-(ENTRANCE_HALF + 0.09), 1.2, approach.minZ + 0.06]}>
         <boxGeometry args={[0.18, 2.4, 0.18]} />
@@ -1874,11 +1880,20 @@ function FloorSurface({
   }, [pbr, repeatX, repeatZ]);
 
   if (maps) {
+    // Tint the shared PBR texture by each room's own palette color instead
+    // of hardcoding white. Every room reuses the SAME cached wood texture
+    // (loadPbrFloorTextures() is a single shared promise), so without a
+    // per-room tint every floor in the museum rendered as the identical
+    // raw red-brown wood, un-differentiated and — under the museum's warm
+    // point/spot lighting stacked on top of an already-warm base color —
+    // blown out toward a flat, saturated orange. Multiplying by the room's
+    // intended (much lighter, cooler) palette color brings each floor back
+    // toward its designed tone and keeps highlights from clipping as hard.
     return (
       <meshStandardMaterial
         map={maps.map}
         roughnessMap={maps.roughnessMap}
-        color="#ffffff"
+        color={color}
         roughness={1}
         metalness={0}
       />
@@ -2017,60 +2032,265 @@ function EntranceDoor() {
   );
 }
 
-function CuratorFigure({ position }: { position: [number, number, number] }) {
-  const meshRef = useRef<THREE.Mesh>(null);
-  const [texture, setTexture] = useState<THREE.Texture | null>(null);
+// ─── Curator 3D model (OBJ + diffuse texture) — lazy-loaded once,
+// cached. The raw OBJ coordinates span ~187 units tall (centimeters),
+// so we hardcode the scale factor and offset rather than trusting a
+// bounding-box computation on the clone (which can drift).
+// Falls back to a silhouette on load failure.
+let curatorModelPromise: Promise<THREE.Group> | null = null;
+
+// Previously this hardcoded a scale factor + Y offset derived from an
+// assumed raw bounding box ("Y: -1.11 to 186.03"). That's brittle the
+// moment the actual exported OBJ doesn't match those exact numbers, and a
+// stale scale/offset applied uniformly to real geometry is a plausible
+// source of the reported model distortion. Now measured dynamically from
+// the loaded object instead, same as ReceptionFemale/BenchFemale below.
+const CURATOR_TARGET_HEIGHT = 1.75;
+
+function loadCuratorModel() {
+  if (!curatorModelPromise) {
+    curatorModelPromise = new Promise<THREE.Group>((resolve, reject) => {
+      const loader = new OBJLoader();
+      loader.load(
+        "/models/curator/rp_dennis_posed_004_30k.OBJ",
+        (obj) => {
+          // Apply diffuse texture to all meshes
+          const tex = new THREE.TextureLoader().load(
+            "/models/curator/tex/rp_dennis_posed_004_dif.jpg",
+            (t) => { t.colorSpace = THREE.SRGBColorSpace; }
+          );
+          obj.traverse((child) => {
+            if (child instanceof THREE.Mesh) {
+              child.material = new THREE.MeshStandardMaterial({
+                map: tex,
+                roughness: 0.7,
+                metalness: 0.05,
+              });
+              // Missing/mismatched normals on an OBJ export read as a
+              // faceted, "melted" surface under standard lighting —
+              // recompute to guarantee normals that actually match this
+              // geometry.
+              if (!child.geometry.attributes.normal) {
+                child.geometry.computeVertexNormals();
+              }
+            }
+          });
+
+          // Measure the real geometry rather than trusting a remembered
+          // bounding box, then normalize scale + ground offset from it —
+          // same pattern as ReceptionFemale/BenchFemale below.
+          const box = new THREE.Box3().setFromObject(obj);
+          const height = box.max.y - box.min.y;
+          if (height > 0) {
+            const scale = CURATOR_TARGET_HEIGHT / height;
+            obj.scale.setScalar(scale);
+            const scaledBox = new THREE.Box3().setFromObject(obj);
+            obj.position.y -= scaledBox.min.y;
+          }
+          obj.updateMatrixWorld(true);
+
+          resolve(obj);
+        },
+        undefined,
+        reject
+      );
+    });
+  }
+  return curatorModelPromise;
+}
+
+function CuratorFigure({
+  position,
+  ry = Math.PI,
+}: {
+  position: [number, number, number];
+  /** RenderPeople OBJ figures face the model's raw +Z by default. The
+   * curator previously had no rotation applied at all (unlike
+   * ReceptionFemale, which needed ry={Math.PI} at its call site) — meaning
+   * it stood facing away from an approaching visitor. Defaulting to PI
+   * turns it to face into the room. */
+  ry?: number;
+}) {
+  const [model, setModel] = useState<THREE.Group | null>(null);
+  const [failed, setFailed] = useState(false);
 
   useEffect(() => {
     let alive = true;
-    const loader = new THREE.TextureLoader();
-    loader.load("/images/curator.png", (tex) => {
-      tex.colorSpace = THREE.SRGBColorSpace;
-      if (alive) setTexture(tex);
-    });
+    loadCuratorModel()
+      .then((source) => {
+        if (!alive) return;
+        setModel(source.clone());
+      })
+      .catch(() => {
+        if (alive) setFailed(true);
+      });
     return () => { alive = false; };
   }, []);
 
-  useFrame(({ camera, clock }) => {
-    if (!meshRef.current) return;
-    meshRef.current.quaternion.copy(camera.quaternion);
-    meshRef.current.position.set(
-      position[0],
-      position[1] + 1.4 + Math.sin(clock.elapsedTime * 0.8) * 0.04,
-      position[2]
+  if (failed) {
+    return (
+      <group position={position}>
+        <mesh position={[0, 0.01, 0]} rotation-x={-Math.PI / 2}>
+          <circleGeometry args={[0.5, 24]} />
+          <meshBasicMaterial color="#000000" transparent opacity={0.08} />
+        </mesh>
+        <mesh position={[0, 0.85, 0]}>
+          <capsuleGeometry args={[0.2, 1.2, 4, 12]} />
+          <meshStandardMaterial color="#1a1a20" roughness={0.8} />
+        </mesh>
+        <Text position={[0, -0.1, 0.1]} fontSize={0.12} color={PALETTE.ivory} anchorX="center" anchorY="middle">
+          Curator
+        </Text>
+      </group>
     );
-  });
+  }
 
-  if (!texture) return null;
+  if (!model) return null;
 
   return (
     <group position={position}>
-      {/* Ground shadow disc */}
       <mesh position={[0, 0.01, 0]} rotation-x={-Math.PI / 2}>
         <circleGeometry args={[0.5, 24]} />
         <meshBasicMaterial color="#000000" transparent opacity={0.08} />
       </mesh>
-      {/* Billboard sprite — always faces camera */}
-      <mesh ref={meshRef} position={[0, 1.4, 0]}>
-        <planeGeometry args={[1.8, 2.8]} />
-        <meshBasicMaterial
-          map={texture}
-          transparent
-          alphaTest={0.1}
-          side={THREE.DoubleSide}
-          depthWrite={false}
-        />
-      </mesh>
-      {/* Label */}
-      <Text
-        position={[0, -0.1, 0.1]}
-        fontSize={0.12}
-        color={PALETTE.ivory}
-        anchorX="center"
-        anchorY="middle"
-      >
+      <group rotation-y={ry}>
+        <primitive object={model} />
+      </group>
+      <Text position={[0, -0.1, 0.1]} fontSize={0.12} color={PALETTE.ivory} anchorX="center" anchorY="middle">
         Curator
       </Text>
+    </group>
+  );
+}
+
+// ─── Two more RenderPeople OBJ figures, same lazy-load + manual-texture
+// pattern as the curator above (no .mtl trusted — RenderPeople's
+// Windows-exported .mtl files reference textures with backslash paths
+// browsers can't resolve, confirmed on bench-female's .mtl specifically).
+let benchFemaleModelPromise: Promise<THREE.Group> | null = null;
+
+function loadBenchFemaleModel() {
+  if (!benchFemaleModelPromise) {
+    benchFemaleModelPromise = new Promise<THREE.Group>((resolve, reject) => {
+      const loader = new OBJLoader();
+      loader.load(
+        "/models/bench-female/091_W_Aya_30K.obj",
+        (obj) => {
+          const tex = new THREE.TextureLoader().load(
+            "/models/bench-female/tex/091_W_Aya_2K_01.jpg",
+            (t) => { t.colorSpace = THREE.SRGBColorSpace; }
+          );
+          obj.traverse((child) => {
+            if (child instanceof THREE.Mesh) {
+              child.material = new THREE.MeshStandardMaterial({ map: tex, roughness: 0.75, metalness: 0.02 });
+            }
+          });
+          // Seated pose — bounding-box height is already compressed vs.
+          // standing height, so scale target is a seated-torso height, not
+          // the ~1.7m used for the standing curator/receptionist.
+          const box = new THREE.Box3().setFromObject(obj);
+          const height = box.max.y - box.min.y;
+          if (height > 0) {
+            const scale = 1.0 / height;
+            obj.scale.setScalar(scale);
+            const scaledBox = new THREE.Box3().setFromObject(obj);
+            obj.position.y -= scaledBox.min.y;
+          }
+          resolve(obj);
+        },
+        undefined,
+        reject
+      );
+    });
+  }
+  return benchFemaleModelPromise;
+}
+
+function BenchFemale({ position, ry = 0 }: { position: [number, number, number]; ry?: number }) {
+  const [model, setModel] = useState<THREE.Group | null>(null);
+
+  useEffect(() => {
+    let alive = true;
+    loadBenchFemaleModel()
+      .then((source) => {
+        if (alive) setModel(source.clone());
+      })
+      .catch((err) => {
+        console.warn("[BenchFemale] failed to load, skipping:", err);
+        benchFemaleModelPromise = null;
+      });
+    return () => { alive = false; };
+  }, []);
+
+  if (!model) return null;
+
+  // Bench seat sits at y=0.42 (Bench component's own seat mesh height) —
+  // offset the whole seated figure up to that surface so she reads as
+  // sitting ON the bench, not floating above or sunk through it.
+  return (
+    <group position={[position[0], position[1] + 0.42, position[2]]} rotation-y={ry}>
+      <primitive object={model} />
+    </group>
+  );
+}
+
+let receptionFemaleModelPromise: Promise<THREE.Group> | null = null;
+
+function loadReceptionFemaleModel() {
+  if (!receptionFemaleModelPromise) {
+    receptionFemaleModelPromise = new Promise<THREE.Group>((resolve, reject) => {
+      const loader = new OBJLoader();
+      loader.load(
+        "/models/reception-female/rp_mei_posed_001_30k.obj",
+        (obj) => {
+          const tex = new THREE.TextureLoader().load(
+            "/models/reception-female/tex/rp_mei_posed_001_dif_2k.jpg",
+            (t) => { t.colorSpace = THREE.SRGBColorSpace; }
+          );
+          obj.traverse((child) => {
+            if (child instanceof THREE.Mesh) {
+              child.material = new THREE.MeshStandardMaterial({ map: tex, roughness: 0.75, metalness: 0.02 });
+            }
+          });
+          const box = new THREE.Box3().setFromObject(obj);
+          const height = box.max.y - box.min.y;
+          if (height > 0) {
+            const scale = 1.65 / height;
+            obj.scale.setScalar(scale);
+            const scaledBox = new THREE.Box3().setFromObject(obj);
+            obj.position.y -= scaledBox.min.y;
+          }
+          resolve(obj);
+        },
+        undefined,
+        reject
+      );
+    });
+  }
+  return receptionFemaleModelPromise;
+}
+
+function ReceptionFemale({ position, ry = 0 }: { position: [number, number, number]; ry?: number }) {
+  const [model, setModel] = useState<THREE.Group | null>(null);
+
+  useEffect(() => {
+    let alive = true;
+    loadReceptionFemaleModel()
+      .then((source) => {
+        if (alive) setModel(source.clone());
+      })
+      .catch((err) => {
+        console.warn("[ReceptionFemale] failed to load, skipping:", err);
+        receptionFemaleModelPromise = null;
+      });
+    return () => { alive = false; };
+  }, []);
+
+  if (!model) return null;
+
+  return (
+    <group position={position} rotation-y={ry}>
+      <primitive object={model} />
     </group>
   );
 }
@@ -2171,6 +2391,191 @@ function LampPost({ position }: { position: [number, number, number] }) {
         />
       </mesh>
       <pointLight position={[0, 2.08, 0]} intensity={1.4} distance={5} decay={2} color="#f0cf8b" />
+    </group>
+  );
+}
+
+// ─── Wall clock — shows the visitor's actual system time, not a fixed prop.
+// Analog face with real hour/minute/second hands, each hand pivoting from
+// a wrapping group (not the mesh itself) so rotation happens around the
+// clock's center rather than the hand's own midpoint.
+function ClockHand({
+  length,
+  width,
+  depth,
+  color,
+}: {
+  length: number;
+  width: number;
+  depth: number;
+  color: string;
+}) {
+  return (
+    <mesh position={[0, length / 2, 0]}>
+      <boxGeometry args={[width, length, depth]} />
+      <meshStandardMaterial color={color} roughness={0.5} metalness={0.2} />
+    </mesh>
+  );
+}
+
+function MuseumClock({
+  position,
+  ry = 0,
+}: {
+  position: [number, number, number];
+  ry?: number;
+}) {
+  const hourRef = useRef<THREE.Group>(null);
+  const minRef = useRef<THREE.Group>(null);
+  const secRef = useRef<THREE.Group>(null);
+
+  useFrame(() => {
+    const now = new Date();
+    const h = now.getHours() % 12;
+    const m = now.getMinutes();
+    const s = now.getSeconds();
+    if (hourRef.current) hourRef.current.rotation.z = -((h + m / 60) / 12) * Math.PI * 2;
+    if (minRef.current) minRef.current.rotation.z = -((m + s / 60) / 60) * Math.PI * 2;
+    if (secRef.current) secRef.current.rotation.z = -(s / 60) * Math.PI * 2;
+  });
+
+  const ticks = useMemo(() => Array.from({ length: 12 }, (_, i) => (i / 12) * Math.PI * 2), []);
+
+  return (
+    <group position={position} rotation-y={ry}>
+      {/* Rim */}
+      <mesh rotation={[Math.PI / 2, 0, 0]}>
+        <cylinderGeometry args={[0.32, 0.32, 0.035, 32]} />
+        <meshStandardMaterial color={PALETTE.frame} roughness={0.5} metalness={0.4} />
+      </mesh>
+      {/* Face */}
+      <mesh position={[0, 0, 0.022]}>
+        <circleGeometry args={[0.29, 32]} />
+        {paperMaterial("#f7f0df", 0.9)}
+      </mesh>
+      {/* Hour ticks */}
+      {ticks.map((a, i) => (
+        <mesh
+          key={i}
+          position={[Math.sin(a) * 0.25, Math.cos(a) * 0.25, 0.03]}
+          rotation-z={-a}
+        >
+          <boxGeometry args={[0.012, 0.03, 0.006]} />
+          {inkMaterial()}
+        </mesh>
+      ))}
+      {/* Hands — each in its own pivot group */}
+      <group ref={hourRef} position={[0, 0, 0.035]}>
+        <ClockHand length={0.15} width={0.014} depth={0.007} color={PALETTE.ivory} />
+      </group>
+      <group ref={minRef} position={[0, 0, 0.042]}>
+        <ClockHand length={0.22} width={0.01} depth={0.007} color={PALETTE.ivory} />
+      </group>
+      <group ref={secRef} position={[0, 0, 0.049]}>
+        <ClockHand length={0.24} width={0.004} depth={0.005} color={PALETTE.gold} />
+      </group>
+      {/* Center pin */}
+      <mesh position={[0, 0, 0.055]}>
+        <sphereGeometry args={[0.012, 8, 8]} />
+        {inkMaterial()}
+      </mesh>
+      {/* Small plaque underneath, matching the museum's captioning style */}
+      <Text position={[0, -0.42, 0.03]} fontSize={0.045} letterSpacing={0.06} color={PALETTE.dim} anchorX="center" anchorY="middle">
+        LOCAL TIME
+      </Text>
+    </group>
+  );
+}
+
+// ─── Reception desk (OBJ model) — lazy-loaded, cached.
+// Raw OBJ: Y range 0–43.5, X range ±416, Z range ±279.
+// Scale to 0.9m tall. Falls back to procedural desk on error.
+let deskModelPromise: Promise<THREE.Group> | null = null;
+
+// Was a hardcoded scalar (0.9 / 43.5) derived from an assumed raw bounding
+// box, same brittleness as the curator model above — measure the loaded
+// geometry instead so a stale assumption can't warp the desk.
+const DESK_TARGET_HEIGHT = 0.9;
+
+function loadDeskModel() {
+  if (!deskModelPromise) {
+    deskModelPromise = new Promise<THREE.Group>((resolve, reject) => {
+      const mtlLoader = new MTLLoader();
+      mtlLoader.load(
+        "/models/reception desk/ReceptionDesk-1-OBJ/Reception_Desk_1_obj.mtl",
+        (materials) => {
+          materials.preload();
+          const objLoader = new OBJLoader();
+          objLoader.setMaterials(materials);
+          objLoader.load(
+          "/models/reception desk/ReceptionDesk-1-OBJ/Reception_Desk_1_obj.obj",
+          (obj) => {
+          const box = new THREE.Box3().setFromObject(obj);
+          const height = box.max.y - box.min.y;
+            if (height > 0) {
+              const scale = DESK_TARGET_HEIGHT / height;
+              obj.scale.setScalar(scale);
+                const scaledBox = new THREE.Box3().setFromObject(obj);
+                obj.position.y -= scaledBox.min.y;
+              }
+              obj.updateMatrixWorld(true);
+              resolve(obj);
+            },
+            undefined,
+            reject
+          );
+        },
+        undefined,
+        reject
+      );
+    });
+  }
+  return deskModelPromise;
+}
+
+function ReceptionDesk({
+  position,
+  ry = 0,
+}: {
+  position: [number, number, number];
+  ry?: number;
+}) {
+  const [model, setModel] = useState<THREE.Group | null>(null);
+
+  useEffect(() => {
+    let alive = true;
+    loadDeskModel()
+      .then((source) => {
+        if (alive) setModel(source.clone());
+      })
+      .catch(() => {
+        // Keep model as null — fallback renders below
+      });
+    return () => { alive = false; };
+  }, []);
+
+  if (!model) {
+    // Fallback: minimal procedural desk
+    return (
+      <group position={position} rotation-y={ry}>
+        <mesh position={[0, 0.45, 0]}>
+          <boxGeometry args={[1.6, 0.9, 0.55]} />
+          {inkMaterial("#4a4438", 0.75)}
+        </mesh>
+        <mesh position={[0, 0.92, 0.02]}>
+          <boxGeometry args={[1.72, 0.05, 0.6]} />
+          {paperMaterial("#e7dec9", 0.85)}
+        </mesh>
+        <Text position={[0, 0.68, 0.293]} fontSize={0.05} color="#f0cf8b" anchorX="center" anchorY="middle">
+          FOYER
+        </Text>
+      </group>
+    );
+  }
+
+  return (
+    <group position={position} rotation-y={ry}>
+      <primitive object={model} />
     </group>
   );
 }
@@ -2421,6 +2826,11 @@ function WalkableWorldScene({
         targets.push({ z: spot.position[2], dir: spot.position[0] > 0 ? -1 : 1 });
       }
     }
+    // Reception desk sits on the +x side at z=19.2 — same glance
+    // convention as the corridor frames above (positive x → dir -1, looks
+    // right), so the camera eases toward it as a visitor walks past
+    // instead of it sitting outside their default forward-facing view.
+    targets.push({ z: 19.2, dir: -1 });
     return targets;
   }, [corridorLayout]);
 
@@ -2481,8 +2891,16 @@ function WalkableWorldScene({
       <ambientLight intensity={0.55} />
       <hemisphereLight args={["#f0ede6", "#d2c4a8", 0.75]} />
       <directionalLight position={[4, 8, 3]} intensity={1.0} color="#fff6df" />
-      <pointLight position={[0, 3.2, 0]} intensity={lightsOn ? 3.0 : 0.3} distance={20} decay={2} color="#f0cf8b" />
-      <pointLight position={[0, 3.2, -14]} intensity={lightsOn ? 2.5 : 0.25} distance={18} decay={2} color="#e8e4dc" />
+      {/* These two were double-counting light already provided by
+          MuseumLighting's pendants/spots/cans below — at 3.0/2.5 intensity
+          with a 18-20 unit falloff distance they blanket the whole reception
+          + corridor floor and were the main source of the blown-out, flat
+          orange floor patches (see FloorSurface's tint fix above for the
+          other half of that fix). Dropped to a fill-light level so the
+          practical fixtures (pendants/track spots/cans) read as the actual
+          light sources instead of being washed out by these two globals. */}
+      <pointLight position={[0, 3.2, 0]} intensity={lightsOn ? 1.1 : 0.15} distance={20} decay={2} color="#f0cf8b" />
+      <pointLight position={[0, 3.2, -14]} intensity={lightsOn ? 1.0 : 0.12} distance={18} decay={2} color="#e8e4dc" />
       <MuseumLighting on={lightsOn} />
 
       <ApproachExterior />
@@ -2584,21 +3002,18 @@ function WalkableWorldScene({
       )}
 
       <CuratorFigure position={[1.8, 0, 18.4]} />
+      <ReceptionDesk position={[3.3, 0, 19.2]} />
+      <ReceptionFemale position={[3.3, 0, 19.6]} ry={Math.PI} />
+      <MuseumClock position={[4.97, 2.3, 18.6]} ry={-Math.PI / 2} />
 
       {/* Reception furnishing */}
       <Bench position={[-3.6, 0, 15.6]} ry={Math.PI / 2} />
+      <BenchFemale position={[-3.6, 0, 15.6]} ry={Math.PI / 2} />
       <Bench position={[3.6, 0, 15.6]} ry={-Math.PI / 2} />
       <PottedPlant position={[4.3, 0, 14.2]} scale={1.4} />
       <PottedPlant position={[-4.3, 0, 19.2]} scale={1.4} />
       <PottedPlant position={[-4.3, 0, 14.5]} scale={1.3} />
       <PottedPlant position={[4.3, 0, 17.6]} scale={1.3} />
-      {/* Real tree models in reception too, not just the exterior approach —
-          placed in the two corners furthest from the door-to-door walking
-          path and the existing bench/planter clusters. Shorter than the
-          exterior trees (targetHeight 2.6 vs 3.2/2.9) so they sit
-          comfortably under the 3.6-unit interior ceiling with clearance. */}
-      <Tree position={[-4.6, 0, 13.6]} targetHeight={2.6} />
-      <Tree position={[4.6, 0, 19.4]} targetHeight={2.6} />
       {/* Center runner — anchors the otherwise-empty middle of the room,
           running door to door in the direction visitors actually walk. */}
       <mesh rotation-x={-Math.PI / 2} position={[0, 0.014, 16.5]}>
@@ -2672,6 +3087,12 @@ export function WalkableWorldCanvas({
       camera={{ fov: 72, near: 0.1, far: 60, position: spawn }}
       onCreated={({ gl, camera }) => {
         gl.setClearColor(PALETTE.paper, 1);
+        // Explicit tone mapping + a slightly reduced exposure so the museum's
+        // many stacked point/spot lights (MuseumLighting on top of the base
+        // ambient/directional/point rig below) compress toward highlight
+        // detail instead of clipping to a flat, blown-out color.
+        gl.toneMapping = THREE.ACESFilmicToneMapping;
+        gl.toneMappingExposure = 1.0;
         camera.up.set(0, 1, 0);
         camera.rotation.order = "YXZ";
         onReady?.();

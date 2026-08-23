@@ -12,7 +12,9 @@ export type InspectSource =
   | "artifact"
   | "projection"
   | "signage"
-  | "curator";
+  | "curator"
+  | "receptionist"
+  | "cat";
 export type InspectInfo = {
   title: string;
   body: string;
@@ -309,6 +311,40 @@ export function buildInteractives(
       body: "I guide visitors through the museum. Each exhibit tells the story behind what was built — the architecture, the decisions, and the craft.",
       source: "curator",
       image: "/images/curator.png",
+    },
+  });
+
+  // Receptionist — stands just behind the desk (matches ReceptionFemale's
+  // render position in walkable-world.tsx). Basic wayfinding only; deeper
+  // exhibit questions get routed to the curator by her own system prompt.
+  items.push({
+    id: "receptionist-presence",
+    position: [3.3, 1.0, 19.6],
+    // Wider range than the curator's (2.8) — the receptionist sits further
+    // off-center (x=3.3 vs the curator's x=1.8), and the camera's x only
+    // ever moves via small mouse-look parallax, not real strafing, so a
+    // tight range here could leave her unreachable from the walking rail.
+    range: 3.4,
+    prompt: "Talk to receptionist",
+    inspect: {
+      title: "The Receptionist",
+      body: "Welcome to Foyer! Need directions, or just want to know what's here?",
+      source: "receptionist",
+    },
+  });
+
+  // Museum cat — sits on the entrance welcome mat (matches MuseumCat's
+  // render position in ApproachExterior). A pure click-reaction, not a
+  // real conversation — see catPrompt.
+  items.push({
+    id: "cat-presence",
+    position: [0.7, 1.0, 22.55],
+    range: 2.2,
+    prompt: "Pet the cat",
+    inspect: {
+      title: "Museum Cat",
+      body: "Meow.",
+      source: "cat",
     },
   });
 

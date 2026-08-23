@@ -2,7 +2,7 @@ import { streamText, convertToModelMessages } from "ai";
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 import type { UIMessage } from "ai";
 import { config } from "@/lib/ai/config";
-import { guideEngine } from "@/lib/ai/prompts";
+import { guideEngine, receptionistPrompt, catPrompt } from "@/lib/ai/prompts";
 import { createExhibitLookupTool } from "@/lib/ai/tools/exhibit";
 import { getExhibitRepository } from "@/lib/repository";
 import { checkRateLimit, validateMessages } from "@/lib/ai/rate-limit";
@@ -31,9 +31,13 @@ export async function POST(req: Request) {
       );
     }
 
-    const { messages } = (await req.json()) as {
+    const { messages, character } = (await req.json()) as {
       id?: string;
       messages: UIMessage[];
+      /** Which museum character is speaking — picks the system prompt and
+       * whether tools are attached. Defaults to the curator for backward
+       * compatibility with any caller that doesn't send this. */
+      character?: "curator" | "receptionist" | "cat";
     };
 
     const validation = validateMessages(messages);
@@ -41,14 +45,20 @@ export async function POST(req: Request) {
       return Response.json({ error: validation.error }, { status: 400 });
     }
 
+    const system =
+      character === "receptionist" ? receptionistPrompt : character === "cat" ? catPrompt : guideEngine;
+
+    // Only the curator needs exhibit lookups — the receptionist handles basic
+    // wayfinding and the cat isn't answering real questions at all.
     const result = streamText({
       model,
-      system: guideEngine,
+      system,
       messages: await convertToModelMessages(messages),
       maxOutputTokens: config.maxTokens,
-      tools: {
-        exhibitLookup: createExhibitLookupTool(getExhibitRepository()),
-      },
+      tools:
+        !character || character === "curator"
+          ? { exhibitLookup: createExhibitLookupTool(getExhibitRepository()) }
+          : undefined,
     });
 
     return result.toUIMessageStreamResponse();

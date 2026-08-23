@@ -20,10 +20,9 @@ import type { RendererQuality } from "@/lib/renderer/capability";
 import { createPlacementMap, populateCorridor } from "@/lib/museum/placement";
 import { getSurfaceLayout } from "@/lib/museum/queries";
 import { SurfaceRenderer } from "@/components/renderer/surface-renderer";
-import { ChatPanel } from "@/components/ai/chat-panel";
-import { ErrorBoundary } from "@/components/ai/error-boundary";
 import { defaultEntityRegistry } from "@/components/renderer/entities/default-registry";
 import type { InspectInfo } from "@/lib/museum/walkable-model";
+import { CuratorSpeechBubble } from "@/components/ai/curator-speech-bubble";
 import { resolveSpawnFromVia } from "@/lib/museum/walkable-model";
 import { viaForRoom } from "@/lib/museum/via-entry";
 import { WalkableWorldCanvas } from "./walkable-world";
@@ -47,7 +46,13 @@ const SOURCE_LABELS: Record<InspectInfo["source"], string> = {
   frame: "Corridor · exhibitor frame",
   signage: "Wayfinding",
   curator: "Curator in the room",
+  receptionist: "Receptionist at the desk",
+  cat: "Museum cat",
 };
+
+// The three characters that get a live AI speech bubble instead of a
+// static inspect card. Keyed by InspectInfo.source.
+const SPEECH_BUBBLE_SOURCES = new Set<InspectInfo["source"]>(["curator", "receptionist", "cat"]);
 
 class SceneErrorBoundary extends Component<
   { onError: () => void; children: ReactNode },
@@ -395,48 +400,16 @@ export function ExhibitRoom3D({
         </div>
       )}
 
-      {inspect && inspect.source === "curator" && (
-        <div
-          ref={inspectRef}
-          role="dialog"
-          aria-modal="true"
-          aria-label="Curator chat"
-          tabIndex={-1}
-          className="absolute inset-x-3 bottom-3 h-[70vh] max-h-[640px] overflow-hidden rounded-sm border border-[#2a2a30]/15 bg-[#efe9da]/98 shadow-lg backdrop-blur-sm focus:outline-none sm:inset-x-auto sm:right-4 sm:bottom-4 sm:left-auto sm:w-[26rem]"
-        >
-          <ErrorBoundary
-            fallback={
-              <div
-                role="alert"
-                className="flex h-full flex-col items-center justify-center gap-3 px-6 text-center"
-              >
-                <p className="font-heading text-[15px] font-medium text-[#2a2a30]">
-                  The curator hit a snag
-                </p>
-                <p className="max-w-[260px] text-[12px] text-[#2a2a30]/50">
-                  Something went wrong loading the chat. Close and try again.
-                </p>
-                <button
-                  type="button"
-                  onClick={closeInspect}
-                  className="mt-1 rounded-sm border border-[#2a2a30]/20 px-3 py-1.5 text-[11px] uppercase tracking-[0.2em] text-[#2a2a30]/60 hover:border-[#2a2a30]/50 hover:text-[#2a2a30]"
-                >
-                  Close
-                </button>
-              </div>
-            }
-          >
-            <ChatPanel
-              variant="panel"
-              heading="Curator"
-              subtitle="Ask about the museum"
-              onClose={closeInspect}
-            />
-          </ErrorBoundary>
-        </div>
+      {inspect && SPEECH_BUBBLE_SOURCES.has(inspect.source) && (
+        <CuratorSpeechBubble
+          title={inspect.title}
+          body={inspect.body}
+          onClose={closeInspect}
+          character={inspect.source as "curator" | "receptionist" | "cat"}
+        />
       )}
 
-      {inspect && inspect.source !== "curator" && (
+      {inspect && !SPEECH_BUBBLE_SOURCES.has(inspect.source) && (
         <div
           className="pointer-events-none absolute inset-x-3 bottom-3 flex justify-center sm:inset-x-auto sm:right-4 sm:bottom-4 sm:left-auto sm:justify-end"
           style={{ perspective: "1200px" }}

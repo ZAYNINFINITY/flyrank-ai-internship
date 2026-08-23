@@ -5,27 +5,41 @@ import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 
 function createBodyGeometry(): THREE.BufferGeometry {
-  const geo = new THREE.BoxGeometry(0.5, 0.32, 0.88, 2, 2, 2);
+  // Higher subdivision (was 2,2,2) so the squircle rounding below has
+  // enough vertices to actually read as curved instead of faceted —
+  // this was the main source of the "boxy, Minecraft cat" look.
+  const geo = new THREE.BoxGeometry(0.46, 0.3, 0.86, 10, 8, 14);
   const pos = geo.attributes.position as THREE.BufferAttribute;
+  const hw = 0.23;
+  const hh = 0.15;
   for (let i = 0; i < pos.count; i++) {
     const x = pos.getX(i);
     const y = pos.getY(i);
     const z = pos.getZ(i);
-    // Round the body slightly
-    const r = 1 - 0.15 * Math.pow(Math.abs(x) / 0.25, 2);
-    pos.setY(i, y * r);
-    // Taper the rear
-    if (z < -0.2) {
-      pos.setX(i, x * 0.85);
-    }
+    // Superellipse-style rounding on BOTH axes (was Y-only), which is
+    // what actually produces a rounded cross-section rather than a box
+    // with slightly squashed top/bottom.
+    const nx = x / hw;
+    const ny = y / hh;
+    const r = 1 - 0.22 * Math.pow(Math.abs(nx), 2.2) - 0.12 * Math.pow(Math.abs(ny), 2.2);
+    pos.setX(i, x * Math.max(r, 0.55));
+    pos.setY(i, y * Math.max(r, 0.6));
+    // Taper the rear more gradually (was a hard cutoff at z < -0.2).
+    const rearT = THREE.MathUtils.clamp((-z - 0.05) / 0.4, 0, 1);
+    pos.setX(i, pos.getX(i) * (1 - rearT * 0.22));
+    pos.setY(i, pos.getY(i) * (1 - rearT * 0.08));
+    // Slight neck taper toward the front — reads as a defined head/neck
+    // line instead of a uniform capsule.
+    const frontT = THREE.MathUtils.clamp((z - 0.28) / 0.16, 0, 1);
+    pos.setX(i, pos.getX(i) * (1 - frontT * 0.3));
   }
   geo.computeVertexNormals();
   return geo;
 }
 
 function createHeadGeometry(): THREE.BufferGeometry {
-  const geo = new THREE.SphereGeometry(0.18, 12, 10);
-  geo.scale(1, 0.95, 1.05);
+  const geo = new THREE.SphereGeometry(0.17, 20, 16);
+  geo.scale(1, 0.92, 1.02);
   return geo;
 }
 
@@ -60,10 +74,10 @@ export function MuseumCat({ position }: { position: [number, number, number] }) 
   const tailCurve = useMemo(() => createTailCurve(), []);
   const tailGeo = useMemo(() => new THREE.TubeGeometry(tailCurve, 12, 0.03, 6, false), [tailCurve]);
 
-  const catColor = "#3a3a3a";
-  const bellyColor = "#5a5a5a";
-  const eyeColor = "#88cc44";
-  const noseColor = "#d47070";
+  const catColor = "#1c1c1e";
+  const bellyColor = "#38383a";
+  const eyeColor = "#9ad35a";
+  const noseColor = "#c96a6a";
 
   useFrame((state) => {
     const t = state.clock.elapsedTime;

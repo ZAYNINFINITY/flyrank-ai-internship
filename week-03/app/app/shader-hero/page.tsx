@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useEffect, useCallback, useState } from "react";
+import Link from "next/link";
 
 /* ─── GLSL Fragment Shader ───────────────────────────────────────────
  *
@@ -128,12 +129,14 @@ export default function ShaderHeroPage() {
   const mouseRef = useRef<[number, number]>([0.5, 0.5]);
   const pausedRef = useRef(false);
   const [hasWebGL, setHasWebGL] = useState(true);
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  });
 
-  /* --- reduced-motion check ------------------------------------------- */
+  /* --- reduced-motion listener ----------------------------------------- */
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setPrefersReducedMotion(mq.matches);
     const handler = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches);
     mq.addEventListener("change", handler);
     return () => mq.removeEventListener("change", handler);
@@ -225,6 +228,7 @@ export default function ShaderHeroPage() {
     const gl = glRef.current;
     const program = programRef.current;
     if (!gl || !program || pausedRef.current) {
+      // eslint-disable-next-line react-hooks/immutability
       rafRef.current = requestAnimationFrame(render);
       return;
     }
@@ -324,12 +328,12 @@ export default function ShaderHeroPage() {
             A digital museum for developers. This is the static fallback —
             the animated aurora shader requires WebGL and motion enabled.
           </p>
-          <a
+          <Link
             href="/"
             className="mt-8 inline-flex min-h-[44px] items-center rounded-[3px] border border-[#f5efe0]/25 px-8 py-3 font-body text-sm font-medium text-[#f5efe0] transition-colors hover:border-[#f5efe0]/50"
           >
             Enter the Museum
-          </a>
+          </Link>
         </div>
       </main>
     );
@@ -355,12 +359,12 @@ export default function ShaderHeroPage() {
             A digital museum for developers. Every project gets a room,
             not a card. Move your cursor to shift the aurora.
           </p>
-          <a
+          <Link
             href="/"
             className="mt-8 inline-flex min-h-[44px] items-center rounded-[3px] border border-[#f5efe0]/25 px-8 py-3 font-body text-sm font-medium text-[#f5efe0] transition-colors hover:border-[#f5efe0]/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#d4a94c]"
           >
             Enter the Museum
-          </a>
+          </Link>
         </div>
       </div>
 

@@ -1,5 +1,5 @@
 import type {
-  Building, Floor, Wing, Room, Door, Surface, Anchor,
+  Building, Floor, Room, Door, Surface, Anchor,
   RoomId, DoorId, AnchorId, WorldIndex,
   SurfaceDirection, AnchorCapability,
 } from "./types";

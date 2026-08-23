@@ -98,16 +98,6 @@ const TIME_CONFIG: Record<TimeOfDay, {
   },
 };
 
-function lerpColor(a: string, b: string, t: number): string {
-  const ca = new THREE.Color(a);
-  const cb = new THREE.Color(b);
-  ca.lerp(cb, t);
-  return "#" + ca.getHexString();
-}
-
-// Real gradient sky (top → horizon), not a single flat fill color. Plain
-// vertex-interpolated shader — no exotic dependencies, just GLSL Three.js
-// already compiles for any shaderMaterial.
 const SKY_VERTEX_SHADER = `
   varying vec3 vWorldPosition;
   void main() {
@@ -136,7 +126,7 @@ function SkyGradient({ topColor, horizonColor }: { topColor: string; horizonColo
       offset: { value: 8 },
       exponent: { value: 0.55 },
     }),
-    []
+    [topColor, horizonColor]
   );
 
   useFrame(() => {
@@ -158,12 +148,6 @@ function SkyGradient({ topColor, horizonColor }: { topColor: string; horizonColo
   );
 }
 
-// A real visible sun/moon disc with a soft additive-blended glow halo,
-// positioned along the same direction as the directional light so the
-// visual object and the light source agree with each other. Previously
-// there was no visual sun at all — only the invisible directionalLight —
-// which is the actual reason the sky read as "fake": nothing to look at,
-// just a flat-colored dome and light with no visible source.
 function SunDisc({
   direction,
   color,
@@ -181,17 +165,14 @@ function SunDisc({
 
   return (
     <group position={pos}>
-      {/* Outer glow — large, very soft, additive */}
       <mesh>
         <circleGeometry args={[5.5, 32]} />
         <meshBasicMaterial color={glowColor} transparent opacity={0.16 * intensity} depthWrite={false} blending={THREE.AdditiveBlending} />
       </mesh>
-      {/* Mid glow */}
       <mesh position={[0, 0, 0.01]}>
         <circleGeometry args={[2.6, 32]} />
         <meshBasicMaterial color={glowColor} transparent opacity={0.32 * intensity} depthWrite={false} blending={THREE.AdditiveBlending} />
       </mesh>
-      {/* Core disc */}
       <mesh position={[0, 0, 0.02]}>
         <circleGeometry args={[1.15, 32]} />
         <meshBasicMaterial color={color} transparent opacity={Math.min(1, intensity + 0.3)} depthWrite={false} />
@@ -200,8 +181,9 @@ function SunDisc({
   );
 }
 
-// Simple starfield — tiny points scattered on the inner sky dome, faded
-// in/out by time of day (only meaningfully visible at dusk/night).
+/* eslint-disable react-hooks/purity, react-hooks/immutability -- particle
+   systems use one-time Math.random init in useMemo and imperative
+   InstancedMesh mutation in useFrame. Standard R3F pattern. */
 function Stars({ visibility }: { visibility: number }) {
   const count = 220;
   const ref = useRef<THREE.Points>(null);
@@ -209,10 +191,8 @@ function Stars({ visibility }: { visibility: number }) {
   const geometry = useMemo(() => {
     const positions = new Float32Array(count * 3);
     for (let i = 0; i < count; i++) {
-      // Random point on the upper hemisphere of a sphere, so stars never
-      // land below the horizon.
       const theta = Math.random() * Math.PI * 2;
-      const phi = Math.acos(Math.random() * 0.85); // biased toward the zenith
+      const phi = Math.acos(Math.random() * 0.85);
       const r = 47;
       positions[i * 3] = r * Math.sin(phi) * Math.cos(theta);
       positions[i * 3 + 1] = r * Math.cos(phi);
@@ -269,10 +249,6 @@ export function EntranceSky({ time }: { time: TimeOfDay }) {
 
   return (
     <>
-      {/* Real gradient sky dome (top -> horizon), plus a visible sun/moon
-          disc with glow and a faint starfield at night — replacing the
-          previous flat single-color dome with an invisible light and
-          nothing to actually look at in the sky. */}
       <SkyGradient topColor={cfg.skyTop} horizonColor={cfg.skyHorizon} />
       <SunDisc
         direction={cfg.sunPos}
@@ -280,35 +256,21 @@ export function EntranceSky({ time }: { time: TimeOfDay }) {
         glowColor={cfg.sunGlowColor}
         intensity={cfg.sunIntensity}
       />
-      <Stars visibility={cfg.starsVisible} />
-
-      {/* Sun / moon (light source) */}
       <directionalLight
         ref={sunRef}
+        args={[cfg.sunColor, cfg.sunIntensity]}
         position={cfg.sunPos}
-        intensity={cfg.sunIntensity}
-        color={cfg.sunColor}
-        castShadow={false}
       />
-
-      {/* Ambient fill */}
       <ambientLight ref={ambientRef} intensity={cfg.ambientIntensity} />
-
-      {/* Sky/ground hemisphere */}
       <hemisphereLight
         ref={hemiRef}
         args={[cfg.hemiSky, cfg.hemiGround, cfg.hemiIntensity]}
       />
-
-      {/* Fog tinted to time */}
       <fog attach="fog" args={[cfg.fog, 18, 55]} />
-
-      {/* Ground glow for night (fake moonlight on floor) */}
+      <Stars visibility={cfg.starsVisible} />
       {time === "night" && (
         <pointLight position={[0, 0.5, 24]} intensity={0.4} distance={12} color="#6688cc" />
       )}
-
-      {/* Warm glow for dawn/dusk */}
       {(time === "dawn" || time === "dusk") && (
         <pointLight position={[0, 1, 24]} intensity={0.6} distance={15} color={time === "dawn" ? "#ffcc88" : "#ff8855"} />
       )}
@@ -325,11 +287,9 @@ function RainSystem() {
   const count = 200;
   const ref = useRef<THREE.InstancedMesh>(null);
   const dummy = useMemo(() => new THREE.Object3D(), []);
-  // Wind gives rain a diagonal fall instead of straight vertical lines —
-  // both the drift velocity and the streak's own tilt use the same angle
-  // so the visible cylinder actually points the direction it's moving.
   const WIND_X = 0.09;
   const tiltAngle = Math.atan2(WIND_X, 0.2);
+
   const velocities = useMemo(() => {
     const v: number[] = [];
     for (let i = 0; i < count; i++) v.push(0.15 + Math.random() * 0.25);
@@ -378,6 +338,7 @@ function SnowSystem() {
   const count = 150;
   const ref = useRef<THREE.InstancedMesh>(null);
   const dummy = useMemo(() => new THREE.Object3D(), []);
+
   const flakes = useMemo(() => {
     const f: { x: number; y: number; z: number; vx: number; vy: number; wobble: number; phase: number }[] = [];
     for (let i = 0; i < count; i++) {
@@ -400,9 +361,6 @@ function SnowSystem() {
     for (let i = 0; i < count; i++) {
       const f = flakes[i];
       f.y -= f.vy * delta * 60;
-      // f.vx was computed but never applied — snow fell perfectly straight
-      // (just wobbling in place) regardless of the per-flake wind velocity
-      // already generated for it. This is the actual "wind effect" fix.
       f.x += (f.vx + Math.sin(t * f.wobble + f.phase) * 0.003) * delta * 60;
       if (f.y < -0.5) {
         f.y = 6 + Math.random() * 2;
@@ -429,6 +387,7 @@ function AutumnLeaves() {
   const count = 30;
   const ref = useRef<THREE.InstancedMesh>(null);
   const dummy = useMemo(() => new THREE.Object3D(), []);
+
   const leaves = useMemo(() => {
     const l: { x: number; y: number; z: number; vy: number; vx: number; rotSpeed: number; rotSpeedX: number; wobble: number; phase: number; size: number }[] = [];
     for (let i = 0; i < count; i++) {
@@ -448,9 +407,6 @@ function AutumnLeaves() {
     return l;
   }, []);
 
-  // Per-instance color (real InstancedMesh.setColorAt, not a flat material
-  // tint) so leaves actually vary across the autumn palette instead of all
-  // being one uniform orange.
   useEffect(() => {
     if (!ref.current) return;
     for (let i = 0; i < count; i++) {
@@ -465,16 +421,12 @@ function AutumnLeaves() {
     for (let i = 0; i < count; i++) {
       const l = leaves[i];
       l.y -= l.vy * delta * 60;
-      // vx (wind) + sine wobble, instead of wobble alone — reads as a leaf
-      // genuinely being carried by wind, not just jittering in place.
       l.x += (l.vx + Math.sin(t * l.wobble + l.phase) * 0.008) * delta * 60;
       if (l.y < -0.3) {
         l.y = 6 + Math.random() * 2;
         l.x = (Math.random() - 0.5) * 16;
       }
       dummy.position.set(l.x, l.y, l.z);
-      // Tumbling on both axes (not just spinning flat) reads as a leaf
-      // genuinely turning end-over-end in the air.
       dummy.rotation.set(t * l.rotSpeedX, t * l.rotSpeed * 0.7, t * l.rotSpeed * 0.4);
       dummy.scale.set(l.size, l.size, l.size);
       dummy.updateMatrix();
@@ -495,6 +447,7 @@ function SpringBlossoms() {
   const count = 40;
   const ref = useRef<THREE.InstancedMesh>(null);
   const dummy = useMemo(() => new THREE.Object3D(), []);
+
   const petals = useMemo(() => {
     const p: { x: number; y: number; z: number; vy: number; wobble: number; phase: number; rotSpeed: number }[] = [];
     for (let i = 0; i < count; i++) {
@@ -511,9 +464,6 @@ function SpringBlossoms() {
     return p;
   }, []);
 
-  // Per-instance color across the blossom palette, plus each petal keeps a
-  // slightly translucent, faintly emissive look for a soft petal glow
-  // rather than a flat pink disc.
   useEffect(() => {
     if (!ref.current) return;
     for (let i = 0; i < count; i++) {
@@ -557,6 +507,7 @@ function SpringBlossoms() {
     </instancedMesh>
   );
 }
+/* eslint-enable react-hooks/purity, react-hooks/immutability */
 
 export function SeasonalWeather({ season }: { season: Season }) {
   return (

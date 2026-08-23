@@ -2,7 +2,7 @@ import type {
   Visitor, Room, Door, Anchor, Placement,
   Surface, Wing, Floor, AnchorId,
 } from "./types";
-import { building, getRoom, worldIndex } from "./world";
+import { building, getRoom } from "./world";
 
 // ─── Room ─────────────────────────────────────────────────
 export function getCurrentRoom(visitor: Visitor): Room | undefined {

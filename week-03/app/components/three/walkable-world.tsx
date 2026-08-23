@@ -4,7 +4,6 @@ import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Text } from "@react-three/drei";
 import * as THREE from "three";
-import { TDSLoader } from "three/addons/loaders/TDSLoader.js";
 import { OBJLoader } from "three/addons/loaders/OBJLoader.js";
 import { MTLLoader } from "three/addons/loaders/MTLLoader.js";
 import type { SurfaceLayout } from "@/lib/museum/queries";
@@ -99,10 +98,6 @@ function paperMaterial(color: string, roughness = 0.94) {
 
 function inkMaterial(color = PALETTE.frame, roughness = 0.82) {
   return <meshStandardMaterial color={color} roughness={roughness} metalness={0} />;
-}
-
-function washMaterial(color = PALETTE.accent, opacity = 0.16) {
-  return <meshBasicMaterial color={color} transparent opacity={opacity} side={THREE.DoubleSide} />;
 }
 
 // ─── Sketch→paint reveal card (the signature itom moment) ─────
@@ -622,113 +617,6 @@ function SawtoothSide({
   );
 }
 
-// ─── Wall-hung content ─────────────────────────────────────────
-function FrameFlat({
-  position,
-  ry,
-  title,
-  tagline,
-  revealZ,
-  imageSrc,
-}: {
-  position: [number, number, number];
-  ry: number;
-  title: string;
-  tagline?: string;
-  revealZ?: number;
-  imageSrc?: string;
-}) {
-  const [texture, setTexture] = useState<THREE.Texture | null>(null);
-
-  useEffect(() => {
-    if (!imageSrc) {
-      return;
-    }
-    let alive = true;
-    const loader = new THREE.TextureLoader();
-    loader.load(
-      imageSrc,
-      (tex) => {
-        tex.colorSpace = THREE.SRGBColorSpace;
-        if (alive) setTexture(tex);
-      },
-      undefined,
-      () => {
-        if (alive) setTexture(null);
-      }
-    );
-    return () => {
-      alive = false;
-    };
-  }, [imageSrc]);
-
-  return (
-    <group position={position} rotation-y={ry}>
-      <mesh position={[0, 0, 0.055]}>
-        <planeGeometry args={[1.72, 2.52]} />
-        {washMaterial(PALETTE.accent, 0.1)}
-      </mesh>
-      {/* Thin ink sketch frame — four strokes around the mat, no slab */}
-      <mesh position={[0, 1.175, 0.1]}>
-        <boxGeometry args={[1.58, 0.05, 0.05]} />
-        {inkMaterial()}
-      </mesh>
-      <mesh position={[0, -1.175, 0.1]}>
-        <boxGeometry args={[1.58, 0.05, 0.05]} />
-        {inkMaterial()}
-      </mesh>
-      <mesh position={[0.79, 0, 0.1]}>
-        <boxGeometry args={[0.05, 2.4, 0.05]} />
-        {inkMaterial()}
-      </mesh>
-      <mesh position={[-0.79, 0, 0.1]}>
-        <boxGeometry args={[0.05, 2.4, 0.05]} />
-        {inkMaterial()}
-      </mesh>
-      {/* Paper mat */}
-      <mesh position={[0, 0, 0.11]}>
-        <planeGeometry args={[1.5, 2.3]} />
-        {paperMaterial("#f7f0df", 0.95)}
-      </mesh>
-      <mesh position={[0, 0.52, 0.22]}>
-        <planeGeometry args={[0.72, 0.72]} />
-        {texture ? (
-          <meshStandardMaterial map={texture} color="#ffffff" roughness={0.88} />
-        ) : (
-          <meshStandardMaterial color="#d8ceb7" roughness={0.9} />
-        )}
-      </mesh>
-      <mesh position={[0, 0.52, 0.245]}>
-        <ringGeometry args={[0.39, 0.42, 36]} />
-        <meshBasicMaterial color={PALETTE.ivory} transparent opacity={0.78} side={THREE.DoubleSide} />
-      </mesh>
-      <Text
-        position={[0, -0.05, 0.27]}
-        fontSize={0.145}
-        color={PALETTE.ivory}
-        anchorX="center"
-        anchorY="middle"
-        maxWidth={1.3}
-        overflowWrap="break-word"
-      >
-        {title}
-      </Text>
-      <Text
-        position={[0, -0.58, 0.27]}
-        fontSize={0.1}
-        color={PALETTE.dim}
-        anchorX="center"
-        anchorY="middle"
-        maxWidth={1.3}
-        overflowWrap="break-word"
-      >
-        {tagline ?? ""}
-      </Text>
-      <SketchCard position={[0, -1.0, 0.2]} seed={title} frameZ={revealZ} />
-    </group>
-  );
-}
-
 // ─── Wall-hung content (physical, developer-first) ───────────────
 // MuseumWallFrame replaces the flat FrameFlat poster on the sawtooth bay
 // walls. Answers "who is exhibiting here?" (developer name/role/bio/work
@@ -770,6 +658,7 @@ function MuseumWallFrame({
 }) {
   const [texture, setTexture] = useState<THREE.Texture | null>(null);
 
+  /* eslint-disable react-hooks/set-state-in-effect -- loads texture async on mount/change */
   useEffect(() => {
     if (!developer.avatar) {
       setTexture(null);
@@ -798,6 +687,7 @@ function MuseumWallFrame({
       alive = false;
     };
   }, [developer.avatar]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   const innerW = FRAME_W - FRAME_BAR * 2;
   const innerH = FRAME_H - FRAME_BAR * 2;
@@ -2578,101 +2468,6 @@ function ReceptionDesk({
       <primitive object={model} />
     </group>
   );
-}
-
-// ─── Real tree model (TDSLoader) — loaded once and cloned per placement.
-// Defensive by design: any load/parse failure resolves to "render nothing"
-// rather than throwing, since 3DS is the least predictable of the three
-// asset formats to load blind, and a missing tree shouldn't be able to
-// break the rest of the scene. Scale is derived from the model's own
-// bounding box rather than a guessed constant, since the 3DS file's native
-// units aren't known.
-let treeModelPromise: Promise<THREE.Group> | null = null;
-
-function loadTreeModel() {
-  if (!treeModelPromise) {
-    treeModelPromise = new Promise<THREE.Group>((resolve, reject) => {
-      const loader = new TDSLoader();
-      loader.load("/models/tree.3ds", resolve, undefined, reject);
-    });
-  }
-  return treeModelPromise;
-}
-
-const TREE_TEXTURE_CACHE = new Map<string, THREE.Texture>();
-function loadTreeTexture(url: string) {
-  let tex = TREE_TEXTURE_CACHE.get(url);
-  if (!tex) {
-    tex = new THREE.TextureLoader().load(url);
-    TREE_TEXTURE_CACHE.set(url, tex);
-  }
-  return tex;
-}
-
-function Tree({
-  position,
-  targetHeight = 3.2,
-}: {
-  position: [number, number, number];
-  targetHeight?: number;
-}) {
-  const [model, setModel] = useState<THREE.Group | null>(null);
-
-  useEffect(() => {
-    let alive = true;
-    loadTreeModel()
-      .then((source) => {
-        if (!alive) return;
-        const clone = source.clone(true);
-        const bark = loadTreeTexture("/models/tree-textures/bark_loo.jpg");
-        const leaf = loadTreeTexture("/models/tree-textures/blatt1.jpg");
-        const leafAlpha = loadTreeTexture("/models/tree-textures/blatt1_a.jpg");
-        bark.colorSpace = THREE.SRGBColorSpace;
-        leaf.colorSpace = THREE.SRGBColorSpace;
-
-        clone.traverse((child) => {
-          if (!(child instanceof THREE.Mesh)) return;
-          const name = child.name.toLowerCase();
-          const looksLikeLeaf =
-            name.includes("leaf") || name.includes("leaves") || name.includes("blatt");
-          child.material = looksLikeLeaf
-            ? new THREE.MeshStandardMaterial({
-                map: leaf,
-                alphaMap: leafAlpha,
-                transparent: true,
-                alphaTest: 0.4,
-                side: THREE.DoubleSide,
-                color: "#7c8f52",
-                roughness: 0.85,
-              })
-            : new THREE.MeshStandardMaterial({ map: bark, color: "#ffffff", roughness: 0.9 });
-        });
-
-        // Normalize scale + ground offset from the model's own bounding box.
-        const box = new THREE.Box3().setFromObject(clone);
-        const size = box.getSize(new THREE.Vector3());
-        const autoScale = size.y > 0.001 ? targetHeight / size.y : 1;
-        clone.scale.setScalar(autoScale);
-        clone.position.y -= box.min.y * autoScale;
-
-        setModel(clone);
-      })
-      .catch((err) => {
-        // Failed to load/parse — clear the cached promise so a future
-        // remount can retry (a texture 404 during dev shouldn't wedge this
-        // permanently for the whole session), and leave the spot empty.
-        console.warn("[Tree] failed to load, skipping:", err);
-        treeModelPromise = null;
-        if (alive) setModel(null);
-      });
-    return () => {
-      alive = false;
-    };
-  }, [targetHeight]);
-
-  if (!model) return null;
-
-  return <primitive object={model} position={position} />;
 }
 
 // ─── Wall-plank accent (OBJLoader + MTLLoader) — same defensive pattern as

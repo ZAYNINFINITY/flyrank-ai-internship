@@ -167,6 +167,7 @@ export function ExhibitRoom3D({
   const closeInspect = useCallback(() => setInspect(null), []);
   const [cardRevealed, setCardRevealed] = useState(false);
 
+  /* eslint-disable react-hooks/set-state-in-effect -- resets animation state on inspect change */
   useEffect(() => {
     if (!inspect) {
       setCardRevealed(false);
@@ -176,6 +177,7 @@ export function ExhibitRoom3D({
     const frame = requestAnimationFrame(() => setCardRevealed(true));
     return () => cancelAnimationFrame(frame);
   }, [inspect]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   useEffect(() => {
     if (!inspect && !showTextWalls) return;

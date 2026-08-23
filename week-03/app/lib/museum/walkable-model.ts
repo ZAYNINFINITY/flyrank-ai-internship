@@ -319,7 +319,7 @@ export function buildInteractives(
   // exhibit questions get routed to the curator by her own system prompt.
   items.push({
     id: "receptionist-presence",
-    position: [3.3, 1.0, 19.6],
+    position: [2.0, 1.0, 19.2],
     // Wider range than the curator's (2.8) — the receptionist sits further
     // off-center (x=3.3 vs the curator's x=1.8), and the camera's x only
     // ever moves via small mouse-look parallax, not real strafing, so a

@@ -25,7 +25,7 @@ import {
 import { getPaperTexture } from "@/lib/three/paper-texture";
 import { RevealMaterial } from "@/lib/three/reveal-material";
 import { WalkablePlayer, type GlanceTarget } from "./walkable-player";
-import { EntranceSky, SeasonalWeather, type TimeOfDay, type Season } from "./entrance-environment";
+import { EntranceSky, type TimeOfDay } from "./entrance-environment";
 import { MuseumCat } from "./museum-cat";
 
 // Itom's corridor runs 3.5 units tall, noticeably cozier than a generic
@@ -65,13 +65,13 @@ const PALETTE = {
   corridorFloor: "#d8d3c8",
   corridorCeiling: "#e4e0d8",
   roomWall: "#f0ede6",
-  roomFloor: "#ccc8be",
+  roomFloor: "#d8d3c8",
   roomCeiling: "#e8e4dc",
   receptionWall: "#ece8e0",
-  receptionFloor: "#d4d0c6",
+  receptionFloor: "#d8d3c8",
   receptionCeiling: "#e4e0d8",
   approachWall: "#c8c3b8",
-  approachFloor: "#b8b3a8",
+  approachFloor: "#d8d3c8",
   approachPath: "#d8d3c8",
   ivory: "#1a1a20",
   dim: "#5a5850",
@@ -2053,76 +2053,10 @@ function CuratorFigure({
   );
 }
 
-// ─── Two more RenderPeople OBJ figures, same lazy-load + manual-texture
+// ─── RenderPeople OBJ figure for receptionist, same lazy-load + manual-texture
 // pattern as the curator above (no .mtl trusted — RenderPeople's
 // Windows-exported .mtl files reference textures with backslash paths
-// browsers can't resolve, confirmed on bench-female's .mtl specifically).
-let benchFemaleModelPromise: Promise<THREE.Group> | null = null;
-
-function loadBenchFemaleModel() {
-  if (!benchFemaleModelPromise) {
-    benchFemaleModelPromise = new Promise<THREE.Group>((resolve, reject) => {
-      const loader = new OBJLoader();
-      loader.load(
-        "/models/bench-female/091_W_Aya_30K.obj",
-        (obj) => {
-          const tex = new THREE.TextureLoader().load(
-            "/models/bench-female/tex/091_W_Aya_2K_01.jpg",
-            (t) => { t.colorSpace = THREE.SRGBColorSpace; }
-          );
-          obj.traverse((child) => {
-            if (child instanceof THREE.Mesh) {
-              child.material = new THREE.MeshStandardMaterial({ map: tex, roughness: 0.75, metalness: 0.02 });
-            }
-          });
-          // Seated pose — bounding-box height is already compressed vs.
-          // standing height, so scale target is a seated-torso height, not
-          // the ~1.7m used for the standing curator/receptionist.
-          const box = new THREE.Box3().setFromObject(obj);
-          const height = box.max.y - box.min.y;
-          if (height > 0) {
-            const scale = 1.0 / height;
-            obj.scale.setScalar(scale);
-            const scaledBox = new THREE.Box3().setFromObject(obj);
-            obj.position.y -= scaledBox.min.y;
-          }
-          resolve(obj);
-        },
-        undefined,
-        reject
-      );
-    });
-  }
-  return benchFemaleModelPromise;
-}
-
-function BenchFemale({ position, ry = 0 }: { position: [number, number, number]; ry?: number }) {
-  const [model, setModel] = useState<THREE.Group | null>(null);
-
-  useEffect(() => {
-    let alive = true;
-    loadBenchFemaleModel()
-      .then((source) => {
-        if (alive) setModel(source.clone());
-      })
-      .catch((err) => {
-        console.warn("[BenchFemale] failed to load, skipping:", err);
-        benchFemaleModelPromise = null;
-      });
-    return () => { alive = false; };
-  }, []);
-
-  if (!model) return null;
-
-  // Bench seat sits at y=0.42 (Bench component's own seat mesh height) —
-  // offset the whole seated figure up to that surface so she reads as
-  // sitting ON the bench, not floating above or sunk through it.
-  return (
-    <group position={[position[0], position[1] + 0.42, position[2]]} rotation-y={ry}>
-      <primitive object={model} />
-    </group>
-  );
-}
+// browsers can't resolve).
 
 let receptionFemaleModelPromise: Promise<THREE.Group> | null = null;
 
@@ -2586,7 +2520,6 @@ export type WalkableSceneProps = {
   enabled: boolean;
   lightsOn?: boolean;
   timeOfDay?: TimeOfDay;
-  season?: Season;
 };
 
 function WalkableWorldScene({
@@ -2604,7 +2537,6 @@ function WalkableWorldScene({
   enabled,
   lightsOn = true,
   timeOfDay = "noon",
-  season = "summer",
 }: WalkableSceneProps) {
   const byId = useMemo(() => new Map(exhibits.map((e) => [e.id, e])), [exhibits]);
   const roomOrigin = { x: 0, z: (FOOTPRINTS.exhibit.minZ + FOOTPRINTS.exhibit.maxZ) / 2 };
@@ -2621,11 +2553,11 @@ function WalkableWorldScene({
         targets.push({ z: spot.position[2], dir: spot.position[0] > 0 ? -1 : 1 });
       }
     }
-    // Reception desk sits on the +x side at z=19.2 — same glance
+    // Reception desk sits on the +x side at z=18.8 — same glance
     // convention as the corridor frames above (positive x → dir -1, looks
     // right), so the camera eases toward it as a visitor walks past
     // instead of it sitting outside their default forward-facing view.
-    targets.push({ z: 19.2, dir: -1 });
+    targets.push({ z: 18.8, dir: -1 });
     return targets;
   }, [corridorLayout]);
 
@@ -2681,7 +2613,6 @@ function WalkableWorldScene({
   return (
     <>
       <EntranceSky time={timeOfDay} />
-      <SeasonalWeather season={season} />
 
       <ambientLight intensity={0.55} />
       <hemisphereLight args={["#f0ede6", "#d2c4a8", 0.75]} />
@@ -2797,13 +2728,11 @@ function WalkableWorldScene({
       )}
 
       <CuratorFigure position={[1.8, 0, 18.4]} />
-      <ReceptionDesk position={[3.3, 0, 19.2]} />
-      <ReceptionFemale position={[3.3, 0, 19.6]} ry={Math.PI} />
+      <ReceptionDesk position={[2.0, 0, 18.8]} />
+      <ReceptionFemale position={[2.0, 0, 19.2]} ry={Math.PI} />
       <MuseumClock position={[4.97, 2.3, 18.6]} ry={-Math.PI / 2} />
 
       {/* Reception furnishing */}
-      <Bench position={[-3.6, 0, 15.6]} ry={Math.PI / 2} />
-      <BenchFemale position={[-3.6, 0, 15.6]} ry={Math.PI / 2} />
       <Bench position={[3.6, 0, 15.6]} ry={-Math.PI / 2} />
       <PottedPlant position={[4.3, 0, 14.2]} scale={1.4} />
       <PottedPlant position={[-4.3, 0, 19.2]} scale={1.4} />
@@ -2857,7 +2786,6 @@ export function WalkableWorldCanvas({
   enabled,
   lightsOn = true,
   timeOfDay = "noon",
-  season = "summer",
 }: WalkableWorldCanvasProps) {
   const world = useMemo<WalkableWorld>(
     () => ({
@@ -2910,7 +2838,6 @@ export function WalkableWorldCanvas({
           enabled={enabled}
           lightsOn={lightsOn}
           timeOfDay={timeOfDay}
-          season={season}
         />
       </Suspense>
     </Canvas>

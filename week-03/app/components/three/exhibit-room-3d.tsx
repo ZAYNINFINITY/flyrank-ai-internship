@@ -36,7 +36,7 @@ import {
   inputState,
   resetWalkableInput,
 } from "./walkable-input";
-import type { TimeOfDay, Season } from "./entrance-environment";
+import type { TimeOfDay } from "./entrance-environment";
 
 const SOURCE_LABELS: Record<InspectInfo["source"], string> = {
   title: "Exhibit · title wall",
@@ -94,7 +94,6 @@ export function ExhibitRoom3D({
   const [corridorLayout, setCorridorLayout] = useState<SurfaceLayout[] | null>(null);
   const [lightsOn, setLightsOn] = useState(true);
   const [timeOfDay, setTimeOfDay] = useState<TimeOfDay>("noon");
-  const [season, setSeason] = useState<Season>("summer");
   const [gyroOn, setGyroOn] = useState(false);
   const openDoors = useRef<Set<string>>(new Set());
   const containerRef = useRef<HTMLDivElement>(null);
@@ -228,7 +227,6 @@ export function ExhibitRoom3D({
             enabled={!inspect && !showTextWalls}
             lightsOn={lightsOn}
             timeOfDay={timeOfDay}
-            season={season}
           />
         )}
       </SceneErrorBoundary>
@@ -315,7 +313,7 @@ export function ExhibitRoom3D({
         </button>
       </div>
 
-      {/* Time of day + season controls — bottom-left, below the scene */}
+      {/* Time of day controls — bottom-left, below the scene */}
       <div className="pointer-events-auto absolute bottom-20 left-4 flex flex-col gap-1.5 sm:bottom-4">
         <div className="flex gap-1">
           {(["dawn", "morning", "noon", "dusk", "night"] as TimeOfDay[]).map((t) => (
@@ -331,23 +329,6 @@ export function ExhibitRoom3D({
               aria-label={`Set time to ${t}`}
             >
               {t === "dawn" ? "🌅" : t === "morning" ? "☀️" : t === "noon" ? "🌞" : t === "dusk" ? "🌇" : "🌙"}
-            </button>
-          ))}
-        </div>
-        <div className="flex gap-1">
-          {(["spring", "summer", "autumn", "winter"] as Season[]).map((s) => (
-            <button
-              key={s}
-              type="button"
-              onClick={() => setSeason(s)}
-              className={`min-h-[32px] rounded-sm border px-2 py-1 text-[9px] uppercase tracking-[0.15em] shadow-sm backdrop-blur-sm transition-all duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${
-                season === s
-                  ? "border-[#2a2a30]/40 bg-[#2a2a30]/15 text-[#2a2a30]/90"
-                  : "border-[#2a2a30]/10 bg-[#efe9da]/60 text-[#2a2a30]/40 hover:border-[#2a2a30]/30 hover:text-[#2a2a30]/70"
-              }`}
-              aria-label={`Set season to ${s}`}
-            >
-              {s === "spring" ? "🌸" : s === "summer" ? "🌿" : s === "autumn" ? "🍂" : "❄️"}
             </button>
           ))}
         </div>

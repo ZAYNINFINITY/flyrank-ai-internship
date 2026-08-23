@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Space_Grotesk, Inter } from "next/font/google";
 import Link from "next/link";
 import { Nav } from "@/components/primitives/nav";
@@ -20,6 +20,15 @@ export const metadata: Metadata = {
   title: "Foyer — Open digital museum for developers",
   description:
     "An open-source platform where developers exhibit their work as curated collections. Not a card grid — a gallery.",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: "cover",
+  themeColor: "#e9e4d6",
 };
 
 export default function RootLayout({

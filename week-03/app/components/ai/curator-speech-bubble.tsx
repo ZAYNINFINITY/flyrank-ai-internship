@@ -8,7 +8,6 @@ export type MuseumCharacter = "curator" | "receptionist" | "cat";
 
 interface CuratorSpeechBubbleProps {
   title: string;
-  body: string;
   onClose: () => void;
   character?: MuseumCharacter;
   avatarInitial?: string;
@@ -51,17 +50,8 @@ function parseOptions(text: string): { cleanText: string; options: string[] } {
   return { cleanText, options };
 }
 
-function parseInitialOptions(body: string): { cleanBody: string; options: string[] } {
-  const match = body.match(OPTIONS_REGEX);
-  if (!match) return { cleanBody: body, options: [] };
-  const cleanBody = body.slice(0, match.index).trim();
-  const options = match[1].split("|").map((o) => o.trim()).filter(Boolean);
-  return { cleanBody, options };
-}
-
 export function CuratorSpeechBubble({
   title,
-  body,
   onClose,
   character = "curator",
   avatarInitial,
@@ -79,15 +69,22 @@ export function CuratorSpeechBubble({
 
   const isLoading = status === "streaming" || status === "submitted";
 
+  const greetingRequested = useRef(false);
+
+  useEffect(() => {
+    if (greetingRequested.current) return;
+    greetingRequested.current = true;
+    sendMessage({
+      text:
+        character === "curator"
+          ? "Welcome the visitor briefly and invite them to ask about an exhibit or the museum."
+          : "Welcome the visitor briefly and offer directions or basic information about the museum.",
+    });
+  }, [character, sendMessage]);
+
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
-
-  // Parse initial greeting options
-  const { cleanBody, options: initialOptions } = useMemo(
-    () => parseInitialOptions(body),
-    [body]
-  );
 
   // Get the latest AI message and its options
   const lastAssistantMsg = useMemo(() => {
@@ -112,19 +109,22 @@ export function CuratorSpeechBubble({
     sendMessage({ text: option });
   };
 
-  const showInitialGreeting = messages.length === 0;
-  const currentOptions = showInitialGreeting ? initialOptions : lastOptions;
+  const currentOptions = lastOptions;
 
   return (
     <div
       role="dialog"
       aria-modal="true"
       aria-label={`Talk to the ${character}`}
-      className="pointer-events-auto fixed bottom-0 left-0 right-0 z-[70] flex justify-center px-3 pb-3 sm:bottom-4 sm:px-4 sm:pb-4"
+      className="pointer-events-auto fixed bottom-16 left-3 z-[70] w-[min(360px,calc(100vw-1.5rem))] sm:bottom-6 sm:left-auto sm:right-6"
     >
-      <div className="w-full max-w-[420px] overflow-hidden rounded-lg border border-[#2a2a30]/20 bg-[#efe9da]/97 shadow-2xl backdrop-blur-md">
+      <div className="relative overflow-visible rounded-2xl border border-[#2a2a30]/20 bg-[#efe9da]/97 shadow-2xl backdrop-blur-md">
+        <span
+          aria-hidden="true"
+          className="absolute -bottom-2 left-8 h-4 w-4 rotate-45 border-b border-r border-[#2a2a30]/20 bg-[#efe9da]"
+        />
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-[#2a2a30]/10 px-3 py-2 sm:px-4 sm:py-3">
+        <div className="flex items-center justify-between px-4 pt-3">
           <div className="flex items-center gap-2">
             <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[#2a2a30] text-[11px] font-medium text-[#efe9da]">
               {avatarInitial ?? defaults.avatarInitial}
@@ -141,23 +141,15 @@ export function CuratorSpeechBubble({
           <button
             type="button"
             onClick={onClose}
-            className="min-h-[44px] min-w-[44px] rounded-sm text-[11px] uppercase tracking-[0.2em] text-[#6f6c62] transition-colors hover:text-[#2a2a30] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#d4a94c]"
+            aria-label="Close conversation"
+            className="min-h-[36px] min-w-[36px] rounded-full text-[11px] uppercase tracking-[0.2em] text-[#6f6c62] transition-colors hover:text-[#2a2a30] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#d4a94c]"
           >
             Close
           </button>
         </div>
 
         {/* Messages area */}
-        <div className="max-h-[320px] overflow-y-auto px-3 py-3 sm:px-4">
-          {/* Initial greeting */}
-          {showInitialGreeting && (
-            <div className="mb-3 flex justify-start">
-              <div className="max-w-[90%] rounded-lg px-3 py-2 text-sm leading-relaxed bg-[#e9e4d6] text-[#2a2a30]">
-                {cleanBody}
-              </div>
-            </div>
-          )}
-
+        <div className="max-h-[240px] overflow-y-auto px-4 py-2">
           {/* Conversation history */}
           {messages.map((msg) => {
             const text = getTextFromParts(msg.parts);
@@ -176,10 +168,10 @@ export function CuratorSpeechBubble({
                 className={`mb-3 flex ${isUser ? "justify-end" : "justify-start"}`}
               >
                 <div
-                  className={`max-w-[90%] rounded-lg px-3 py-2 text-sm leading-relaxed ${
+                    className={`max-w-[90%] py-1 text-sm leading-relaxed ${
                     isUser
-                      ? "bg-[#2a2a30] text-[#efe9da]"
-                      : "bg-[#e9e4d6] text-[#2a2a30]"
+                      ? "text-[#6f6c62] italic"
+                      : "text-[#2a2a30]"
                   }`}
                 >
                   {displayText || (
@@ -203,7 +195,7 @@ export function CuratorSpeechBubble({
 
         {/* Options */}
         {currentOptions.length > 0 && !isLoading && (
-          <div className="flex flex-wrap gap-1.5 border-t border-[#2a2a30]/10 px-3 py-2.5 sm:px-4">
+          <div className="flex flex-wrap gap-1.5 px-4 pb-3 pt-1">
             {currentOptions.map((option) => (
               <button
                 key={option}

@@ -29,6 +29,8 @@ const GLANCE_END = -2;
 const MAX_GLANCE_YAW = 0.15;
 const GLANCE_LOOK_SMOOTHING = 0.03;
 const GLANCE_RELEASE_SMOOTHING = 0.08;
+const MAX_FOCUS_YAW = 1.05;
+const MAX_FOCUS_PITCH = 0.28;
 
 export type GlanceTarget = { z: number; dir: 1 | -1 };
 
@@ -119,8 +121,15 @@ export function WalkablePlayer({
       const dx = focusPos.current[0] - camera.position.x;
       const dy = focusPos.current[1] - camera.position.y;
       const dz = focusPos.current[2] - camera.position.z;
-      lastFocusYaw.current = Math.atan2(dx, -dz);
-      lastFocusPitch.current = -Math.atan2(dy, Math.hypot(dx, dz));
+      // Three.js cameras look down local -Z. Positive yaw turns that
+      // direction toward negative X, so the target angles use the inverse
+      // signs from the usual screen-space bearing calculation.
+      lastFocusYaw.current = THREE.MathUtils.clamp(-Math.atan2(dx, -dz), -MAX_FOCUS_YAW, MAX_FOCUS_YAW);
+      lastFocusPitch.current = THREE.MathUtils.clamp(
+        Math.atan2(dy, Math.hypot(dx, dz)),
+        -MAX_FOCUS_PITCH,
+        MAX_FOCUS_PITCH
+      );
     }
     if (focusBlend.current > 0.001) {
       // Reuse the last computed focus angle while easing out too, not just

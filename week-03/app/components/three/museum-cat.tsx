@@ -28,8 +28,9 @@ function loadCatModel(): Promise<THREE.Group> {
               const box = new THREE.Box3().setFromObject(obj);
               const size = box.getSize(new THREE.Vector3());
               const maxDim = Math.max(size.x, size.y, size.z);
-              // Target ~0.35m tall (same scale as the procedural cat was)
-              const targetHeight = 0.35;
+              // Keep the cat readable from the entrance camera while it remains
+              // small enough to sit naturally on the welcome mat.
+              const targetHeight = 0.55;
               const scaleFactor = maxDim > 0 ? targetHeight / size.y : 1;
               obj.scale.setScalar(scaleFactor);
               // Recompute after scaling
@@ -53,7 +54,7 @@ function loadCatModel(): Promise<THREE.Group> {
                 (obj) => {
                   const box = new THREE.Box3().setFromObject(obj);
                   const size = box.getSize(new THREE.Vector3());
-                  const scaleFactor = size.y > 0 ? 0.35 / size.y : 1;
+                  const scaleFactor = size.y > 0 ? 0.55 / size.y : 1;
                   obj.scale.setScalar(scaleFactor);
                   const scaledBox = new THREE.Box3().setFromObject(obj);
                   const scaledSize = scaledBox.getSize(new THREE.Vector3());
@@ -88,7 +89,7 @@ function loadCatModel(): Promise<THREE.Group> {
             (obj) => {
               const box = new THREE.Box3().setFromObject(obj);
               const size = box.getSize(new THREE.Vector3());
-              const scaleFactor = size.y > 0 ? 0.35 / size.y : 1;
+              const scaleFactor = size.y > 0 ? 0.55 / size.y : 1;
               obj.scale.setScalar(scaleFactor);
               const scaledBox = new THREE.Box3().setFromObject(obj);
               const scaledSize = scaledBox.getSize(new THREE.Vector3());
@@ -117,7 +118,7 @@ function loadCatModel(): Promise<THREE.Group> {
   return catModelPromise;
 }
 
-export function MuseumCat({ position }: { position: [number, number, number] }) {
+export function MuseumCat({ position, ry = 0 }: { position: [number, number, number]; ry?: number }) {
   const groupRef = useRef<THREE.Group>(null);
   const [model, setModel] = useState<THREE.Group | null>(null);
 
@@ -149,7 +150,7 @@ export function MuseumCat({ position }: { position: [number, number, number] }) 
   if (!model) return null;
 
   return (
-    <group ref={groupRef} position={position}>
+    <group ref={groupRef} position={position} rotation-y={ry}>
       <primitive object={model} />
     </group>
   );

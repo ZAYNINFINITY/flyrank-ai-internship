@@ -4,6 +4,7 @@ import {
   Component,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
   type ReactNode,
@@ -52,7 +53,38 @@ const SOURCE_LABELS: Record<InspectInfo["source"], string> = {
 
 // The three characters that get a live AI speech bubble instead of a
 // static inspect card. Keyed by InspectInfo.source.
-const SPEECH_BUBBLE_SOURCES = new Set<InspectInfo["source"]>(["curator", "receptionist", "cat"]);
+const SPEECH_BUBBLE_SOURCES = new Set<InspectInfo["source"]>(["curator", "receptionist"]);
+
+function hasLiveLink(exhibit: (typeof mockExhibits)[number]) {
+  return exhibit.links.some((link) => /^https?:\/\//i.test(link.url));
+}
+
+function ShowcaseWheel({
+  projects,
+  selectedId,
+  onSelect,
+}: {
+  projects: typeof mockExhibits;
+  selectedId: string;
+  onSelect: (id: string) => void;
+}) {
+  const selectedIndex = Math.max(0, projects.findIndex((project) => project.id === selectedId));
+  if (projects.length < 2) return null;
+
+  return (
+    <div className="pointer-events-auto absolute left-1/2 top-4 z-50 -translate-x-1/2 rounded-full border border-[#2a2a30]/20 bg-[#efe9da]/90 px-3 py-2 shadow-lg backdrop-blur-sm">
+      <div className="flex items-center gap-2">
+        <button type="button" aria-label="Previous showcased project" onClick={() => onSelect(projects[(selectedIndex - 1 + projects.length) % projects.length].id)} className="flex h-8 w-8 items-center justify-center rounded-full border border-[#2a2a30]/20 text-[#2a2a30]/70 transition-colors hover:bg-[#2a2a30]/10">&#8592;</button>
+        <div className="min-w-[150px] text-center">
+          <p className="text-[9px] uppercase tracking-[0.22em] text-[#6f6c62]">Showcase wheel</p>
+          <p className="truncate text-sm font-medium text-[#2a2a30]">{projects[selectedIndex].title}</p>
+          <p className="text-[10px] text-[#6f6c62]">{selectedIndex + 1} of {projects.length} live projects</p>
+        </div>
+        <button type="button" aria-label="Next showcased project" onClick={() => onSelect(projects[(selectedIndex + 1) % projects.length].id)} className="flex h-8 w-8 items-center justify-center rounded-full border border-[#2a2a30]/20 text-[#2a2a30]/70 transition-colors hover:bg-[#2a2a30]/10">&#8594;</button>
+      </div>
+    </div>
+  );
+}
 
 class SceneErrorBoundary extends Component<
   { onError: () => void; children: ReactNode },
@@ -90,6 +122,12 @@ export function ExhibitRoom3D({
   const [showTextWalls, setShowTextWalls] = useState(false);
   const [sceneFailed, setSceneFailed] = useState(false);
   const [inspect, setInspect] = useState<InspectInfo | null>(null);
+  const showcaseProjects = useMemo(
+    () => mockExhibits.filter((project) => project.developerId === exhibit?.developerId && hasLiveLink(project)),
+    [exhibit?.developerId]
+  );
+  const [selectedShowcaseId, setSelectedShowcaseId] = useState(exhibitId);
+  const selectedShowcase = showcaseProjects.find((project) => project.id === selectedShowcaseId) ?? exhibit;
   const [prompt, setPrompt] = useState<string | null>(null);
   const [corridorLayout, setCorridorLayout] = useState<SurfaceLayout[] | null>(null);
   const [lightsOn, setLightsOn] = useState(true);
@@ -212,11 +250,12 @@ export function ExhibitRoom3D({
       <SceneErrorBoundary onError={() => setSceneFailed(true)}>
         {corridorLayout && (
           <WalkableWorldCanvas
+            key={selectedShowcase?.id ?? exhibit.id}
             corridorLayout={corridorLayout}
             roomLayout={layout}
             exhibits={mockExhibits}
             developers={seedDevelopers}
-            exhibit={exhibit}
+            exhibit={selectedShowcase ?? exhibit}
             spawn={spawn}
             quality={quality}
             openDoors={openDoors}
@@ -230,6 +269,15 @@ export function ExhibitRoom3D({
           />
         )}
       </SceneErrorBoundary>
+
+      <ShowcaseWheel
+        projects={showcaseProjects}
+        selectedId={selectedShowcase?.id ?? exhibit.id}
+        onSelect={(id) => {
+          setInspect(null);
+          setSelectedShowcaseId(id);
+        }}
+      />
 
       {arrivalIntro && (
         <div
@@ -386,7 +434,6 @@ export function ExhibitRoom3D({
       {inspect && SPEECH_BUBBLE_SOURCES.has(inspect.source) && (
         <CuratorSpeechBubble
           title={inspect.title}
-          body={inspect.body}
           onClose={closeInspect}
           character={inspect.source as "curator" | "receptionist" | "cat"}
         />

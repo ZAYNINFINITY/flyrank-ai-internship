@@ -26,7 +26,6 @@ import { getPaperTexture } from "@/lib/three/paper-texture";
 import { RevealMaterial } from "@/lib/three/reveal-material";
 import { WalkablePlayer, type GlanceTarget } from "./walkable-player";
 import { EntranceSky, type TimeOfDay } from "./entrance-environment";
-import { MuseumCat } from "./museum-cat";
 
 // Itom's corridor runs 3.5 units tall, noticeably cozier than a generic
 // 4-unit box — that proportion reads as "designed" rather than cavernous.
@@ -62,17 +61,16 @@ const ENTRANCE_HALF = 0.8;
 // restrained warm accent. The museum should feel designed, not sketched.
 const PALETTE = {
   corridorWall: "#e8e4dc",
-  corridorFloor: "#d8d3c8",
+  corridorFloor: "#8a5a38",
   corridorCeiling: "#e4e0d8",
   roomWall: "#f0ede6",
-  roomFloor: "#d8d3c8",
+  roomFloor: "#8a5a38",
   roomCeiling: "#e8e4dc",
   receptionWall: "#ece8e0",
-  receptionFloor: "#d8d3c8",
+  receptionFloor: "#8a5a38",
   receptionCeiling: "#e4e0d8",
   approachWall: "#c8c3b8",
-  approachFloor: "#d8d3c8",
-  approachPath: "#d8d3c8",
+  approachFloor: "#8a5a38",
   ivory: "#1a1a20",
   dim: "#5a5850",
   accent: "#8b6a4a",
@@ -257,6 +255,7 @@ function RoomBox({
 }) {
   const widthX = footprint.maxX - footprint.minX;
   const widthZ = footprint.maxZ - footprint.minZ;
+  const centerZ = (footprint.minZ + footprint.maxZ) / 2;
 
   const wallAlongX = ({
     x,
@@ -327,11 +326,11 @@ function RoomBox({
 
   return (
     <group>
-      <mesh rotation-x={-Math.PI / 2}>
+      <mesh rotation-x={-Math.PI / 2} position={[0, 0, centerZ]}>
         <planeGeometry args={[widthX, widthZ]} />
         <FloorSurface color={palette.floor} widthX={widthX} widthZ={widthZ} />
       </mesh>
-      <mesh rotation-x={Math.PI / 2} position={[0, HEIGHT, 0]}>
+      <mesh rotation-x={Math.PI / 2} position={[0, HEIGHT, centerZ]}>
         <planeGeometry args={[widthX, widthZ]} />
         {paperMaterial(palette.ceiling, 1)}
       </mesh>
@@ -877,21 +876,60 @@ function Plaque({
   title,
   body,
   size,
+  eyebrow,
+  image,
 }: {
   position: [number, number, number];
   ry: number;
   title: string;
   body?: string;
   size: [number, number];
+  eyebrow?: string;
+  image?: string;
 }) {
+  const [texture, setTexture] = useState<THREE.Texture | null>(null);
+
+  useEffect(() => {
+    if (!image) return;
+    let alive = true;
+    new THREE.TextureLoader().load(image, (loaded) => {
+      if (alive) {
+        loaded.colorSpace = THREE.SRGBColorSpace;
+        loaded.anisotropy = 8;
+        setTexture(loaded);
+      }
+    });
+    return () => {
+      alive = false;
+    };
+  }, [image]);
+
   return (
     <group position={position} rotation-y={ry}>
       <mesh position={[0, 0, 0]}>
         <boxGeometry args={[size[0], size[1], 0.08]} />
         {paperMaterial(PALETTE.paper, 0.95)}
       </mesh>
+      {texture && (
+        <mesh position={[0, 0, 0.045]}>
+          <planeGeometry args={[size[0] - 0.1, size[1] - 0.1]} />
+          <meshBasicMaterial map={texture} transparent opacity={0.2} />
+        </mesh>
+      )}
+      {eyebrow && (
+        <Text
+          position={[0, size[1] / 2 - 0.22, 0.12]}
+          fontSize={0.06}
+          letterSpacing={0.08}
+          color={PALETTE.accent}
+          anchorX="center"
+          anchorY="middle"
+        >
+          {eyebrow}
+        </Text>
+      )}
       <Text
-        position={[0, size[1] / 4, 0.12]}
+        position={[0, eyebrow ? size[1] / 8 : size[1] / 4, 0.12]}
         fontSize={Math.min(0.24, size[1] / 6)}
         color={PALETTE.ivory}
         anchorX="center"
@@ -1485,13 +1523,8 @@ function ApproachExterior() {
           of being the only geometry with void on either side of it. */}
       <mesh rotation-x={-Math.PI / 2} position={[0, 0, midZ]}>
         <planeGeometry args={[widthX, widthZ]} />
-        <FloorSurface color={PALETTE.approachFloor} widthX={widthX} widthZ={widthZ} />
+        <FloorSurface color={PALETTE.corridorFloor} widthX={widthX} widthZ={widthZ} />
       </mesh>
-      <mesh rotation-x={-Math.PI / 2} position={[0, 0.012, midZ]}>
-        <planeGeometry args={[2.4, widthZ]} />
-        {paperMaterial(PALETTE.approachPath, 0.9)}
-      </mesh>
-
       {/* Lamp posts flanking the walk toward the entrance */}
       <LampPost position={[-2.6, 0, approach.minZ + 5.5]} />
       <LampPost position={[2.6, 0, approach.minZ + 5.5]} />
@@ -1517,9 +1550,6 @@ function ApproachExterior() {
         <planeGeometry args={[2.0, 0.9]} />
         <meshStandardMaterial color={PALETTE.accent} roughness={0.92} metalness={0} />
       </mesh>
-
-      {/* Museum cat — sits on the welcome mat, alive and breathing */}
-      <MuseumCat position={[0.7, 0, approach.minZ + 2.55]} />
 
       {/* Flanking courtyard walls — without these the approach reads as an
           open void either side of the path instead of a bounded space.
@@ -1715,6 +1745,7 @@ function loadPbrFloorTextures() {
       for (const t of [map, roughnessMap]) {
         t.wrapS = THREE.RepeatWrapping;
         t.wrapT = THREE.RepeatWrapping;
+        t.anisotropy = 8;
       }
       return { map, roughnessMap };
     }).catch((err) => {
@@ -1731,10 +1762,12 @@ function FloorSurface({
   color,
   widthX,
   widthZ,
+  usePbr = true,
 }: {
   color: string;
   widthX: number;
   widthZ: number;
+  usePbr?: boolean;
 }) {
   const [pbr, setPbr] = useState<{
     map: THREE.Texture;
@@ -1769,7 +1802,7 @@ function FloorSurface({
     return { map, roughnessMap };
   }, [pbr, repeatX, repeatZ]);
 
-  if (maps) {
+  if (maps && usePbr) {
     // Tint the shared PBR texture by each room's own palette color instead
     // of hardcoding white. Every room reuses the SAME cached wood texture
     // (loadPbrFloorTextures() is a single shared promise), so without a
@@ -1780,13 +1813,7 @@ function FloorSurface({
     // intended (much lighter, cooler) palette color brings each floor back
     // toward its designed tone and keeps highlights from clipping as hard.
     return (
-      <meshStandardMaterial
-        map={maps.map}
-        roughnessMap={maps.roughnessMap}
-        color={color}
-        roughness={1}
-        metalness={0}
-      />
+      <meshBasicMaterial map={maps.map} />
     );
   }
 
@@ -2314,92 +2341,28 @@ function MuseumClock({
 // ─── Reception desk (OBJ model) — lazy-loaded, cached.
 // Raw OBJ: Y range 0–43.5, X range ±416, Z range ±279.
 // Scale to 0.9m tall. Falls back to procedural desk on error.
-let deskModelPromise: Promise<THREE.Group> | null = null;
-
-// Was a hardcoded scalar (0.9 / 43.5) derived from an assumed raw bounding
-// box, same brittleness as the curator model above — measure the loaded
-// geometry instead so a stale assumption can't warp the desk.
-const DESK_TARGET_HEIGHT = 0.9;
-
-function loadDeskModel() {
-  if (!deskModelPromise) {
-    deskModelPromise = new Promise<THREE.Group>((resolve, reject) => {
-      const mtlLoader = new MTLLoader();
-      mtlLoader.load(
-        "/models/reception desk/ReceptionDesk-1-OBJ/Reception_Desk_1_obj.mtl",
-        (materials) => {
-          materials.preload();
-          const objLoader = new OBJLoader();
-          objLoader.setMaterials(materials);
-          objLoader.load(
-          "/models/reception desk/ReceptionDesk-1-OBJ/Reception_Desk_1_obj.obj",
-          (obj) => {
-          const box = new THREE.Box3().setFromObject(obj);
-          const height = box.max.y - box.min.y;
-            if (height > 0) {
-              const scale = DESK_TARGET_HEIGHT / height;
-              obj.scale.setScalar(scale);
-                const scaledBox = new THREE.Box3().setFromObject(obj);
-                obj.position.y -= scaledBox.min.y;
-              }
-              obj.updateMatrixWorld(true);
-              resolve(obj);
-            },
-            undefined,
-            reject
-          );
-        },
-        undefined,
-        reject
-      );
-    });
-  }
-  return deskModelPromise;
-}
-
 function ReceptionDesk({
   position,
-  ry = 0,
 }: {
   position: [number, number, number];
-  ry?: number;
 }) {
-  const [model, setModel] = useState<THREE.Group | null>(null);
-
-  useEffect(() => {
-    let alive = true;
-    loadDeskModel()
-      .then((source) => {
-        if (alive) setModel(source.clone());
-      })
-      .catch(() => {
-        // Keep model as null — fallback renders below
-      });
-    return () => { alive = false; };
-  }, []);
-
-  if (!model) {
-    // Fallback: minimal procedural desk
-    return (
-      <group position={position} rotation-y={ry}>
-        <mesh position={[0, 0.45, 0]}>
-          <boxGeometry args={[1.6, 0.9, 0.55]} />
-          {inkMaterial("#4a4438", 0.75)}
-        </mesh>
-        <mesh position={[0, 0.92, 0.02]}>
-          <boxGeometry args={[1.72, 0.05, 0.6]} />
-          {paperMaterial("#e7dec9", 0.85)}
-        </mesh>
-        <Text position={[0, 0.68, 0.293]} fontSize={0.05} color="#f0cf8b" anchorX="center" anchorY="middle">
-          FOYER
-        </Text>
-      </group>
-    );
-  }
-
   return (
-    <group position={position} rotation-y={ry}>
-      <primitive object={model} />
+    <group position={position}>
+      <mesh position={[0, 0.44, 0]}>
+        <boxGeometry args={[2.2, 0.88, 0.72]} />
+        {inkMaterial("#55351f", 0.78)}
+      </mesh>
+      <mesh position={[0, 0.9, 0]}>
+        <boxGeometry args={[2.32, 0.08, 0.8]} />
+        {inkMaterial("#8a5a38", 0.7)}
+      </mesh>
+      <mesh position={[0, 0.58, 0.365]}>
+        <boxGeometry args={[1.55, 0.26, 0.025]} />
+        {paperMaterial(PALETTE.paper, 0.9)}
+      </mesh>
+      <Text position={[0, 0.58, 0.385]} fontSize={0.09} color={PALETTE.ink} anchorX="center" anchorY="middle">
+        FOYER
+      </Text>
     </group>
   );
 }
@@ -2553,11 +2516,9 @@ function WalkableWorldScene({
         targets.push({ z: spot.position[2], dir: spot.position[0] > 0 ? -1 : 1 });
       }
     }
-    // Reception desk sits on the +x side at z=18.8 — same glance
-    // convention as the corridor frames above (positive x → dir -1, looks
-    // right), so the camera eases toward it as a visitor walks past
-    // instead of it sitting outside their default forward-facing view.
-    targets.push({ z: 18.8, dir: -1 });
+    // Reception sits on the left side of the entrance at z=18.35, so the
+    // camera eases toward it as visitors approach instead of looking past it.
+    targets.push({ z: 18.35, dir: 1 });
     return targets;
   }, [corridorLayout]);
 
@@ -2625,8 +2586,8 @@ function WalkableWorldScene({
           other half of that fix). Dropped to a fill-light level so the
           practical fixtures (pendants/track spots/cans) read as the actual
           light sources instead of being washed out by these two globals. */}
-      <pointLight position={[0, 3.2, 0]} intensity={lightsOn ? 1.1 : 0.15} distance={20} decay={2} color="#f0cf8b" />
-      <pointLight position={[0, 3.2, -14]} intensity={lightsOn ? 1.0 : 0.12} distance={18} decay={2} color="#e8e4dc" />
+      <pointLight position={[0, 3.2, 0]} intensity={lightsOn ? 0.7 : 0.15} distance={20} decay={2} color="#fff4df" />
+      <pointLight position={[0, 3.2, -14]} intensity={lightsOn ? 0.65 : 0.12} distance={18} decay={2} color="#f1eee6" />
       <MuseumLighting on={lightsOn} />
 
       <ApproachExterior />
@@ -2673,7 +2634,7 @@ function WalkableWorldScene({
         // posts, wide lintel, FOYER MUSEUM signage) — skip RoomBox's
         // standard doorway frame here so the two don't double up.
         omitDoorwayFrame={["south"]}
-        palette={{ wall: PALETTE.receptionWall, floor: PALETTE.receptionFloor, ceiling: PALETTE.receptionCeiling }}
+        palette={{ wall: PALETTE.receptionWall, floor: PALETTE.corridorFloor, ceiling: PALETTE.receptionCeiling }}
       />
 
       {world.doors.map((door) => (
@@ -2687,17 +2648,19 @@ function WalkableWorldScene({
           const exhibitItem = byId.get(placement.entityId);
           const position = spot.position(roomOrigin);
           if (anchor.id === "exhibit-media-wall") {
-            return <ProjectionScreen key={anchor.id} position={position} ry={-Math.PI / 2} exhibit={exhibitItem} />;
+            return <ProjectionScreen key={`${anchor.id}-${exhibit?.id ?? "empty"}`} position={position} ry={-Math.PI / 2} exhibit={exhibit} />;
           }
           if (anchor.id === "exhibit-title-wall") {
             return (
               <Plaque
-                key={anchor.id}
+                key={`${anchor.id}-${exhibit?.id ?? exhibitItem?.id ?? "empty"}`}
                 position={position}
                 ry={0}
                 title={exhibit?.title ?? exhibitItem?.title ?? "Exhibit"}
                 body={exhibit?.tagline}
                 size={[3.8, 1.7]}
+                eyebrow="NOW SHOWING · LIVE PROJECT"
+                image={exhibit?.media[0]?.src}
               />
             );
           }
@@ -2728,8 +2691,8 @@ function WalkableWorldScene({
       )}
 
       <CuratorFigure position={[1.8, 0, 18.4]} />
-      <ReceptionDesk position={[2.0, 0, 18.8]} />
-      <ReceptionFemale position={[2.0, 0, 19.2]} ry={Math.PI} />
+      <ReceptionDesk position={[-1.2, 0, 18.35]} />
+      <ReceptionFemale position={[-1.2, 0, 18.85]} ry={0} />
       <MuseumClock position={[4.97, 2.3, 18.6]} ry={-Math.PI / 2} />
 
       {/* Reception furnishing */}
@@ -2738,12 +2701,6 @@ function WalkableWorldScene({
       <PottedPlant position={[-4.3, 0, 19.2]} scale={1.4} />
       <PottedPlant position={[-4.3, 0, 14.5]} scale={1.3} />
       <PottedPlant position={[4.3, 0, 17.6]} scale={1.3} />
-      {/* Center runner — anchors the otherwise-empty middle of the room,
-          running door to door in the direction visitors actually walk. */}
-      <mesh rotation-x={-Math.PI / 2} position={[0, 0.014, 16.5]}>
-        <planeGeometry args={[1.7, 5.6]} />
-        <meshStandardMaterial color={PALETTE.accent} roughness={0.92} metalness={0} />
-      </mesh>
       {/* Wall-plank accent (OBJLoader+MTLLoader) — reuses the x=-4.3 wall
           line already proven safe by the PottedPlant above, at a different
           Z so it doesn't overlap either existing prop. */}
@@ -2806,7 +2763,7 @@ export function WalkableWorldCanvas({
   return (
     <Canvas
       dpr={[1, quality.maxDpr]}
-      gl={{ antialias: true, powerPreference: "high-performance", alpha: false }}
+      gl={{ antialias: quality.maxDpr > 1, powerPreference: "high-performance", alpha: false }}
       camera={{ fov: 72, near: 0.1, far: 60, position: spawn }}
       onCreated={({ gl, camera }) => {
         gl.setClearColor(PALETTE.paper, 1);

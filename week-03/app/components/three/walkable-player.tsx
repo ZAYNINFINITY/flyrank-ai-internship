@@ -29,6 +29,8 @@ const GLANCE_END = -2;
 const MAX_GLANCE_YAW = 0.15;
 const GLANCE_LOOK_SMOOTHING = 0.03;
 const GLANCE_RELEASE_SMOOTHING = 0.08;
+const MAX_FOCUS_YAW = 1.4;
+const MAX_FOCUS_PITCH = 0.28;
 
 export type GlanceTarget = { z: number; dir: 1 | -1 };
 
@@ -68,6 +70,7 @@ export function WalkablePlayer({
   // dialog closed). focusBlend eases the turn both in and out.
   const focusPos = useRef<[number, number, number] | null>(null);
   const focusBlend = useRef(0);
+  const focusVelocity = useRef(0);
   const lastFocusYaw = useRef(0);
   const lastFocusPitch = useRef(0);
 
@@ -110,8 +113,14 @@ export function WalkablePlayer({
     const forwardYaw = parallaxX.current * -0.045 + glanceOffset.current;
     const forwardPitch = parallaxY.current * 0.035;
 
-    const focusLerp = 1 - Math.pow(1 - 0.14, rate);
-    focusBlend.current = THREE.MathUtils.lerp(focusBlend.current, focusPos.current ? 1 : 0, focusLerp);
+    const springK = 8;
+    const damping = 0.7;
+    const focusTarget = focusPos.current ? 1 : 0;
+    const springForce = (focusTarget - focusBlend.current) * springK;
+    focusVelocity.current += springForce * dt;
+    focusVelocity.current *= Math.pow(damping, rate);
+    focusBlend.current += focusVelocity.current * dt;
+    focusBlend.current = clamp(focusBlend.current, 0, 1);
 
     let yaw = forwardYaw;
     let pitch = forwardPitch;
@@ -119,8 +128,15 @@ export function WalkablePlayer({
       const dx = focusPos.current[0] - camera.position.x;
       const dy = focusPos.current[1] - camera.position.y;
       const dz = focusPos.current[2] - camera.position.z;
-      lastFocusYaw.current = Math.atan2(dx, -dz);
-      lastFocusPitch.current = -Math.atan2(dy, Math.hypot(dx, dz));
+      // Three.js cameras look down local -Z. Positive yaw turns that
+      // direction toward negative X, so the target angles use the inverse
+      // signs from the usual screen-space bearing calculation.
+      lastFocusYaw.current = THREE.MathUtils.clamp(-Math.atan2(dx, -dz), -MAX_FOCUS_YAW, MAX_FOCUS_YAW);
+      lastFocusPitch.current = THREE.MathUtils.clamp(
+        Math.atan2(dy, Math.hypot(dx, dz)),
+        -MAX_FOCUS_PITCH,
+        MAX_FOCUS_PITCH
+      );
     }
     if (focusBlend.current > 0.001) {
       // Reuse the last computed focus angle while easing out too, not just

@@ -6,6 +6,8 @@
 **Branch:** `main`
 **Master packet:** https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-08/week-8-submission-summary.md
 
+**Current verification (August 24, 2026):** Local checks pass, but the production URL returned HTTP 404 and the existing `demo-video.mp4` is 35 seconds. Redeployment/URL confirmation and a 3-5 minute demo recording are still required before final submission.
+
 ---
 
 ## Deliverables

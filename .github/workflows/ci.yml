@@ -10,7 +10,9 @@ permissions:
 
 jobs:
   quality:
-    name: Lint, typecheck, tests, build, e2e
+    # Must stay exactly "ci" — branch protection on main requires this
+    # status-check context before PRs can merge.
+    name: ci
     runs-on: ubuntu-latest
     defaults:
       run:

@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useMemo, useEffect } from "react";
-import { useFrame } from "@react-three/fiber";
+import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 
 export type TimeOfDay = "dawn" | "morning" | "noon" | "dusk" | "night";
@@ -119,6 +119,9 @@ const SKY_FRAGMENT_SHADER = `
 `;
 
 function SkyGradient({ topColor, horizonColor }: { topColor: string; horizonColor: string }) {
+  // Uniforms are rebuilt whenever the time-of-day colors change (useMemo
+  // deps), so there's nothing to re-apply every frame — the old per-frame
+  // .set() calls were pure redundant work on the render loop.
   const uniforms = useMemo(
     () => ({
       topColor: { value: new THREE.Color(topColor) },
@@ -128,11 +131,6 @@ function SkyGradient({ topColor, horizonColor }: { topColor: string; horizonColo
     }),
     [topColor, horizonColor]
   );
-
-  useFrame(() => {
-    (uniforms.topColor.value as THREE.Color).set(topColor);
-    (uniforms.horizonColor.value as THREE.Color).set(horizonColor);
-  });
 
   return (
     <mesh position={[0, 0, 5]}>
@@ -162,9 +160,17 @@ function SunDisc({
   const dir = useMemo(() => new THREE.Vector3(...direction).normalize(), [direction]);
   const radius = 46;
   const pos: [number, number, number] = [dir.x * radius, dir.y * radius, 5 + dir.z * radius];
+  const groupRef = useRef<THREE.Group>(null);
+  const { camera } = useThree();
+
+  useFrame(() => {
+    if (groupRef.current) {
+      groupRef.current.quaternion.copy(camera.quaternion);
+    }
+  });
 
   return (
-    <group position={pos}>
+    <group ref={groupRef} position={pos}>
       <mesh>
         <circleGeometry args={[5.5, 32]} />
         <meshBasicMaterial color={glowColor} transparent opacity={0.16 * intensity} depthWrite={false} blending={THREE.AdditiveBlending} />
@@ -177,6 +183,51 @@ function SunDisc({
         <circleGeometry args={[1.15, 32]} />
         <meshBasicMaterial color={color} transparent opacity={Math.min(1, intensity + 0.3)} depthWrite={false} />
       </mesh>
+    </group>
+  );
+}
+
+function MoonDisc({ position }: { position: [number, number, number] }) {
+  const dir = useMemo(() => new THREE.Vector3(...position).normalize(), [position]);
+  const radius = 46;
+  const pos: [number, number, number] = [dir.x * radius, dir.y * radius, 5 + dir.z * radius];
+  const groupRef = useRef<THREE.Group>(null);
+  const { camera } = useThree();
+
+  useFrame(() => {
+    if (groupRef.current) {
+      groupRef.current.quaternion.copy(camera.quaternion);
+    }
+  });
+
+  return (
+    <group ref={groupRef} position={pos}>
+      {/* Soft outer glow — paler than sun */}
+      <mesh>
+        <circleGeometry args={[4.5, 32]} />
+        <meshBasicMaterial color="#c8c4d8" transparent opacity={0.12} depthWrite={false} blending={THREE.AdditiveBlending} />
+      </mesh>
+      {/* Mid glow */}
+      <mesh position={[0, 0, 0.01]}>
+        <circleGeometry args={[2.2, 32]} />
+        <meshBasicMaterial color="#d8d4e0" transparent opacity={0.2} depthWrite={false} blending={THREE.AdditiveBlending} />
+      </mesh>
+      {/* Core — pale grey-white, not blue */}
+      <mesh position={[0, 0, 0.02]}>
+        <circleGeometry args={[1.1, 32]} />
+        <meshBasicMaterial color="#e8e6f0" transparent opacity={0.9} depthWrite={false} />
+      </mesh>
+      {/* Faint craters — 3 small dots */}
+      {[
+        [-0.35, 0.3, 0.025],
+        [0.2, -0.15, 0.025],
+        [0.45, 0.1, 0.025],
+      ].map(([x, y, z], i) => (
+        <mesh key={i} position={[x, y, z]}>
+          <circleGeometry args={[0.12, 12]} />
+          <meshBasicMaterial color="#c0bcc8" transparent opacity={0.35} depthWrite={false} />
+        </mesh>
+      ))}
     </group>
   );
 }
@@ -203,13 +254,9 @@ function Stars({ visibility }: { visibility: number }) {
     return geo;
   }, []);
 
-  useFrame(() => {
-    const mat = ref.current?.material as THREE.PointsMaterial | undefined;
-    if (mat) mat.opacity = visibility;
-  });
-
   if (visibility <= 0.01) return null;
 
+  // Opacity is declarative on the material — no per-frame writes needed.
   return (
     <points ref={ref} geometry={geometry}>
       <pointsMaterial
@@ -224,49 +271,145 @@ function Stars({ visibility }: { visibility: number }) {
   );
 }
 
-export function EntranceSky({ time }: { time: TimeOfDay }) {
-  const sunRef = useRef<THREE.DirectionalLight>(null);
-  const ambientRef = useRef<THREE.AmbientLight>(null);
-  const hemiRef = useRef<THREE.HemisphereLight>(null);
+// ─── Procedural clouds ─────
+// One soft-puff canvas texture shared by every cloud. Each cloud is a
+// billboard plane orbiting slowly overhead; tint/opacity track time of day
+// so dusk gets warm clouds and night keeps only faint dark ones.
+let CLOUD_TEXTURE: THREE.CanvasTexture | null = null;
 
-  const cfg = TIME_CONFIG[time];
+function getCloudTexture(): THREE.CanvasTexture {
+  if (CLOUD_TEXTURE) return CLOUD_TEXTURE;
+  const s = 512;
+  const canvas = document.createElement("canvas");
+  canvas.width = s;
+  canvas.height = s;
+  const ctx = canvas.getContext("2d");
+  if (ctx) {
+    ctx.clearRect(0, 0, s, s);
+    // Overlapping radial-gradient blobs form a cumulus puff
+    const blobs: Array<[number, number, number]> = [
+      [0.5, 0.62, 0.26],
+      [0.33, 0.54, 0.19],
+      [0.67, 0.52, 0.21],
+      [0.43, 0.4, 0.17],
+      [0.58, 0.37, 0.15],
+      [0.25, 0.62, 0.13],
+      [0.76, 0.6, 0.12],
+    ];
+    for (const [bx, by, br] of blobs) {
+      const grad = ctx.createRadialGradient(s * bx, s * by, 0, s * bx, s * by, s * br);
+      grad.addColorStop(0, "rgba(255,255,255,0.85)");
+      grad.addColorStop(0.6, "rgba(255,255,255,0.35)");
+      grad.addColorStop(1, "rgba(255,255,255,0)");
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(s * bx, s * by, s * br, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+  CLOUD_TEXTURE = new THREE.CanvasTexture(canvas);
+  return CLOUD_TEXTURE;
+}
 
-  useFrame(() => {
-    if (sunRef.current) {
-      sunRef.current.color.set(cfg.sunColor);
-      sunRef.current.intensity = cfg.sunIntensity;
-      sunRef.current.position.set(...cfg.sunPos);
-    }
-    if (ambientRef.current) {
-      ambientRef.current.intensity = cfg.ambientIntensity;
-    }
-    if (hemiRef.current) {
-      hemiRef.current.color.set(cfg.hemiSky);
-      hemiRef.current.groundColor.set(cfg.hemiGround);
-      hemiRef.current.intensity = cfg.hemiIntensity;
-    }
+const CLOUD_TINT: Record<TimeOfDay, { color: string; opacity: number }> = {
+  dawn: { color: "#f6cdb2", opacity: 0.35 },
+  morning: { color: "#ffffff", opacity: 0.45 },
+  noon: { color: "#ffffff", opacity: 0.55 },
+  dusk: { color: "#eda57c", opacity: 0.4 },
+  night: { color: "#464662", opacity: 0.12 },
+};
+
+function Clouds({ time }: { time: TimeOfDay }) {
+  const { camera } = useThree();
+  const tint = CLOUD_TINT[time];
+  const tex = getCloudTexture();
+
+  const clouds = useMemo(
+    () =>
+      Array.from({ length: 6 }, (_, i) => ({
+        angle: (i / 6) * Math.PI * 2 + Math.random() * 0.7,
+        speed: 0.004 + Math.random() * 0.004,
+        radius: 40 + Math.random() * 4,
+        height: 22 + Math.random() * 8,
+        scale: 4.5 + Math.random() * 2.5,
+        opacityJitter: 0.55 + Math.random() * 0.25,
+      })),
+    []
+  );
+
+  const meshRefs = useRef<Array<THREE.Mesh | null>>([]);
+
+  // Only transforms live in the render loop. Tint/opacity are declarative
+  // props below — R3F diffs and applies them on time-of-day changes, so the
+  // old per-frame hex parsing (mat.color.set) is gone entirely.
+  useFrame((_, delta) => {
+    clouds.forEach((cloud, i) => {
+      const mesh = meshRefs.current[i];
+      if (!mesh) return;
+      cloud.angle += delta * cloud.speed;
+      mesh.position.set(
+        Math.cos(cloud.angle) * cloud.radius,
+        cloud.height,
+        5 + Math.sin(cloud.angle) * cloud.radius
+      );
+      mesh.quaternion.copy(camera.quaternion);
+    });
   });
 
   return (
     <>
+      {clouds.map((cloud, i) => (
+        <mesh
+          key={i}
+          ref={(el) => {
+            meshRefs.current[i] = el;
+          }}
+          scale={cloud.scale}
+        >
+          <planeGeometry args={[1, 1]} />
+          <meshBasicMaterial
+            map={tex}
+            color={tint.color}
+            transparent
+            opacity={tint.opacity * cloud.opacityJitter}
+            depthWrite={false}
+            fog={false}
+          />
+        </mesh>
+      ))}
+    </>
+  );
+}
+
+export function EntranceSky({ time }: { time: TimeOfDay }) {
+  // All light properties are declarative below (args/props carry the
+  // time-of-day values directly), so nothing needs imperative per-frame
+  // writes — the old useFrame here was redundant work 60×/sec.
+  const cfg = TIME_CONFIG[time];
+
+  return (
+    <>
       <SkyGradient topColor={cfg.skyTop} horizonColor={cfg.skyHorizon} />
-      <SunDisc
-        direction={cfg.sunPos}
-        color={cfg.sunColor}
-        glowColor={cfg.sunGlowColor}
-        intensity={cfg.sunIntensity}
-      />
+      {time === "night" ? (
+        <MoonDisc position={cfg.sunPos} />
+      ) : (
+        <SunDisc
+          direction={cfg.sunPos}
+          color={cfg.sunColor}
+          glowColor={cfg.sunGlowColor}
+          intensity={cfg.sunIntensity}
+        />
+      )}
       <directionalLight
-        ref={sunRef}
         args={[cfg.sunColor, cfg.sunIntensity]}
         position={cfg.sunPos}
       />
-      <ambientLight ref={ambientRef} intensity={cfg.ambientIntensity} />
+      <ambientLight intensity={cfg.ambientIntensity} />
       <hemisphereLight
-        ref={hemiRef}
         args={[cfg.hemiSky, cfg.hemiGround, cfg.hemiIntensity]}
       />
       <fog attach="fog" args={[cfg.fog, 18, 55]} />
+      <Clouds time={time} />
       <Stars visibility={cfg.starsVisible} />
       {time === "night" && (
         <pointLight position={[0, 0.5, 24]} intensity={0.4} distance={12} color="#6688cc" />

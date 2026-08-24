@@ -4,6 +4,7 @@ import {
   Component,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
   type ReactNode,
@@ -52,7 +53,38 @@ const SOURCE_LABELS: Record<InspectInfo["source"], string> = {
 
 // The three characters that get a live AI speech bubble instead of a
 // static inspect card. Keyed by InspectInfo.source.
-const SPEECH_BUBBLE_SOURCES = new Set<InspectInfo["source"]>(["curator", "receptionist", "cat"]);
+const SPEECH_BUBBLE_SOURCES = new Set<InspectInfo["source"]>(["curator", "receptionist"]);
+
+function hasLiveLink(exhibit: (typeof mockExhibits)[number]) {
+  return exhibit.links.some((link) => /^https?:\/\//i.test(link.url));
+}
+
+function ShowcaseWheel({
+  projects,
+  selectedId,
+  onSelect,
+}: {
+  projects: typeof mockExhibits;
+  selectedId: string;
+  onSelect: (id: string) => void;
+}) {
+  const selectedIndex = Math.max(0, projects.findIndex((project) => project.id === selectedId));
+  if (projects.length < 2) return null;
+
+  return (
+    <div className="pointer-events-auto absolute left-1/2 top-4 z-50 -translate-x-1/2 rounded-full border border-[#2a2a30]/20 bg-[#efe9da]/90 px-3 py-2 shadow-lg backdrop-blur-sm">
+      <div className="flex items-center gap-2">
+        <button type="button" aria-label="Previous showcased project" onClick={() => onSelect(projects[(selectedIndex - 1 + projects.length) % projects.length].id)} className="flex h-8 w-8 items-center justify-center rounded-full border border-[#2a2a30]/20 text-[#2a2a30]/70 transition-colors hover:bg-[#2a2a30]/10">&#8592;</button>
+        <div className="min-w-[150px] text-center">
+          <p className="text-[9px] uppercase tracking-[0.22em] text-[#6f6c62]">Showcase wheel</p>
+          <p className="truncate text-sm font-medium text-[#2a2a30]">{projects[selectedIndex].title}</p>
+          <p className="text-[10px] text-[#6f6c62]">{selectedIndex + 1} of {projects.length} live projects</p>
+        </div>
+        <button type="button" aria-label="Next showcased project" onClick={() => onSelect(projects[(selectedIndex + 1) % projects.length].id)} className="flex h-8 w-8 items-center justify-center rounded-full border border-[#2a2a30]/20 text-[#2a2a30]/70 transition-colors hover:bg-[#2a2a30]/10">&#8594;</button>
+      </div>
+    </div>
+  );
+}
 
 class SceneErrorBoundary extends Component<
   { onError: () => void; children: ReactNode },
@@ -90,6 +122,24 @@ export function ExhibitRoom3D({
   const [showTextWalls, setShowTextWalls] = useState(false);
   const [sceneFailed, setSceneFailed] = useState(false);
   const [inspect, setInspect] = useState<InspectInfo | null>(null);
+  const activeSpeaker =
+    inspect?.source === "curator" || inspect?.source === "receptionist"
+      ? inspect.source
+      : null;
+  const showcaseProjects = useMemo(
+    () => mockExhibits.filter((project) => project.developerId === exhibit?.developerId && hasLiveLink(project)),
+    [exhibit?.developerId]
+  );
+  const [selectedShowcaseId, setSelectedShowcaseId] = useState(exhibitId);
+  // Route-param changes reuse this component instance (no remount), so the
+  // selection must follow the incoming exhibitId or it goes stale. Adjusting
+  // state during render is the React-recommended alternative to an effect.
+  const [prevExhibitId, setPrevExhibitId] = useState(exhibitId);
+  if (prevExhibitId !== exhibitId) {
+    setPrevExhibitId(exhibitId);
+    setSelectedShowcaseId(exhibitId);
+  }
+  const selectedShowcase = showcaseProjects.find((project) => project.id === selectedShowcaseId) ?? exhibit;
   const [prompt, setPrompt] = useState<string | null>(null);
   const [corridorLayout, setCorridorLayout] = useState<SurfaceLayout[] | null>(null);
   const [lightsOn, setLightsOn] = useState(true);
@@ -212,11 +262,12 @@ export function ExhibitRoom3D({
       <SceneErrorBoundary onError={() => setSceneFailed(true)}>
         {corridorLayout && (
           <WalkableWorldCanvas
+            key={selectedShowcase?.id ?? exhibit.id}
             corridorLayout={corridorLayout}
             roomLayout={layout}
             exhibits={mockExhibits}
             developers={seedDevelopers}
-            exhibit={exhibit}
+            exhibit={selectedShowcase ?? exhibit}
             spawn={spawn}
             quality={quality}
             openDoors={openDoors}
@@ -227,9 +278,19 @@ export function ExhibitRoom3D({
             enabled={!inspect && !showTextWalls}
             lightsOn={lightsOn}
             timeOfDay={timeOfDay}
+            activeSpeaker={activeSpeaker}
           />
         )}
       </SceneErrorBoundary>
+
+      <ShowcaseWheel
+        projects={showcaseProjects}
+        selectedId={selectedShowcase?.id ?? exhibit.id}
+        onSelect={(id) => {
+          setInspect(null);
+          setSelectedShowcaseId(id);
+        }}
+      />
 
       {arrivalIntro && (
         <div
@@ -386,7 +447,6 @@ export function ExhibitRoom3D({
       {inspect && SPEECH_BUBBLE_SOURCES.has(inspect.source) && (
         <CuratorSpeechBubble
           title={inspect.title}
-          body={inspect.body}
           onClose={closeInspect}
           character={inspect.source as "curator" | "receptionist" | "cat"}
         />
@@ -395,7 +455,6 @@ export function ExhibitRoom3D({
       {inspect && !SPEECH_BUBBLE_SOURCES.has(inspect.source) && (
         <div
           className="pointer-events-none absolute inset-x-3 bottom-3 flex justify-center sm:inset-x-auto sm:right-4 sm:bottom-4 sm:left-auto sm:justify-end"
-          style={{ perspective: "1200px" }}
         >
           <div
             key={inspect.title + inspect.source}
@@ -404,54 +463,61 @@ export function ExhibitRoom3D({
             aria-modal="true"
             aria-label="Inspect"
             tabIndex={-1}
-            className="pointer-events-auto w-full overflow-hidden rounded-sm border border-[#2a2a30]/15 bg-[#efe9da]/95 shadow-lg backdrop-blur-sm transition-[transform,opacity] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] focus:outline-none sm:w-[22rem]"
+            className="pointer-events-auto w-[340px] max-w-[90vw] overflow-hidden rounded-2xl bg-[#efe9da]/95 backdrop-blur-md shadow-[0_20px_60px_-15px_rgba(0,0,0,0.35)] ring-1 ring-black/5 focus:outline-none"
             style={{
-              transformStyle: "preserve-3d",
-              transform: cardRevealed ? "rotateY(0deg) scale(1)" : "rotateY(-90deg) scale(0.92)",
+              transform: cardRevealed
+                ? "translateY(0) scale(1)"
+                : "translateY(12px) scale(0.96)",
               opacity: cardRevealed ? 1 : 0,
+              transition: "transform 320ms cubic-bezier(0.16, 1, 0.3, 1), opacity 220ms ease-out",
             }}
           >
             {inspect.image && (
-              <div className="h-32 w-full overflow-hidden border-b border-[#2a2a30]/12 bg-[#2a2a30]/5">
+              <div className="relative h-36 w-full overflow-hidden">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={inspect.image}
-                  alt=""
+                  alt={inspect.title}
                   className="h-full w-full object-cover"
                 />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#efe9da] via-transparent to-transparent" />
               </div>
             )}
             <div className="p-5">
-              <p className="text-[10px] uppercase tracking-[0.25em] text-[#6f6c62]">
+              <span className="inline-block rounded-full bg-[#2a2a30]/8 px-2.5 py-1 text-[10px] font-medium uppercase tracking-wider text-[#2a2a30]/60">
                 {SOURCE_LABELS[inspect.source]}
-              </p>
-              <h4 className="mt-1 font-heading text-lg tracking-tight text-[#2a2a30]">
+              </span>
+              <h3 className="mt-2 font-heading text-lg font-semibold tracking-tight text-[#1a1a20]">
                 {inspect.title}
-              </h4>
-              <p className="mt-2 text-sm leading-relaxed text-[#2a2a30]/70">
+              </h3>
+              <p className="mt-1.5 line-clamp-3 text-sm leading-relaxed text-[#2a2a30]/70">
                 {inspect.body}
               </p>
-              <div className="mt-4 flex flex-wrap items-center justify-between gap-4">
-                {inspect.href && (
-                  <Link
-                    href={inspect.href}
-                    className="inline-flex min-h-[44px] items-center text-xs uppercase tracking-[0.2em] text-[#2a2a30]/60 transition-opacity duration-200 hover:text-[#2a2a30] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-                  >
-                    {inspect.hrefLabel ?? "Continue"} &rarr;
-                  </Link>
-                )}
-                {portfolioRoute && !inspect.href && (
-                  <Link
-                    href={portfolioRoute}
-                    className="inline-flex min-h-[44px] items-center text-xs uppercase tracking-[0.2em] text-[#2a2a30]/60 transition-opacity duration-200 hover:text-[#2a2a30] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-                  >
-                    Open full exhibit &rarr;
-                  </Link>
-                )}
+              <div className="mt-4 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  {inspect.href && (
+                    <a
+                      href={inspect.href}
+                      className="group inline-flex items-center gap-1.5 rounded-full bg-[#1a1a20] px-4 py-2 text-xs font-medium text-[#efe9da] transition-colors hover:bg-[#1a1a20]/85"
+                    >
+                      {inspect.hrefLabel ?? "Open exhibit"}
+                      <span className="transition-transform group-hover:translate-x-0.5">&rarr;</span>
+                    </a>
+                  )}
+                  {portfolioRoute && (
+                    <Link
+                      href={portfolioRoute}
+                      className="group inline-flex items-center gap-1.5 rounded-full border border-[#2a2a30]/20 px-4 py-2 text-xs font-medium text-[#2a2a30]/70 transition-colors hover:bg-[#2a2a30]/5"
+                    >
+                      {inspect.href ? "Portfolio" : "Open full exhibit"}
+                      <span className="transition-transform group-hover:translate-x-0.5">&rarr;</span>
+                    </Link>
+                  )}
+                </div>
                 <button
                   type="button"
                   onClick={closeInspect}
-                  className="rounded-sm border border-[#2a2a30]/20 px-3 py-1.5 text-[11px] uppercase tracking-[0.2em] text-[#2a2a30]/60 transition-all duration-200 hover:border-[#2a2a30]/50 hover:text-[#2a2a30] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                  className="rounded-full border border-[#2a2a30]/15 px-3 py-2 text-xs text-[#2a2a30]/60 transition-colors hover:bg-[#2a2a30]/5"
                 >
                   Close
                 </button>

@@ -34,7 +34,10 @@ export function evaluateRendererCapability(input: CapabilityInput): RendererCapa
     return { mode: "2d", reason: "low-memory", quality: FALLBACK_QUALITY };
   }
 
-  const maxDpr = input.coarsePointer || memory < 4 ? 1.5 : 2;
+  // Mobile GPUs pay the pixel cost twice: high device-pixel-ratio screens
+  // and a large fullscreen canvas. Keep the 3D path, but cap its internal
+  // render buffer at CSS resolution for a steadier frame rate.
+  const maxDpr = input.coarsePointer || memory < 4 ? 1 : 2;
   const shadows = !input.coarsePointer && memory >= 4;
 
   return { mode: "3d", reason: "webgl2-ok", quality: { maxDpr, shadows } };

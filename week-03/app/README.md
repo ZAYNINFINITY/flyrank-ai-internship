@@ -1,10 +1,10 @@
-# Plinth
+# Foyer
 
 **An open digital museum for developers.**
 
 Plinth is a platform where developers exhibit their work as curated gallery rooms — not card grids, not thumbnail clusters. Each project gets a dedicated space with architectural presence: a scrollable 3D corridor, an exhibit room with text walls and media, and an AI curator that answers questions about what's on display.
 
-**Live:** [plinth-cyan.vercel.app](https://plinth-cyan.vercel.app)
+**Live:** [foyer-cyan.vercel.app](https://foyer-cyan.vercel.app) (verify deployment before submission)
 
 ## What it solves
 
@@ -133,6 +133,14 @@ Average performance: 99.25. Accessibility = 95 on 3D routes because Three.js can
 - **Lighthouse not in CI** — Manual run only.
 - **No external error tracking** — Manual monitoring.
 - **Auth not wired** — Dashboard and login are placeholders.
+- **Deployment verification:** `https://foyer-cyan.vercel.app` returned HTTP 404 during the August 24, 2026 check.
+- **Streaming timeout:** `app/api/chat/route.ts` has rate and input limits but does not currently declare `maxDuration`.
+
+## Current implementation notes
+
+- Curator and receptionist use live streamed AI speech bubbles with separate role prompts.
+- The exhibit room showcase wheel switches among the current developer's projects with HTTP(S) links and synchronizes the board, projection, artifacts, and inspection state.
+- The reception desk uses bounded procedural wood geometry to avoid the source OBJ's placeholder material and oversized bounds.
 
 ## Future improvements
 

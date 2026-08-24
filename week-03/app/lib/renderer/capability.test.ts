@@ -40,7 +40,7 @@ describe("evaluateRendererCapability", () => {
       hardwareConcurrency: 2,
     });
     expect(result.mode).toBe("3d");
-    expect(result.quality).toEqual({ maxDpr: 1.5, shadows: false });
+    expect(result.quality).toEqual({ maxDpr: 1, shadows: false });
   });
 
   it("renders 3D on capable desktop hardware with full quality", () => {
@@ -53,12 +53,12 @@ describe("evaluateRendererCapability", () => {
   it("caps DPR and disables shadows for touch/coarse-pointer devices", () => {
     const result = evaluateRendererCapability({ ...capableDesktop, coarsePointer: true });
     expect(result.mode).toBe("3d");
-    expect(result.quality).toEqual({ maxDpr: 1.5, shadows: false });
+    expect(result.quality).toEqual({ maxDpr: 1, shadows: false });
   });
 
   it("caps DPR and disables shadows on mid-range memory (2-3 GB)", () => {
     const result = evaluateRendererCapability({ ...capableDesktop, deviceMemory: 3 });
-    expect(result.quality).toEqual({ maxDpr: 1.5, shadows: false });
+    expect(result.quality).toEqual({ maxDpr: 1, shadows: false });
   });
 
   it("uses the estimated 4 GB baseline when memory and concurrency are both unknown", () => {

@@ -120,3 +120,18 @@ These files were already deleted/modified outside the requested work and were le
 - The current repository uses mock/seed exhibit data and has no persistence database. Receptionist visitor records are described as current-session context only and are not claimed to be permanently stored.
 - `assets/floor+ceilin/Floor.FBX` exists outside `public`; browser loading currently uses the copied floor texture maps under `public/models/floor-textures`.
 - The integrated browser may show a stale Next/Turbopack bundle after edits; a page refresh or dev-server restart may be needed when visually checking the latest scene.
+
+## Git and Pull Request Status
+
+**Updated:** 2026-08-24 06:58 +05:00
+
+- Application commit: `344885e feat: refine museum interactions and mobile rendering`
+- Documentation commit: `040cb44 docs: update capstone handoffs and status`
+- Direct push to protected `main` was rejected as expected because the branch requires a pull request and CI status.
+- Feature branch pushed: `copilot/museum-polish-mobile-handoff`
+- Pull request: https://github.com/ZAYNINFINITY/flyrank-ai-internship/pull/1
+- Pull request title: `Refine museum interactions, AI roles, and mobile rendering`
+- Pull request body was updated with the complete implementation summary and validation notes.
+- GitHub Vercel status check: `success` — deployment completed.
+- The pull request is open and awaits merge into protected `main`.
+- The pre-existing deleted `bench-female` assets were not staged, committed, or pushed.

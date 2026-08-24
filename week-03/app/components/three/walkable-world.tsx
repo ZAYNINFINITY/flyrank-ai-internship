@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Text } from "@react-three/drei";
+import { PerformanceMonitor, Text } from "@react-three/drei";
 import * as THREE from "three";
 import { OBJLoader } from "three/addons/loaders/OBJLoader.js";
 import { MTLLoader } from "three/addons/loaders/MTLLoader.js";
@@ -26,6 +26,21 @@ import { getPaperTexture } from "@/lib/three/paper-texture";
 import { RevealMaterial } from "@/lib/three/reveal-material";
 import { WalkablePlayer, type GlanceTarget } from "./walkable-player";
 import { EntranceSky, type TimeOfDay } from "./entrance-environment";
+import { useAudio } from "@/components/ui/audio-provider";
+import { SpeechBubble } from "./speech-bubble";
+
+// Sign image preloader — loads once, reused by canvas texture
+let signImg: HTMLImageElement | null = null;
+let signReady = false;
+if (typeof window !== "undefined") {
+  const img = new Image();
+  img.src = "/images/sign.png";
+  img.onload = () => {
+    signImg = img;
+    signReady = true;
+    NOTE_TEXTURE_CACHE.delete("info-board"); // force re-render
+  };
+}
 
 // Itom's corridor runs 3.5 units tall, noticeably cozier than a generic
 // 4-unit box — that proportion reads as "designed" rather than cavernous.
@@ -1358,8 +1373,8 @@ function ApproachFacade() {
     const hw = widthX / 2;
     shape.moveTo(-hw, facadeBottom);
     shape.lineTo(hw, facadeBottom);
-    shape.lineTo(hw, facadeTop);
-    shape.lineTo(-hw, facadeTop);
+    shape.lineTo(hw, facadeTop - 0.15);
+    shape.quadraticCurveTo(0, facadeTop + 0.25, -hw, facadeTop - 0.15);
     shape.lineTo(-hw, facadeBottom);
 
     // The door-shaped hole — reaches from the base of the facade up to the
@@ -1380,6 +1395,33 @@ function ApproachFacade() {
       <meshStandardMaterial map={getFacadeTexture()} color="#ffffff" roughness={0.94} side={THREE.DoubleSide} />
     </mesh>
   );
+}
+
+function RooflineLights() {
+  const approach = FOOTPRINTS.approach;
+  const widthX = approach.maxX - approach.minX;
+  const y = HEIGHT / 2 + (HEIGHT * 1.05) / 2 + 0.15;
+  const z = approach.minZ + 0.08;
+  const xs = [-widthX * 0.3, -widthX * 0.1, widthX * 0.1, widthX * 0.3];
+
+  return (
+    <>
+      {xs.map((x, i) => (
+        <RooflineLight key={i} position={[x, y, z]} delay={i * 0.8} />
+      ))}
+    </>
+  );
+}
+
+function RooflineLight({ position, delay }: { position: [number, number, number]; delay: number }) {
+  const ref = useRef<THREE.PointLight>(null);
+  useFrame(({ clock }) => {
+    if (ref.current) {
+      const t = clock.getElapsedTime() + delay;
+      ref.current.intensity = 0.4 + Math.sin(t * 0.9) * 0.15;
+    }
+  });
+  return <pointLight ref={ref} position={position} intensity={0.5} distance={4} color="#f0d8a0" />;
 }
 
 // ─── Entrance dressing — flanking pillars (grander than the door's own
@@ -1438,9 +1480,23 @@ function EntranceSignboard() {
       >
         An open museum — any developer can exhibit here
       </Text>
+      <Text
+        position={[0, -0.32, 0.05]}
+        fontSize={0.065}
+        color={PALETTE.dim}
+        anchorX="center"
+        anchorY="middle"
+      >
+        Created by ZAYNINFINITY
+      </Text>
     </group>
   );
 }
+
+const BOARD_W = 1.5;
+const BOARD_H = 2.4;
+const BOARD_DEPTH = 0.06;
+const BOARD_BAR = 0.05;
 
 const INFO_BOARD_MENU: Array<[string, string]> = [
   ["Reception Hall", "Curator & wayfinding"],
@@ -1448,63 +1504,235 @@ const INFO_BOARD_MENU: Array<[string, string]> = [
   ["Exhibition Rooms", "Explore individual work"],
 ];
 
+function getInfoBoardTexture(): THREE.CanvasTexture {
+  const cached = NOTE_TEXTURE_CACHE.get("info-board");
+  if (cached) return cached;
+  const w = 1024;
+  const h = 1536;
+  const canvas = document.createElement("canvas");
+  canvas.width = w;
+  canvas.height = h;
+  const ctx = canvas.getContext("2d");
+  if (ctx) {
+    // Bright paper background
+    ctx.fillStyle = "#e2dbca";
+    ctx.fillRect(0, 0, w, h);
+
+    // Subtle grain
+    for (let i = 0; i < 4000; i++) {
+      const alpha = 0.015 + Math.random() * 0.025;
+      ctx.fillStyle = Math.random() > 0.5
+        ? `rgba(255,255,255,${alpha})`
+        : `rgba(60,50,30,${alpha})`;
+      ctx.fillRect(Math.random() * w, Math.random() * h, 1, 1);
+    }
+
+    const cx = w / 2;
+
+    // ─── ABOUT section ───
+    ctx.fillStyle = "#000000";
+    ctx.font = "bold 52px 'Helvetica Neue', Arial, sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText("ABOUT", cx, 120);
+
+    ctx.fillStyle = "#0a0a0a";
+    ctx.font = "700 36px 'Helvetica Neue', Arial, sans-serif";
+    const aboutText = [
+      "Built by Zain Ul Abideen",
+      "CS student, MERN stack developer.",
+      "",
+      "A space where developers exhibit",
+      "their craft as curated collections,",
+      "not card grids.",
+    ];
+    aboutText.forEach((line, i) => {
+      ctx.fillText(line, cx, 195 + i * 46);
+    });
+
+    // Gold divider
+    ctx.strokeStyle = "#a08850";
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.moveTo(w * 0.12, 430);
+    ctx.lineTo(w * 0.88, 430);
+    ctx.stroke();
+
+    // ─── MENU section ───
+    ctx.fillStyle = "#000000";
+    ctx.font = "bold 52px 'Helvetica Neue', Arial, sans-serif";
+    ctx.fillText("MENU", cx, 500);
+
+    INFO_BOARD_MENU.forEach(([label, sub], i) => {
+      const y = 580 + i * 115;
+      ctx.fillStyle = "#000000";
+      ctx.font = "700 40px 'Helvetica Neue', Arial, sans-serif";
+      ctx.fillText(label, cx, y);
+      ctx.fillStyle = "#1a1a1a";
+      ctx.font = "500 30px 'Helvetica Neue', Arial, sans-serif";
+      ctx.fillText(sub, cx, y + 42);
+    });
+
+    // Gold divider
+    ctx.strokeStyle = "#a08850";
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.moveTo(w * 0.12, 980);
+    ctx.lineTo(w * 0.88, 980);
+    ctx.stroke();
+
+    // ─── NOW PLAYING section ───
+    ctx.fillStyle = "#a08850";
+    ctx.font = "bold 36px 'Helvetica Neue', Arial, sans-serif";
+    ctx.fillText("\u266A  NOW PLAYING", cx, 1050);
+
+    ctx.fillStyle = "#000000";
+    ctx.font = "700 38px 'Helvetica Neue', Arial, sans-serif";
+    ctx.fillText("My Truth in Every Note", cx, 1120);
+    ctx.fillStyle = "#1a1a1a";
+    ctx.font = "500 30px 'Helvetica Neue', Arial, sans-serif";
+    ctx.fillText("Violinhop", cx, 1168);
+
+    // Play indicator triangle
+    ctx.fillStyle = "#a08850";
+    ctx.beginPath();
+    ctx.moveTo(cx - 16, 1230);
+    ctx.lineTo(cx + 22, 1258);
+    ctx.lineTo(cx - 16, 1286);
+    ctx.closePath();
+    ctx.fill();
+
+    // ─── SIGNATURE ───
+    ctx.fillStyle = "#C5A029";
+    ctx.font = "bold 28px 'Helvetica Neue', Arial, sans-serif";
+    ctx.fillText("ZAYNINFINITY", cx, 1340);
+
+    ctx.fillStyle = "#777777";
+    ctx.font = "500 16px 'Helvetica Neue', Arial, sans-serif";
+    ctx.fillText("github.com/ZAYNINFINITY", cx, 1370);
+
+    // Draw sign image if loaded
+    if (signReady && signImg) {
+      const maxW = 120;
+      const ratio = signImg.width / signImg.height;
+      const drawW = maxW;
+      const drawH = drawW / ratio;
+      ctx.drawImage(signImg, cx - drawW / 2, 1395, drawW, drawH);
+    }
+  }
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  NOTE_TEXTURE_CACHE.set("info-board", tex);
+  return tex;
+}
+
+function GlowStrip({ position }: { position: [number, number, number] }) {
+  const ref = useRef<THREE.Mesh>(null);
+  useFrame(({ clock }) => {
+    if (ref.current) {
+      const mat = ref.current.material as THREE.MeshStandardMaterial;
+      mat.emissiveIntensity = 0.8 + Math.sin(clock.getElapsedTime() * 1.2) * 0.4;
+    }
+  });
+  return (
+    <mesh ref={ref} position={position}>
+      <boxGeometry args={[BOARD_W - 0.3, 0.035, 0.01]} />
+      <meshStandardMaterial
+        color="#a08850"
+        emissive="#a08850"
+        emissiveIntensity={1.0}
+        roughness={0.3}
+        metalness={0.4}
+      />
+    </mesh>
+  );
+}
+
 function EntranceInfoBoard() {
   const approach = FOOTPRINTS.approach;
   const x = approach.minX + 0.03;
   const z = approach.minZ + 3.4;
+  const { show, togglePlay } = useAudio();
+  const hw = BOARD_W / 2;
+  const hh = BOARD_H / 2;
+  const innerW = BOARD_W - BOARD_BAR * 2;
+  const innerH = BOARD_H - BOARD_BAR * 2;
+  const gapZ = 0.015;
+  const matZ = gapZ + 0.018;
+  const contentZ = matZ + 0.008;
+  const frontZ = BOARD_DEPTH + 0.01;
+
   return (
     <group position={[x, 1.55, z]} rotation-y={Math.PI / 2}>
-      <mesh>
-        <boxGeometry args={[1.5, 2.1, 0.05]} />
-        {paperMaterial(PALETTE.paper, 0.92)}
+      {/* Backing plate */}
+      <mesh position={[0, 0, 0.01]}>
+        <boxGeometry args={[BOARD_W, BOARD_H, 0.02]} />
+        <meshStandardMaterial color="#111111" roughness={0.6} metalness={0.15} />
       </mesh>
-      <Text
-        position={[0, 0.88, 0.03]}
-        fontSize={0.12}
-        letterSpacing={0.08}
-        color={PALETTE.dim}
-        anchorX="center"
-        anchorY="top"
-      >
-        ABOUT
-      </Text>
-      <Text
-        position={[0, 0.68, 0.03]}
-        fontSize={0.072}
-        lineHeight={1.35}
-        color={PALETTE.ivory}
-        anchorX="center"
-        anchorY="top"
-        maxWidth={1.3}
-        textAlign="center"
-        overflowWrap="break-word"
-      >
-        An open museum for developer work.
-      </Text>
-      <mesh position={[0, 0.24, 0.001]}>
-        <boxGeometry args={[1.2, 0.015, 0.01]} />
-        {inkMaterial(PALETTE.gold, 0.6)}
+
+      {/* Frame bars */}
+      <mesh position={[0, hh - BOARD_BAR / 2, BOARD_DEPTH / 2 + 0.01]}>
+        <boxGeometry args={[BOARD_W, BOARD_BAR, BOARD_DEPTH]} />
+        <meshStandardMaterial color={PALETTE.frame} emissive={PALETTE.frame} emissiveIntensity={0.3} roughness={0.35} metalness={0.45} />
       </mesh>
-      <Text
-        position={[0, 0.1, 0.03]}
-        fontSize={0.12}
-        letterSpacing={0.08}
-        color={PALETTE.dim}
-        anchorX="center"
-        anchorY="top"
+      <mesh position={[0, -(hh - BOARD_BAR / 2), BOARD_DEPTH / 2 + 0.01]}>
+        <boxGeometry args={[BOARD_W, BOARD_BAR, BOARD_DEPTH]} />
+        <meshStandardMaterial color={PALETTE.frame} emissive={PALETTE.frame} emissiveIntensity={0.3} roughness={0.35} metalness={0.45} />
+      </mesh>
+      <mesh position={[hw - BOARD_BAR / 2, 0, BOARD_DEPTH / 2 + 0.01]}>
+        <boxGeometry args={[BOARD_BAR, innerH, BOARD_DEPTH]} />
+        <meshStandardMaterial color={PALETTE.frame} emissive={PALETTE.frame} emissiveIntensity={0.3} roughness={0.35} metalness={0.45} />
+      </mesh>
+      <mesh position={[-(hw - BOARD_BAR / 2), 0, BOARD_DEPTH / 2 + 0.01]}>
+        <boxGeometry args={[BOARD_BAR, innerH, BOARD_DEPTH]} />
+        <meshStandardMaterial color={PALETTE.frame} emissive={PALETTE.frame} emissiveIntensity={0.3} roughness={0.35} metalness={0.45} />
+      </mesh>
+
+      {/* Recessed dark gap */}
+      <mesh position={[0, 0, gapZ]}>
+        <planeGeometry args={[innerW, innerH]} />
+        <meshStandardMaterial color="#14141a" roughness={0.9} />
+      </mesh>
+
+      {/* Mat */}
+      <mesh position={[0, 0, matZ]}>
+        <planeGeometry args={[innerW - 0.04, innerH - 0.04]} />
+        <meshStandardMaterial color="#cfc8b8" roughness={0.85} />
+      </mesh>
+
+      {/* Content face — clickable to play music */}
+      <mesh
+        position={[0, 0, contentZ]}
+        onClick={() => { show(); togglePlay(); }}
       >
-        MENU
-      </Text>
-      {INFO_BOARD_MENU.map(([label, sub], i) => (
-        <group key={label} position={[0, -0.16 - i * 0.3, 0.03]}>
-          <Text fontSize={0.1} color={PALETTE.ivory} anchorX="center" anchorY="top">
-            {label}
-          </Text>
-          <Text position={[0, -0.14, 0]} fontSize={0.065} color={PALETTE.dim} anchorX="center" anchorY="top">
-            {sub}
-          </Text>
-        </group>
+        <planeGeometry args={[innerW - 0.1, innerH - 0.1]} />
+        <meshStandardMaterial
+          map={getInfoBoardTexture()}
+          emissiveMap={getInfoBoardTexture()}
+          emissive="#ffffff"
+          emissiveIntensity={0.18}
+          roughness={0.6}
+          metalness={0.05}
+        />
+      </mesh>
+
+      {/* Mounting screws */}
+      {[
+        [hw - 0.05, hh - 0.05],
+        [-(hw - 0.05), hh - 0.05],
+        [hw - 0.05, -(hh - 0.05)],
+        [-(hw - 0.05), -(hh - 0.05)],
+      ].map(([sx, sy], i) => (
+        <mesh key={i} position={[sx, sy, frontZ + 0.006]} rotation={[Math.PI / 2, 0, 0]}>
+          <cylinderGeometry args={[0.012, 0.012, 0.01, 8]} />
+          <meshStandardMaterial color={PALETTE.gold} metalness={0.5} roughness={0.4} />
+        </mesh>
       ))}
+
+      {/* Glow accent strip */}
+      <GlowStrip position={[0, -(hh + 0.12), contentZ]} />
+
+      {/* Soft local glow */}
+      <pointLight position={[0, 0, 0.5]} intensity={1.5} distance={4} color="#f0d8a0" />
     </group>
   );
 }
@@ -1567,6 +1795,7 @@ function ApproachExterior() {
       {/* Facade — a single plane with a real door-shaped hole cut into it
           (ApproachFacade, via ShapeGeometry), not two stretched halves. */}
       <ApproachFacade />
+      <RooflineLights />
       {/* Ceiling cap — the approach previously had zero ceiling geometry
           (every other room shares RoomBox, which does render one), so it
           opened straight into the sky-dome background right above the
@@ -2175,6 +2404,487 @@ function Bench({ position, ry = 0 }: { position: [number, number, number]; ry?: 
   );
 }
 
+// ─── Monstera plant (procedural upgrade) ─────
+// Canvas-painted monstera leaf on alpha-cutout planes fanned around curved
+// stems — reads as real foliage from a distance, not a sphere-on-a-pot.
+// The leaf texture is painted once and cached like the other canvas art.
+function getMonsteraLeafTexture(): THREE.CanvasTexture {
+  const cached = NOTE_TEXTURE_CACHE.get("monstera-leaf");
+  if (cached) return cached;
+  const s = 256;
+  const canvas = document.createElement("canvas");
+  canvas.width = s;
+  canvas.height = s;
+  const ctx = canvas.getContext("2d");
+  if (ctx) {
+    ctx.clearRect(0, 0, s, s);
+
+    // Leaf body — heart-shaped, drawn tip-up with side lobes at the base
+    const grad = ctx.createLinearGradient(0, 0, 0, s);
+    grad.addColorStop(0, "#3f6a30");
+    grad.addColorStop(0.55, "#4f7d3a");
+    grad.addColorStop(1, "#5f8f44");
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.moveTo(s / 2, 8); // tip
+    ctx.bezierCurveTo(s * 0.95, s * 0.22, s * 0.88, s * 0.72, s / 2, s * 0.96);
+    ctx.bezierCurveTo(s * 0.12, s * 0.72, s * 0.05, s * 0.22, s / 2, 8);
+    ctx.closePath();
+    ctx.fill();
+
+    // Monstera slits — wedge cutouts from the edges toward the midrib
+    ctx.globalCompositeOperation = "destination-out";
+    const slits = [
+      { y: 0.3, w: 0.34 }, { y: 0.45, w: 0.38 },
+      { y: 0.62, w: 0.34 }, { y: 0.78, w: 0.26 },
+    ];
+    for (const slit of slits) {
+      for (const dir of [-1, 1]) {
+        ctx.beginPath();
+        const cy = s * slit.y;
+        const halfW = (s * slit.w) / 2;
+        ctx.moveTo(dir < 0 ? s * 0.06 : s * 0.94, cy - s * 0.02);
+        ctx.lineTo(s / 2 + dir * s * 0.03, cy);
+        ctx.lineTo(dir < 0 ? s * 0.06 : s * 0.94, cy + s * 0.05);
+        ctx.closePath();
+        ctx.fill();
+        void halfW;
+      }
+    }
+    ctx.globalCompositeOperation = "source-over";
+
+    // Midrib + veins
+    ctx.strokeStyle = "rgba(30,50,22,0.55)";
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.moveTo(s / 2, s * 0.94);
+    ctx.lineTo(s / 2, s * 0.08);
+    ctx.stroke();
+    ctx.lineWidth = 2.5;
+    for (let i = 0; i < 5; i++) {
+      const y = s * (0.25 + i * 0.14);
+      ctx.beginPath();
+      ctx.moveTo(s / 2, y);
+      ctx.lineTo(s * 0.16, y + s * 0.07);
+      ctx.moveTo(s / 2, y);
+      ctx.lineTo(s * 0.84, y + s * 0.07);
+      ctx.stroke();
+    }
+  }
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  NOTE_TEXTURE_CACHE.set("monstera-leaf", tex);
+  return tex;
+}
+
+// Leaf fan config: [rotation around pot, outward tilt, stem height]
+const MONSTERA_LEAVES: Array<[number, number, number]> = [
+  [0.0, 0.18, 0.72],
+  [0.9, 0.42, 0.58],
+  [1.9, 0.24, 0.82],
+  [2.8, 0.55, 0.52],
+  [3.7, 0.2, 0.78],
+  [4.5, 0.48, 0.6],
+  [5.4, 0.32, 0.68],
+];
+
+function MonsteraPlant({
+  position,
+  scale = 1,
+}: {
+  position: [number, number, number];
+  scale?: number;
+}) {
+  const leafTex = getMonsteraLeafTexture();
+  return (
+    <group position={position} scale={scale}>
+      {/* Terracotta pot with rim */}
+      <mesh position={[0, 0.19, 0]}>
+        <cylinderGeometry args={[0.23, 0.17, 0.38, 18]} />
+        {inkMaterial("#8b6a4a", 0.75)}
+      </mesh>
+      <mesh position={[0, 0.39, 0]}>
+        <cylinderGeometry args={[0.26, 0.26, 0.06, 18]} />
+        {inkMaterial("#7a5c40", 0.7)}
+      </mesh>
+      {/* Soil */}
+      <mesh position={[0, 0.41, 0]}>
+        <cylinderGeometry args={[0.21, 0.21, 0.02, 18]} />
+        <meshStandardMaterial color="#2e241c" roughness={1} />
+      </mesh>
+      {/* Fanned leaves — each is its own tilted stem group */}
+      {MONSTERA_LEAVES.map(([rot, tilt, h], i) => (
+        <group key={i} rotation-y={rot}>
+          <group rotation-x={tilt}>
+            {/* Stem */}
+            <mesh position={[0, h / 2 + 0.36, 0]}>
+              <cylinderGeometry args={[0.012, 0.02, h, 6]} />
+              <meshStandardMaterial color="#4a6a35" roughness={0.9} />
+            </mesh>
+            {/* Leaf plane riding the stem tip */}
+            <mesh
+              position={[0, h + 0.5, 0]}
+              rotation-x={-0.35 - tilt}
+            >
+              <planeGeometry args={[0.4, 0.46]} />
+              <meshStandardMaterial
+                map={leafTex}
+                alphaTest={0.5}
+                side={THREE.DoubleSide}
+                roughness={0.85}
+              />
+            </mesh>
+          </group>
+        </group>
+      ))}
+    </group>
+  );
+}
+
+// ─── Snake plant (Sansevieria) ─────
+// Tall variegated blades on alpha-cutout planes — the classic modern-office
+// floor plant. One shared canvas texture, fanned blade transforms.
+function getSnakeLeafTexture(): THREE.CanvasTexture {
+  const cached = NOTE_TEXTURE_CACHE.get("snake-leaf");
+  if (cached) return cached;
+  const w = 160;
+  const h = 480;
+  const canvas = document.createElement("canvas");
+  canvas.width = w;
+  canvas.height = h;
+  const ctx = canvas.getContext("2d");
+  if (ctx) {
+    ctx.clearRect(0, 0, w, h);
+    // Blade silhouette — pointed tip, widest at mid, narrow base
+    ctx.beginPath();
+    ctx.moveTo(w / 2, 6);
+    ctx.quadraticCurveTo(w * 0.94, h * 0.35, w * 0.42, h * 0.98);
+    ctx.lineTo(w * 0.58, h * 0.98);
+    ctx.quadraticCurveTo(w * 0.06, h * 0.35, w / 2, 6);
+    ctx.closePath();
+    ctx.save();
+    ctx.clip();
+
+    // Base green + banded variegation
+    const grad = ctx.createLinearGradient(0, 0, 0, h);
+    grad.addColorStop(0, "#4a7a40");
+    grad.addColorStop(1, "#33612e");
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, w, h);
+    for (let i = 0; i < 9; i++) {
+      ctx.fillStyle = "rgba(140,180,110,0.32)";
+      ctx.fillRect(0, h * 0.08 + i * h * 0.1, w, h * 0.032);
+    }
+    // Pale margin — stroked inside the clip reads as sansevieria edging
+    ctx.strokeStyle = "#b8c47a";
+    ctx.lineWidth = 9;
+    ctx.stroke();
+
+    ctx.restore();
+  }
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  NOTE_TEXTURE_CACHE.set("snake-leaf", tex);
+  return tex;
+}
+
+const SNAKE_BLADES: Array<[number, number, number]> = [
+  [0.0, 0.06, 0.98],
+  [0.75, 0.3, 0.72],
+  [1.5, 0.14, 0.88],
+  [2.3, 0.38, 0.58],
+  [3.1, 0.1, 0.92],
+  [3.9, 0.34, 0.66],
+  [4.6, 0.16, 0.84],
+  [5.4, 0.28, 0.62],
+];
+
+function SnakePlant({
+  position,
+  scale = 1,
+}: {
+  position: [number, number, number];
+  scale?: number;
+}) {
+  const leafTex = getSnakeLeafTexture();
+  return (
+    <group position={position} scale={scale}>
+      {/* Matte black pot */}
+      <mesh position={[0, 0.17, 0]}>
+        <cylinderGeometry args={[0.19, 0.15, 0.34, 18]} />
+        <meshStandardMaterial color="#33333a" roughness={0.45} metalness={0.1} />
+      </mesh>
+      <mesh position={[0, 0.35, 0]}>
+        <cylinderGeometry args={[0.215, 0.215, 0.05, 18]} />
+        <meshStandardMaterial color="#2a2a30" roughness={0.4} metalness={0.15} />
+      </mesh>
+      {/* Soil */}
+      <mesh position={[0, 0.37, 0]}>
+        <cylinderGeometry args={[0.17, 0.17, 0.02, 18]} />
+        <meshStandardMaterial color="#2e241c" roughness={1} />
+      </mesh>
+      {SNAKE_BLADES.map(([rot, tilt, bh], i) => (
+        <group key={i} rotation-y={rot}>
+          <group rotation-x={tilt}>
+            <mesh position={[0, bh / 2 + 0.36, 0]}>
+              <planeGeometry args={[0.17, bh]} />
+              <meshStandardMaterial
+                map={leafTex}
+                alphaTest={0.5}
+                side={THREE.DoubleSide}
+                roughness={0.8}
+              />
+            </mesh>
+          </group>
+        </group>
+      ))}
+    </group>
+  );
+}
+
+// ─── Fiddle leaf fig (statement outdoor/lobby tree) ─────
+// Slender trunk with big oval leaves riding branch tips — grand enough to
+// flank the entrance without any imported model weight.
+function getFiddleLeafTexture(): THREE.CanvasTexture {
+  const cached = NOTE_TEXTURE_CACHE.get("fiddle-leaf");
+  if (cached) return cached;
+  const s = 256;
+  const canvas = document.createElement("canvas");
+  canvas.width = s;
+  canvas.height = s;
+  const ctx = canvas.getContext("2d");
+  if (ctx) {
+    ctx.clearRect(0, 0, s, s);
+    // Rounded violin-ish oval body
+    const grad = ctx.createLinearGradient(0, 0, 0, s);
+    grad.addColorStop(0, "#2f5a26");
+    grad.addColorStop(0.6, "#3d6c30");
+    grad.addColorStop(1, "#4c7c3a");
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.moveTo(s / 2, 10);
+    ctx.bezierCurveTo(s * 0.92, s * 0.25, s * 0.85, s * 0.78, s / 2, s * 0.95);
+    ctx.bezierCurveTo(s * 0.15, s * 0.78, s * 0.08, s * 0.25, s / 2, 10);
+    ctx.closePath();
+    ctx.fill();
+    // Midrib + side veins
+    ctx.strokeStyle = "rgba(22,44,18,0.55)";
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.moveTo(s / 2, s * 0.93);
+    ctx.lineTo(s / 2, s * 0.07);
+    ctx.stroke();
+    ctx.lineWidth = 2;
+    for (let i = 0; i < 6; i++) {
+      const y = s * (0.2 + i * 0.13);
+      ctx.beginPath();
+      ctx.moveTo(s / 2, y);
+      ctx.lineTo(s * 0.2, y + s * 0.06);
+      ctx.moveTo(s / 2, y);
+      ctx.lineTo(s * 0.8, y + s * 0.06);
+      ctx.stroke();
+    }
+  }
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  NOTE_TEXTURE_CACHE.set("fiddle-leaf", tex);
+  return tex;
+}
+
+// Branch fans: [rotation around trunk, outward tilt, stem length]
+const FIG_BRANCHES: Array<[number, number, number]> = [
+  [0.2, 0.5, 0.3],
+  [1.3, 0.62, 0.26],
+  [2.4, 0.48, 0.34],
+  [3.5, 0.66, 0.24],
+  [4.4, 0.52, 0.32],
+  [5.3, 0.6, 0.27],
+  [1.8, 0.72, 0.2],
+  [4.9, 0.74, 0.19],
+];
+
+function FiddleLeafFig({
+  position,
+  scale = 1,
+}: {
+  position: [number, number, number];
+  scale?: number;
+}) {
+  const leafTex = getFiddleLeafTexture();
+  const trunkTop = 1.28;
+  return (
+    <group position={position} scale={scale}>
+      {/* Pot */}
+      <mesh position={[0, 0.19, 0]}>
+        <cylinderGeometry args={[0.22, 0.16, 0.38, 18]} />
+        {inkMaterial("#8b6a4a", 0.75)}
+      </mesh>
+      <mesh position={[0, 0.39, 0]}>
+        <cylinderGeometry args={[0.25, 0.25, 0.06, 18]} />
+        {inkMaterial("#7a5c40", 0.7)}
+      </mesh>
+      <mesh position={[0, 0.41, 0]}>
+        <cylinderGeometry args={[0.2, 0.2, 0.02, 18]} />
+        <meshStandardMaterial color="#2e241c" roughness={1} />
+      </mesh>
+      {/* Trunk with a gentle lean in two segments */}
+      <mesh position={[0, 0.86, 0]} rotation-z={0.04}>
+        <cylinderGeometry args={[0.026, 0.042, 0.92, 8]} />
+        <meshStandardMaterial color="#6a5138" roughness={0.9} />
+      </mesh>
+      <mesh position={[0.035, 1.36, 0]} rotation-z={-0.09}>
+        <cylinderGeometry args={[0.018, 0.028, 0.5, 8]} />
+        <meshStandardMaterial color="#6f563c" roughness={0.9} />
+      </mesh>
+      {/* Branches with big leaves riding their tips */}
+      {FIG_BRANCHES.map(([rot, tilt, sl], i) => (
+        <group key={i} rotation-y={rot}>
+          <group position={[0.03, trunkTop - i * 0.02, 0]} rotation-x={tilt}>
+            <mesh position={[0, sl / 2, 0]}>
+              <cylinderGeometry args={[0.008, 0.014, sl, 6]} />
+              <meshStandardMaterial color="#66503a" roughness={0.9} />
+            </mesh>
+            <mesh position={[0, sl + 0.16, 0]} rotation-x={-0.4 - tilt}>
+              <planeGeometry args={[0.36, 0.42]} />
+              <meshStandardMaterial
+                map={leafTex}
+                alphaTest={0.5}
+                side={THREE.DoubleSide}
+                roughness={0.85}
+              />
+            </mesh>
+          </group>
+        </group>
+      ))}
+      {/* Crown leaf straight up from the trunk top */}
+      <mesh position={[0.05, trunkTop + 0.42, 0]} rotation-x={-0.15}>
+        <planeGeometry args={[0.38, 0.44]} />
+        <meshStandardMaterial
+          map={leafTex}
+          alphaTest={0.5}
+          side={THREE.DoubleSide}
+          roughness={0.85}
+        />
+      </mesh>
+    </group>
+  );
+}
+
+// ─── Orchid ─────
+// White ceramic pot, two arched stems, painted blossom sprites crossed as
+// X-planes so flowers read from every angle.
+function getOrchidFlowerTexture(): THREE.CanvasTexture {
+  const cached = NOTE_TEXTURE_CACHE.get("orchid-flower");
+  if (cached) return cached;
+  const s = 128;
+  const canvas = document.createElement("canvas");
+  canvas.width = s;
+  canvas.height = s;
+  const ctx = canvas.getContext("2d");
+  if (ctx) {
+    ctx.clearRect(0, 0, s, s);
+    const cx = s / 2;
+    const cy = s / 2;
+    // Five petals fanned around the centre
+    for (let i = 0; i < 5; i++) {
+      const ang = -Math.PI / 2 + (i * 2 * Math.PI) / 5;
+      const px = cx + Math.cos(ang) * s * 0.26;
+      const py = cy + Math.sin(ang) * s * 0.26;
+      const pgrad = ctx.createRadialGradient(px, py, 2, px, py, s * 0.2);
+      pgrad.addColorStop(0, "#ffffff");
+      pgrad.addColorStop(0.75, "#fbeff2");
+      pgrad.addColorStop(1, "#eecdd8");
+      ctx.fillStyle = pgrad;
+      ctx.beginPath();
+      ctx.ellipse(px, py, s * 0.17, s * 0.115, ang + Math.PI / 2, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    // Throat of the bloom
+    ctx.fillStyle = "#c2477e";
+    ctx.beginPath();
+    ctx.arc(cx, cy, s * 0.055, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "#f0c040";
+    ctx.beginPath();
+    ctx.arc(cx, cy, s * 0.024, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  NOTE_TEXTURE_CACHE.set("orchid-flower", tex);
+  return tex;
+}
+
+function OrchidPlant({
+  position,
+  scale = 1,
+}: {
+  position: [number, number, number];
+  scale?: number;
+}) {
+  const flowerTex = getOrchidFlowerTexture();
+  return (
+    <group position={position} scale={scale}>
+      {/* White ceramic pot */}
+      <mesh position={[0, 0.13, 0]}>
+        <cylinderGeometry args={[0.15, 0.11, 0.26, 20]} />
+        <meshStandardMaterial color="#ece6d8" roughness={0.35} />
+      </mesh>
+      <mesh position={[0, 0.255, 0]}>
+        <cylinderGeometry args={[0.155, 0.155, 0.02, 20]} />
+        <meshStandardMaterial color="#ddd5c2" roughness={0.4} />
+      </mesh>
+      {/* Mossy soil */}
+      <mesh position={[0, 0.262, 0]}>
+        <cylinderGeometry args={[0.13, 0.13, 0.02, 20]} />
+        <meshStandardMaterial color="#4a5238" roughness={1} />
+      </mesh>
+      {/* Two arched flower stems */}
+      {[[-0.16, 0.78], [0.14, 0.68]].map(([lean, stemH], si) => (
+        <group key={si} rotation-z={lean}>
+          {/* Stem */}
+          <mesh position={[0, stemH / 2 + 0.26, 0]}>
+            <cylinderGeometry args={[0.007, 0.01, stemH, 6]} />
+            <meshStandardMaterial color="#5a7a48" roughness={0.9} />
+          </mesh>
+          {/* Buds near the tip */}
+          <mesh position={[0, stemH + 0.28, 0]}>
+            <sphereGeometry args={[0.014, 8, 6]} />
+            <meshStandardMaterial color="#e8a8bc" roughness={0.7} />
+          </mesh>
+          {/* Blossoms descending the arch — each is two crossed sprites */}
+          {[0, 1, 2, 3].map((bi) => {
+            const by = stemH + 0.2 - bi * 0.13;
+            const bx = bi * 0.035;
+            return (
+              <group key={bi} position={[bx, by, 0]}>
+                <mesh rotation-y={si * 1.1}>
+                  <planeGeometry args={[0.11, 0.11]} />
+                  <meshStandardMaterial
+                    map={flowerTex}
+                    alphaTest={0.5}
+                    side={THREE.DoubleSide}
+                    roughness={0.7}
+                  />
+                </mesh>
+                <mesh rotation-y={(si * 1.1) + Math.PI / 2}>
+                  <planeGeometry args={[0.11, 0.11]} />
+                  <meshStandardMaterial
+                    map={flowerTex}
+                    alphaTest={0.5}
+                    side={THREE.DoubleSide}
+                    roughness={0.7}
+                  />
+                </mesh>
+              </group>
+            );
+          })}
+        </group>
+      ))}
+    </group>
+  );
+}
+
 function PottedPlant({
   position,
   scale = 1,
@@ -2215,7 +2925,7 @@ function Planter({ position, ry = 0 }: { position: [number, number, number]; ry?
         <boxGeometry args={[0.66, 0.04, 0.66]} />
         {inkMaterial(PALETTE.frame, 0.75)}
       </mesh>
-      <PottedPlant position={[0, 0.58, 0]} scale={1.3} />
+      <FiddleLeafFig position={[0, 0.58, 0]} scale={1.05} />
     </group>
   );
 }
@@ -2279,12 +2989,17 @@ function MuseumClock({
   const hourRef = useRef<THREE.Group>(null);
   const minRef = useRef<THREE.Group>(null);
   const secRef = useRef<THREE.Group>(null);
+  // Hands move at most once per second — skip Date allocation on every frame
+  // and only recompute when the displayed second actually flips over.
+  const lastSecond = useRef(-1);
 
   useFrame(() => {
     const now = new Date();
+    const s = now.getSeconds();
+    if (s === lastSecond.current) return;
+    lastSecond.current = s;
     const h = now.getHours() % 12;
     const m = now.getMinutes();
-    const s = now.getSeconds();
     if (hourRef.current) hourRef.current.rotation.z = -((h + m / 60) / 12) * Math.PI * 2;
     if (minRef.current) minRef.current.rotation.z = -((m + s / 60) / 60) * Math.PI * 2;
     if (secRef.current) secRef.current.rotation.z = -(s / 60) * Math.PI * 2;
@@ -2356,13 +3071,100 @@ function ReceptionDesk({
         <boxGeometry args={[2.32, 0.08, 0.8]} />
         {inkMaterial("#8a5a38", 0.7)}
       </mesh>
-      <mesh position={[0, 0.58, 0.365]}>
+      {/* Brass plaque backing — gives the FOYER panel a mounted, framed look */}
+      <mesh position={[0, 0.58, 0.36]}>
+        <boxGeometry args={[1.75, 0.42, 0.02]} />
+        <meshStandardMaterial color="#a08850" roughness={0.35} metalness={0.65} />
+      </mesh>
+      {/* Plaque corner rivets */}
+      {([
+        [-0.81, 0.73],
+        [0.81, 0.73],
+        [-0.81, 0.43],
+        [0.81, 0.43],
+      ] as const).map(([rx, ry2], i) => (
+        <mesh key={i} position={[rx, ry2, 0.375]} rotation-x={Math.PI / 2}>
+          <cylinderGeometry args={[0.018, 0.018, 0.015, 10]} />
+          <meshStandardMaterial color="#c8b070" roughness={0.25} metalness={0.8} />
+        </mesh>
+      ))}
+      {/* Paper face sits proud of the brass backing */}
+      <mesh position={[0, 0.58, 0.375]}>
         <boxGeometry args={[1.55, 0.26, 0.025]} />
         {paperMaterial(PALETTE.paper, 0.9)}
       </mesh>
-      <Text position={[0, 0.58, 0.385]} fontSize={0.09} color={PALETTE.ink} anchorX="center" anchorY="middle">
+      <Text position={[0, 0.58, 0.395]} fontSize={0.09} color={PALETTE.ink} anchorX="center" anchorY="middle">
         FOYER
       </Text>
+
+      {/* ─── Desk-top dressing (surface at y=0.94) ─── */}
+      {/* Potted plant — left end */}
+      <group position={[-0.92, 0.94, 0.05]}>
+        <mesh position={[0, 0.07, 0]}>
+          <cylinderGeometry args={[0.065, 0.05, 0.14, 14]} />
+          <meshStandardMaterial color="#7a4a30" roughness={0.6} metalness={0.1} />
+        </mesh>
+        <mesh position={[0, 0.21, 0]}>
+          <sphereGeometry args={[0.085, 12, 10]} />
+          <meshStandardMaterial color="#4a6a3a" roughness={0.9} />
+        </mesh>
+        <mesh position={[0.04, 0.27, 0.02]}>
+          <sphereGeometry args={[0.055, 10, 8]} />
+          <meshStandardMaterial color="#557a42" roughness={0.9} />
+        </mesh>
+        <mesh position={[-0.04, 0.26, -0.02]}>
+          <sphereGeometry args={[0.05, 10, 8]} />
+          <meshStandardMaterial color="#3f5c33" roughness={0.9} />
+        </mesh>
+      </group>
+
+      {/* Book stack — right end, casually rotated */}
+      <group position={[0.88, 0.98, -0.08]}>
+        <mesh rotation-y={0.12}>
+          <boxGeometry args={[0.34, 0.045, 0.24]} />
+          <meshStandardMaterial color="#6a3030" roughness={0.85} />
+        </mesh>
+        <mesh position={[0, 0.045, 0]} rotation-y={-0.06}>
+          <boxGeometry args={[0.31, 0.04, 0.22]} />
+          <meshStandardMaterial color="#30506a" roughness={0.85} />
+        </mesh>
+        <mesh position={[0.01, 0.085, 0]} rotation-y={0.2}>
+          <boxGeometry args={[0.28, 0.035, 0.2]} />
+          <meshStandardMaterial color="#a08850" roughness={0.8} />
+        </mesh>
+      </group>
+
+      {/* Open guestbook — centre-right */}
+      <group position={[0.35, 0.945, 0.12]} rotation-y={-0.08}>
+        <mesh>
+          <boxGeometry args={[0.3, 0.02, 0.22]} />
+          <meshStandardMaterial color="#5a3a28" roughness={0.85} />
+        </mesh>
+        <mesh position={[0, 0.013, 0]}>
+          <boxGeometry args={[0.28, 0.006, 0.2]} />
+          <meshStandardMaterial color="#f5efe0" roughness={0.95} />
+        </mesh>
+        <mesh position={[-0.06, 0.019, 0.02]} rotation-y={0.3}>
+          <boxGeometry args={[0.11, 0.006, 0.012]} />
+          <meshStandardMaterial color="#2a2a30" roughness={0.4} />
+        </mesh>
+      </group>
+
+      {/* Pen cup — beside the books */}
+      <group position={[0.62, 0.99, -0.16]}>
+        <mesh>
+          <cylinderGeometry args={[0.045, 0.04, 0.11, 12]} />
+          <meshStandardMaterial color="#3a3a42" roughness={0.4} metalness={0.5} />
+        </mesh>
+        <mesh position={[0.015, 0.09, 0]} rotation-z={0.12}>
+          <cylinderGeometry args={[0.006, 0.006, 0.14, 8]} />
+          <meshStandardMaterial color="#1a1a20" roughness={0.5} />
+        </mesh>
+        <mesh position={[-0.02, 0.085, 0.01]} rotation-z={-0.15}>
+          <cylinderGeometry args={[0.006, 0.006, 0.13, 8]} />
+          <meshStandardMaterial color="#a08850" roughness={0.4} metalness={0.6} />
+        </mesh>
+      </group>
     </group>
   );
 }
@@ -2483,6 +3285,7 @@ export type WalkableSceneProps = {
   enabled: boolean;
   lightsOn?: boolean;
   timeOfDay?: TimeOfDay;
+  activeSpeaker?: "curator" | "receptionist" | null;
 };
 
 function WalkableWorldScene({
@@ -2500,6 +3303,7 @@ function WalkableWorldScene({
   enabled,
   lightsOn = true,
   timeOfDay = "noon",
+  activeSpeaker = null,
 }: WalkableSceneProps) {
   const byId = useMemo(() => new Map(exhibits.map((e) => [e.id, e])), [exhibits]);
   const roomOrigin = { x: 0, z: (FOOTPRINTS.exhibit.minZ + FOOTPRINTS.exhibit.maxZ) / 2 };
@@ -2690,17 +3494,27 @@ function WalkableWorldScene({
         })
       )}
 
-      <CuratorFigure position={[1.8, 0, 18.4]} />
+      <CuratorFigure position={[1.0, 0, 11.5]} ry={Math.PI + 0.9} />
+      <SpeechBubble
+        visible={activeSpeaker === "curator"}
+        position={[0.8, 1.9, 11.5]}
+        pointerDirection="left"
+      />
       <ReceptionDesk position={[-1.2, 0, 18.35]} />
-      <ReceptionFemale position={[-1.2, 0, 18.85]} ry={0} />
-      <MuseumClock position={[4.97, 2.3, 18.6]} ry={-Math.PI / 2} />
+      <ReceptionFemale position={[-1.2, 0, 17.85]} ry={0} />
+      <SpeechBubble
+        visible={activeSpeaker === "receptionist"}
+        position={[-1.0, 1.7, 17.85]}
+        pointerDirection="right"
+      />
+      <MuseumClock position={[-1.7, 2.3, 13.07]} ry={0} />
 
       {/* Reception furnishing */}
       <Bench position={[3.6, 0, 15.6]} ry={-Math.PI / 2} />
-      <PottedPlant position={[4.3, 0, 14.2]} scale={1.4} />
-      <PottedPlant position={[-4.3, 0, 19.2]} scale={1.4} />
-      <PottedPlant position={[-4.3, 0, 14.5]} scale={1.3} />
-      <PottedPlant position={[4.3, 0, 17.6]} scale={1.3} />
+      <MonsteraPlant position={[4.3, 0, 14.2]} scale={1.4} />
+      <SnakePlant position={[-4.3, 0, 19.2]} scale={1.35} />
+      <OrchidPlant position={[-4.3, 0, 14.5]} scale={1.6} />
+      <SnakePlant position={[4.3, 0, 17.6]} scale={1.25} />
       {/* Wall-plank accent (OBJLoader+MTLLoader) — reuses the x=-4.3 wall
           line already proven safe by the PottedPlant above, at a different
           Z so it doesn't overlap either existing prop. */}
@@ -2743,6 +3557,7 @@ export function WalkableWorldCanvas({
   enabled,
   lightsOn = true,
   timeOfDay = "noon",
+  activeSpeaker = null,
 }: WalkableWorldCanvasProps) {
   const world = useMemo<WalkableWorld>(
     () => ({
@@ -2760,10 +3575,21 @@ export function WalkableWorldCanvas({
     [corridorLayout, roomLayout, exhibits, developers, exhibit]
   );
 
+  // Adaptive DPR: full quality.maxDpr on strong hardware, drops to 1 when the
+  // PerformanceMonitor sees sustained frame declines (typical on mobile), and
+  // climbs back when headroom returns. Pure resolution scaling — no visual
+  // feature changes.
+  const [dynamicDpr, setDynamicDpr] = useState(quality.maxDpr);
+
   return (
     <Canvas
-      dpr={[1, quality.maxDpr]}
-      gl={{ antialias: quality.maxDpr > 1, powerPreference: "high-performance", alpha: false }}
+      dpr={dynamicDpr}
+      gl={{
+        antialias: quality.maxDpr > 1,
+        powerPreference: "high-performance",
+        alpha: false,
+        stencil: false,
+      }}
       camera={{ fov: 72, near: 0.1, far: 60, position: spawn }}
       onCreated={({ gl, camera }) => {
         gl.setClearColor(PALETTE.paper, 1);
@@ -2778,6 +3604,10 @@ export function WalkableWorldCanvas({
         onReady?.();
       }}
     >
+      <PerformanceMonitor
+        onDecline={() => setDynamicDpr(1)}
+        onIncline={() => setDynamicDpr(quality.maxDpr)}
+      />
       <Suspense fallback={null}>
         <WalkableWorldScene
           world={world}
@@ -2795,6 +3625,7 @@ export function WalkableWorldCanvas({
           enabled={enabled}
           lightsOn={lightsOn}
           timeOfDay={timeOfDay}
+          activeSpeaker={activeSpeaker}
         />
       </Suspense>
     </Canvas>

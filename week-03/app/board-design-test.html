@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Board Design Test</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #0a0a12;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    -webkit-tap-highlight-color: transparent;
+    overflow: hidden;
+  }
+
+  .scene {
+    perspective: 1200px;
+    perspective-origin: 50% 50%;
+  }
+
+  .board {
+    position: relative;
+    width: 380px;
+    background: #FFFFFF;
+    border: 6px solid #111111;
+    transform-style: preserve-3d;
+    transform: rotateY(24deg) rotateX(1deg) rotateZ(-1deg);
+    will-change: transform, text-shadow;
+    box-shadow:
+      0 0 0 2px #111111,
+      0 8px 32px rgba(0,0,0,0.6),
+      0 2px 8px rgba(0,0,0,0.3);
+  }
+
+  /* Mobile adaptation */
+  @media (max-width: 480px) {
+    .board { width: 280px; }
+  }
+
+  .section {
+    padding: 28px 24px;
+    position: relative;
+    animation: fadeStagger 0.6s ease-out both;
+  }
+  .section:nth-child(1) { animation-delay: 0s; }
+  .section:nth-child(2) { animation-delay: 0.15s; }
+  .section:nth-child(3) { animation-delay: 0.3s; }
+  .section:nth-child(4) { animation-delay: 0.45s; }
+
+  @keyframes fadeStagger {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .divider {
+    height: 1px;
+    background: #E0E0E0;
+    margin: 0 24px;
+  }
+
+  .header {
+    font-size: 13px;
+    font-weight: 700;
+    color: #000000;
+    letter-spacing: 6px;
+    text-align: center;
+    text-transform: uppercase;
+  }
+
+  .body-text {
+    font-size: 14px;
+    font-weight: 400;
+    color: #333333;
+    text-align: center;
+    line-height: 1.6;
+    margin-top: 12px;
+  }
+
+  .menu-item {
+    text-align: center;
+    padding: 10px 0;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-radius: 4px;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .menu-item:hover {
+    background: rgba(197, 160, 41, 0.08);
+  }
+  .menu-item.active {
+    background: rgba(197, 160, 41, 0.12);
+    text-shadow: 0 0 12px rgba(197, 160, 41, 0.4);
+  }
+  .menu-item.active .menu-label {
+    color: #C5A029;
+  }
+
+  .menu-label {
+    font-size: 15px;
+    font-weight: 600;
+    color: #000000;
+    transition: color 0.2s ease;
+  }
+
+  .menu-sub {
+    font-size: 12px;
+    font-weight: 300;
+    color: #555555;
+    margin-top: 2px;
+  }
+
+  .now-playing {
+    text-align: center;
+  }
+
+  .now-playing .np-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #C5A029;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+  }
+
+  .now-playing .np-title {
+    font-size: 15px;
+    font-weight: 500;
+    color: #000000;
+    margin-top: 8px;
+  }
+
+  .now-playing .np-artist {
+    font-size: 12px;
+    font-weight: 300;
+    color: #555555;
+    margin-top: 2px;
+  }
+
+  .play-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #C5A029;
+    color: #111111;
+    margin-top: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(197, 160, 41, 0.3);
+  }
+  .play-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 16px rgba(197, 160, 41, 0.5);
+  }
+
+  .credit {
+    font-size: 10px;
+    color: #999999;
+    text-align: center;
+    letter-spacing: 2px;
+    margin-top: 4px;
+  }
+</style>
+</head>
+<body>
+
+<div class="scene">
+  <div class="board">
+
+    <!-- ABOUT -->
+    <div class="section">
+      <div class="header">About</div>
+      <div class="body-text">
+        Built by Zain Ul Abideen<br>
+        CS student, MERN stack developer.<br><br>
+        A space where developers exhibit<br>
+        their craft as curated collections,<br>
+        not card grids.
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- MENU -->
+    <div class="section">
+      <div class="header">Menu</div>
+      <div class="menu-item" onclick="selectMenu(this)">
+        <div class="menu-label">Reception Hall</div>
+        <div class="menu-sub">Curator & wayfinding</div>
+      </div>
+      <div class="menu-item" onclick="selectMenu(this)">
+        <div class="menu-label">Developer Corridor</div>
+        <div class="menu-sub">Meet the exhibitors</div>
+      </div>
+      <div class="menu-item" onclick="selectMenu(this)">
+        <div class="menu-label">Exhibition Rooms</div>
+        <div class="menu-sub">Explore individual work</div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- NOW PLAYING -->
+    <div class="section">
+      <div class="now-playing">
+        <div class="np-label">♪ Now Playing</div>
+        <div class="np-title">My Truth in Every Note</div>
+        <div class="np-artist">Violinhop</div>
+        <div class="play-btn" onclick="this.textContent = this.textContent === '▶' ? '❚❚' : '▶'">▶</div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- CREDIT -->
+    <div class="section">
+      <div class="credit">Created by Zain Ul Abideen</div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // Exclusive single choice — toggle one forces others off
+  function selectMenu(el) {
+    const items = document.querySelectorAll('.menu-item');
+    const wasActive = el.classList.contains('active');
+    items.forEach(i => i.classList.remove('active'));
+    if (!wasActive) el.classList.add('active');
+  }
+</script>
+
+</body>
+</html>

@@ -29,7 +29,7 @@ const GLANCE_END = -2;
 const MAX_GLANCE_YAW = 0.15;
 const GLANCE_LOOK_SMOOTHING = 0.03;
 const GLANCE_RELEASE_SMOOTHING = 0.08;
-const MAX_FOCUS_YAW = 1.05;
+const MAX_FOCUS_YAW = 1.4;
 const MAX_FOCUS_PITCH = 0.28;
 
 export type GlanceTarget = { z: number; dir: 1 | -1 };
@@ -70,6 +70,7 @@ export function WalkablePlayer({
   // dialog closed). focusBlend eases the turn both in and out.
   const focusPos = useRef<[number, number, number] | null>(null);
   const focusBlend = useRef(0);
+  const focusVelocity = useRef(0);
   const lastFocusYaw = useRef(0);
   const lastFocusPitch = useRef(0);
 
@@ -112,8 +113,14 @@ export function WalkablePlayer({
     const forwardYaw = parallaxX.current * -0.045 + glanceOffset.current;
     const forwardPitch = parallaxY.current * 0.035;
 
-    const focusLerp = 1 - Math.pow(1 - 0.14, rate);
-    focusBlend.current = THREE.MathUtils.lerp(focusBlend.current, focusPos.current ? 1 : 0, focusLerp);
+    const springK = 8;
+    const damping = 0.7;
+    const focusTarget = focusPos.current ? 1 : 0;
+    const springForce = (focusTarget - focusBlend.current) * springK;
+    focusVelocity.current += springForce * dt;
+    focusVelocity.current *= Math.pow(damping, rate);
+    focusBlend.current += focusVelocity.current * dt;
+    focusBlend.current = clamp(focusBlend.current, 0, 1);
 
     let yaw = forwardYaw;
     let pitch = forwardPitch;

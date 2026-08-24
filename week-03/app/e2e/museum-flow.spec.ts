@@ -60,7 +60,9 @@ test.describe("primary museum flow", () => {
     // ── Home (3D museum-as-homepage or flat fallback) ─────
     await page.goto("/");
     const flatEnter = page.getByRole("link", { name: "Enter the Museum" });
-    const textWalls = page.getByRole("button", { name: "Accessible view" });
+    // The 3D room's escape hatch carries a descriptive aria-label
+    // ("Open accessible text view of this room") — match on the stable part.
+    const textWalls = page.getByRole("button", { name: /accessible text view/i });
     await expect(flatEnter.or(textWalls)).toBeVisible({ timeout: 45000 });
 
     if (await flatEnter.isVisible()) {

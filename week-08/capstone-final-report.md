@@ -6,6 +6,8 @@
 **Live:** https://foyer-cyan.vercel.app
 **Repo:** https://github.com/ZAYNINFINITY/flyrank-ai-internship
 
+**Current verification (August 24, 2026):** Local typecheck, lint, tests, and production build pass. The documented Vercel URL returned HTTP 404, so production deployment must be restored or confirmed before this report is final.
+
 ---
 
 ## Executive Summary
@@ -19,7 +21,7 @@ Built during an 8-week AI-first internship at FlyRank, Foyer demonstrates how AI
 - Lighthouse scores: 98-100 across all routes
 - 3D museum with 4 distinct zones (entrance, reception, corridor, exhibit room)
 - AI curator with tool use (OpenRouter + Gemini + exhibitLookup)
-- Day/night cycle, 4 seasonal weather systems, animated cat
+- Day/night cycle and 4 seasonal weather systems
 - Full 2D fallback for accessibility and low-end devices
 
 ---

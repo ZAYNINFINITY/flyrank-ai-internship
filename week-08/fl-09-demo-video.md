@@ -2,7 +2,7 @@
 
 ## What this is
 
-A scene-by-scene script for recording a 2-3 minute demo video of Foyer. The video should show the real live app, not slides or mockups.
+A scene-by-scene script for recording a 3-5 minute demo video of Foyer. The video should show the real live app, not slides or mockups.
 
 ## Recording setup
 
@@ -10,8 +10,8 @@ A scene-by-scene script for recording a 2-3 minute demo video of Foyer. The vide
 - **Browser:** Chrome (desktop, 1920x1080)
 - **Tool:** Any screen recorder (OBS, QuickTime, Windows Game Bar `Win+G`)
 - **Flags:** `--enable-unsafe-swiftshader --use-angle=swiftshader-webgl` if no GPU available
-- **Duration target:** 2-3 minutes
-- **Auto-recorded demo:** `week-08/demo-video.mp4` (35 seconds, 9 routes, 597KB)
+- **Duration target:** 3-5 minutes
+- **Existing auto-recorded demo:** `week-08/demo-video.mp4` (35 seconds, 9 routes, 597KB) — evidence exists, but it does not meet the assignment duration requirement.
 
 ## Scene script
 
@@ -94,7 +94,7 @@ A scene-by-scene script for recording a 2-3 minute demo video of Foyer. The vide
 
 ## Post-recording checklist
 
-- [ ] Video is under 3 minutes
+- [ ] Video is 3-5 minutes
 - [ ] All 5 key routes shown: `/`, corridor, exhibit, AI chat, accessible view
 - [ ] Audio is clear (or text overlays are readable)
 - [ ] No console errors visible in the recording

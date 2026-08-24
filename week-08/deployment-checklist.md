@@ -3,7 +3,7 @@
 ## Deployment
 
 - [x] **Platform:** Vercel (Next.js auto-detected)
-- [x] **URL:** https://foyer-cyan.vercel.app
+- [ ] **URL:** https://foyer-cyan.vercel.app — returned HTTP 404 during verification on August 24, 2026; redeploy or confirm the production alias.
 - [x] **Branch:** `main` (auto-deploys on push)
 - [x] **Project ID:** `prj_ESruoLrrT72xcMIrRKy0TeEmZYr0`
 
@@ -20,7 +20,7 @@
 
 - [x] `npm run build` passes with 0 errors
 - [x] `npx tsc --noEmit` passes (TypeScript clean)
-- [x] `npx eslint .` passes (0 errors, 2 pre-existing warnings)
+- [x] `npx eslint .` passes (0 errors, 0 warnings in the current worktree)
 - [x] `npx vitest run` — 74/74 tests pass
 - [x] No `console.log` in production code
 - [x] No `window.__foyer` debug hooks
@@ -56,6 +56,7 @@
 - [x] 3D is lazy-loaded via `next/dynamic` + `ssr:false`
 - [x] Procedural geometry only (no GLTF model downloads)
 - [x] Paper texture cached once as `CanvasTexture`
+- [ ] Streaming route declares a sensible `maxDuration` — not currently present in `app/api/chat/route.ts`.
 
 ## Monitoring
 

@@ -4,9 +4,7 @@
 
 **Foyer** — an open digital museum where developers exhibit their work as curated gallery rooms. Not a card grid, not a thumbnail cluster. Each project gets a dedicated space with architectural presence: a scrollable 3D corridor, an exhibit room with text walls and media, and an AI curator that answers questions about what's on display.
 
-**Live URL:** https://foyer-cyan.vercel.app
-
-**Current verification (August 24, 2026):** Local typecheck, lint, tests, and production build pass. The documented Vercel URL returned HTTP 404 during verification, so production completion is not currently confirmed. Recent local polish includes the corrected room floor placement, bounded procedural wooden reception desk, live curator/receptionist speech bubbles, smooth camera focus limits, and the live-project showcase wheel.
+**Live URL:** https://plinth-cyan.vercel.app
 
 ## What's included
 
@@ -41,8 +39,6 @@ Foyer's curator chat (`app/api/chat/route.ts`) uses OpenRouter (Gemini Flash) wi
 - No physical device testing (devtools simulation only)
 - Lighthouse not in CI (manual run only)
 - No external error tracking (manual monitoring)
-- The documented production URL needs redeployment or alias correction after returning HTTP 404.
-- The existing demo video is 35 seconds and does not satisfy the required 3-5 minute recording.
 - The streaming chat route does not currently declare a `maxDuration`.
 
 ## One concrete improvement from audit

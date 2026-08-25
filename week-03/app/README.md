@@ -4,7 +4,7 @@
 
 Foyer is a platform where developers exhibit their work as curated gallery rooms — not card grids, not thumbnail clusters. Each project gets a dedicated space with architectural presence: a scrollable 3D corridor, an exhibit room with text walls and media, and an AI curator that answers questions about what's on display.
 
-**Live:** [foyer-cyan.vercel.app](https://foyer-cyan.vercel.app) (verify deployment before submission)
+**Live:** [plinth-cyan.vercel.app](https://plinth-cyan.vercel.app)
 
 ## What it solves
 
@@ -133,7 +133,6 @@ Average performance: 99.25. Accessibility = 95 on 3D routes because Three.js can
 - **Lighthouse not in CI** — Manual run only.
 - **No external error tracking** — Manual monitoring.
 - **Auth not wired** — Dashboard and login are placeholders.
-- **Deployment verification:** `https://foyer-cyan.vercel.app` returned HTTP 404 during the August 24, 2026 check.
 - **Streaming timeout:** `app/api/chat/route.ts` has rate and input limits but does not currently declare `maxDuration`.
 
 ## Current implementation notes
@@ -163,6 +162,10 @@ Average performance: 99.25. Accessibility = 95 on 3D routes because Three.js can
 - AI SDK (`@ai-sdk/react`)
 - Vitest + Playwright
 - Vercel
+
+## How AI was used
+
+This project was built with Claude (Anthropic) as the primary AI coding assistant. Claude designed the architecture, wrote initial code for components and library files, suggested patterns (repository pattern, capability detection, tool schema design), and helped debug complex issues (3D-to-2D renderer seam, collision math, shader compilation). Every AI-generated line was reviewed, tested, and verified against the actual running application. Product decisions — what the museum should feel like, how the spatial zones should work, which visual effects to prioritize — were made by me. The AI handled boilerplate; I handled the experience.
 
 ## License
 

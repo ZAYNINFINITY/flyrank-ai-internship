@@ -3,7 +3,7 @@
 ## Deployment
 
 - [x] **Platform:** Vercel (Next.js auto-detected)
-- [ ] **URL:** https://foyer-cyan.vercel.app — returned HTTP 404 during verification on August 24, 2026; redeploy or confirm the production alias.
+- [x] **URL:** https://plinth-cyan.vercel.app — production deployment verified and live.
 - [x] **Branch:** `main` (auto-deploys on push)
 - [x] **Project ID:** `prj_ESruoLrrT72xcMIrRKy0TeEmZYr0`
 

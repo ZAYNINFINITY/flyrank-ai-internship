@@ -127,16 +127,6 @@ Built over 8 weeks during an AI-first internship at FlyRank, Foyer demonstrates 
 | Deployment checklist | ✅ `week-08/deployment-checklist.md` |
 | Reflection | ✅ `week-08/reflection.md` |
 
-### 3.6 Capstone — Send the Link (General AI Fluency)
-
-| Requirement | Status |
-|-------------|--------|
-| How to add next case study | ✅ `week-08/plan-to-keep-building.md` |
-| Named next piece of work | ✅ "Real data" phase |
-| Build-in-public post | ✅ `week-08/build-in-public-post.md` |
-| Live site on FlyRank domain | ✅ `plinth-cyan.vercel.app` |
-| Submission package index | ✅ `week-08/capstone-final-report.md` (this document) |
-
 ---
 
 ## 4. Technical Architecture

@@ -2,13 +2,13 @@
 
 **An open digital museum for developers.**
 
-Plinth is a platform where developers exhibit their work as curated gallery rooms — not card grids, not thumbnail clusters. Each project gets a dedicated space with architectural presence: a scrollable 3D corridor, an exhibit room with text walls and media, and an AI curator that answers questions about what's on display.
+Foyer is a platform where developers exhibit their work as curated gallery rooms — not card grids, not thumbnail clusters. Each project gets a dedicated space with architectural presence: a scrollable 3D corridor, an exhibit room with text walls and media, and an AI curator that answers questions about what's on display.
 
 **Live:** [foyer-cyan.vercel.app](https://foyer-cyan.vercel.app) (verify deployment before submission)
 
 ## What it solves
 
-Developer portfolios are all the same. Plinth gives projects the presentation they deserve — rooms, not cards. Visitors walk through a museum instead of scrolling a grid.
+Developer portfolios are all the same. Foyer gives projects the presentation they deserve — rooms, not cards. Visitors walk through a museum instead of scrolling a grid.
 
 ## Who it's for
 
@@ -68,7 +68,7 @@ lib/
 
 ## AI integration
 
-Plinth's curator chat (`app/api/chat/route.ts`) uses **OpenRouter** (Gemini Flash) with a custom `exhibitLookup` tool:
+Foyer's curator chat (`app/api/chat/route.ts`) uses **OpenRouter** (Gemini Flash) with a custom `exhibitLookup` tool:
 
 ```typescript
 exhibitLookup: { id?: string, collection?: string, query?: string }

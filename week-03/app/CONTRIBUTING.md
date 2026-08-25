@@ -1,6 +1,6 @@
-# Contributing to Plinth
+# Contributing to Foyer
 
-Thanks for thinking about contributing. Plinth is in early development (Week 3 of a public build), so the best way to contribute right now is:
+Thanks for thinking about contributing. Foyer is in early development (Week 3 of a public build), so the best way to contribute right now is:
 
 ## Getting started
 

@@ -33,7 +33,7 @@ Built over 8 weeks during an AI-first internship at FlyRank, Foyer demonstrates 
 
 ### Live Application Demo
 
-![Foyer — Full Walkthrough Demo](../screenshots/demo-walkthrough.gif)
+![Foyer — Full Walkthrough Demo](demo-walkthrough.gif)
 
 *14-step walkthrough: Homepage → Entrance → Corridor → Exhibits → Explore → About → AI Assistant → Dashboard → All Routes*
 
@@ -530,7 +530,7 @@ This internship used an ITOMDEV-style AI-first workflow:
 | 11 | Demo Video Script | `week-08/fl-09-demo-video.md` | ✅ |
 | 12 | Build-in-Public Post | `week-08/build-in-public-post.md` | ✅ |
 | 13 | Demo Walkthrough GIF | `week-08/demo-walkthrough.gif` | ✅ |
-| 14 | Demo Video | `week-08/demo-video-v2.mp4` | ⬜ Recording |
+| 14 | Demo Video | `week-08/demo-video-final.mp4` (5m28s, intro + overlays + outro) | ✅ |
 
 ### 12.2 Screenshots Inventory
 

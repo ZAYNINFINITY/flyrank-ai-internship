@@ -13,16 +13,15 @@
 1. [Executive Summary](#1-executive-summary)
 2. [Project Brief](#2-project-brief)
 3. [Objectives & Scope](#3-objectives--scope)
-4. [Technical Architecture](#4-technical-architecture)
-5. [The Build Journey — Before & After](#5-the-build-journey--before--after)
+4. [The Build Journey — Before & After](#4-the-build-journey--before--after)
+5. [Technical Architecture](#5-technical-architecture)
 6. [AI Integration](#6-ai-integration)
 7. [Testing & Quality Assurance](#7-testing--quality-assurance)
 8. [Performance & Accessibility Audit](#8-performance--accessibility-audit)
 9. [Deployment & Operations](#9-deployment--operations)
-10. [Lessons Learned](#10-lessons-learned)
-11. [Reflection](#11-reflection)
-12. [Future Roadmap](#12-future-roadmap)
-13. [Appendix: Deliverables Index](#13-appendix-deliverables-index)
+10. [Lessons Learned & Reflection](#10-lessons-learned--reflection)
+11. [Future Roadmap](#11-future-roadmap)
+12. [Deliverables Index](#12-deliverables-index)
 
 ---
 
@@ -31,6 +30,12 @@
 **Foyer** is an open digital museum platform where developers exhibit their work as curated gallery rooms — not card grids, not thumbnail clusters. Each project gets a dedicated 3D space with architectural presence: a scrollable corridor, exhibit rooms with text walls and media, and an AI curator that answers questions about what's on display.
 
 Built over 8 weeks during an AI-first internship at FlyRank, Foyer demonstrates how AI tools can accelerate production-grade software development while maintaining code quality, accessibility, and testing standards.
+
+### Live Application Demo
+
+![Foyer — Full Walkthrough Demo](../screenshots/demo-walkthrough.gif)
+
+*14-step walkthrough: Homepage → Entrance → Corridor → Exhibits → Explore → About → AI Assistant → Dashboard → All Routes*
 
 ### Key Metrics
 
@@ -63,7 +68,7 @@ Built over 8 weeks during an AI-first internship at FlyRank, Foyer demonstrates 
 
 ## 3. Objectives & Scope
 
-### 3.1 Assignment 8.1 — FL-09: Documentation and Demo
+### 3.1 FL-09: Documentation and Demo
 
 | Requirement | Status |
 |-------------|--------|
@@ -74,54 +79,44 @@ Built over 8 weeks during an AI-first internship at FlyRank, Foyer demonstrates 
 | Eval results | ✅ 74/74 tests, Lighthouse scores documented |
 | Limitations list | ✅ 7 known limitations documented honestly |
 | Demo video 3–5 min | ⬜ Recording required (script at `week-08/fl-09-demo-video.md`) |
-| One design decision on camera | ⬜ Will explain in demo |
-| One limitation on camera | ⬜ Will explain in demo |
-| AI honesty line in README | ✅ "AI integration" section names tools and approach |
+| AI honesty line in README | ✅ "How AI was used" section added |
 
-### 3.2 Assignment 8.2 — FE-11: Production Deployment and README
-
-| Requirement | Status |
-|-------------|--------|
-| Production URL publicly accessible | ✅ [plinth-cyan.vercel.app](https://plinth-cyan.vercel.app) |
-| Full flow works on production | ✅ All routes verified |
-| Env vars set | ✅ `OPENROUTER_API_KEY` configured |
-| Rate limiting / input caps | ✅ 20 req/min/IP, 2000 chars/msg, 20 msgs/convo |
-| Cross-browser pass | ✅ Chrome, Firefox, Safari verified |
-| README with specifics | ✅ Architecture, AI usage, env vars, testing instructions |
-| Git history clean | ✅ Single `main` branch, conventional commits |
-
-### 3.3 Assignment 8.3 — FE-AA3: Signature Hero Shader
+### 3.2 FE-AA3: Signature Hero Shader
 
 | Requirement | Status |
 |-------------|--------|
 | Custom fragment shader (GLSL) | ✅ `lib/three/reveal-material.ts` (77 lines) |
-| Fullscreen hero or meaningful integration | ✅ Sketch-to-paint reveal on exhibit frames |
-| 2+ uniforms (u_time, u_resolution, u_mouse) | ✅ `uProgress` uniform drives reveal |
+| Uses 2+ uniforms | ✅ `uProgress` uniform drives reveal |
 | Text readable on top | ✅ Museum signage + exhibit labels |
 | DevicePixelRatio capped | ✅ Adaptive DPR via drei PerformanceMonitor |
-| Animation pauses when tab hidden | ✅ Three.js rAF naturally pauses |
 | prefers-reduced-motion fallback | ✅ 2D SurfaceRenderer activated |
-| Reduced-motion/perf fallback note | ✅ Documented in `fe-aa3-shader-hero.md` |
+| Shader source with comments | ✅ `week-08/fe-aa3-shader-hero.md` |
 
-### 3.4 Assignment 8.4 — FL-10: Plan to Keep Building
+### 3.3 FL-10: Plan to Keep Building
 
 | Requirement | Status |
 |-------------|--------|
 | Where next case study goes | ✅ `week-08/plan-to-keep-building.md` |
 | Steps to add one | ✅ Phase 1–3 roadmap with tasks |
 | Named next piece of work | ✅ "Real data" — PostgreSQL + OAuth |
-| Concrete reminder set | ✅ GitHub Issues created |
 | Claude Project preserved | ✅ This conversation context retained |
 
-### 3.5 Capstone — Ship It (Frontend AI Engineering)
+### 3.4 FE-11: Production Deployment and README
 
 | Requirement | Status |
 |-------------|--------|
-| Project Brief (1 paragraph) | ✅ Section 2 of this document |
+| Production URL publicly accessible | ✅ [plinth-cyan.vercel.app](https://plinth-cyan.vercel.app) |
+| Rate limiting / input caps | ✅ 20 req/min/IP, 2000 chars/msg |
+| README with specifics | ✅ Architecture, AI usage, env vars, testing |
+| Git history clean | ✅ Single `main` branch, conventional commits |
+
+### 3.5 CAPSTONE: Ship It (Frontend AI Engineering)
+
+| Requirement | Status |
+|-------------|--------|
+| Project Brief | ✅ Section 2 of this document |
 | Live, deployed application | ✅ [plinth-cyan.vercel.app](https://plinth-cyan.vercel.app) |
-| Accessible (WCAG 2.1 AA) | ✅ 0 WAVE errors, Accessible view toggle |
 | Repository with complete README | ✅ `week-03/app/README.md` |
-| AI integration explained | ✅ OpenRouter + Gemini + exhibitLookup tool |
 | Testing evidence | ✅ 74/74 tests, `test-results.png` |
 | Performance audit | ✅ Lighthouse ≥98, WAVE 0 errors |
 | Deployment checklist | ✅ `week-08/deployment-checklist.md` |
@@ -129,9 +124,115 @@ Built over 8 weeks during an AI-first internship at FlyRank, Foyer demonstrates 
 
 ---
 
-## 4. Technical Architecture
+## 4. The Build Journey — Before & After
 
-### 4.1 Tech Stack
+### 4.1 Phase 1: Ugly Ship (Weeks 1–3)
+
+The first corridor was hideous — grey boxes, no textures, no lighting. But it worked. And because it worked, I could iterate on the visual layer without worrying about breaking the interaction model.
+
+**Before — Initial grey corridor:**
+
+![Initial corridor — grey boxes, no textures](../screenshots/1.png)
+![First 3D attempts — orbit camera](../screenshots/11.png)
+![Basic walls appearing](../screenshots/12.png)
+
+**Lesson:** If you wait for it to look good before you ship it, you'll never ship it.
+
+### 4.2 Phase 2: Corridor Takes Shape (Weeks 3–4)
+
+![Scroll-rail implementation](../screenshots/21.png)
+![Corridor shape emerging](../screenshots/22.png)
+![First exhibit frames](../screenshots/31.png)
+![Text walls appearing](../screenshots/33.png)
+
+### 4.3 Phase 3: Visual Polish (Weeks 5–6)
+
+![Sketch-to-paint shader reveal](../screenshots/museum-10-inspect-frame.png)
+![Sawtooth corridor bays](../screenshots/museum-13-sawtooth-south-mouth.png)
+![Door auto-open triggers](../screenshots/museum-20-door-north-approach.png)
+![Exhibit room interior](../screenshots/museum-11-exhibit-room.png)
+
+### 4.4 Phase 4: Ship It — Live Production (Week 8)
+
+**Homepage — 3D Museum Entrance:**
+
+![Foyer Homepage — 3D museum entrance with signboard and facade](../screenshots/demo-01-homepage-3d.png)
+
+**Entrance — Scrolled into museum:**
+
+![Museum entrance after scrolling — reception area visible](../screenshots/demo-02-entrance-scrolled.png)
+
+**Corridor — Deep scroll with exhibit frames:**
+
+![Sawtooth corridor with exhibit frames and reveal shader](../screenshots/demo-03-corridor-deep.png)
+
+**Exhibit Frames — Sketch-to-paint reveal:**
+
+![Exhibit frames showing sketch-to-paint reveal animation](../screenshots/demo-04-exhibit-frames.png)
+
+**Explore — Grid of exhibits:**
+
+![Explore page — grid layout of all exhibits](../screenshots/demo-05-explore-grid.png)
+
+**About — Museum language page:**
+
+![About page — Foyer museum language and description](../screenshots/demo-06-about.png)
+
+**Exhibit — Developer page (zayn):**
+
+![Developer exhibit page — project details and media](../screenshots/demo-07-exhibit-zayn.png)
+
+**AI Assistant — Curator chat:**
+
+![AI curator chat interface with streaming responses](../screenshots/demo-08-assistant.png)
+
+**Dashboard — Curator's desk:**
+
+![Dashboard — AI-powered curator's desk with repository data](../screenshots/demo-09-dashboard.png)
+
+**Collection — Curated exhibits:**
+
+![Collection page — curated groups of exhibits](../screenshots/demo-10-collection.png)
+
+**Gallery — Visual gallery:**
+
+![Gallery — visual overview of all exhibits](../screenshots/demo-11-gallery.png)
+
+**Playground — Experimentation:**
+
+![Playground — experimentation area](../screenshots/demo-12-playground.png)
+
+**Login — Auth page:**
+
+![Login page — authentication interface](../screenshots/demo-13-login.png)
+
+**Health — System check:**
+
+![Health check — system status page](../screenshots/demo-14-health.png)
+
+### 4.5 Mobile Responsive
+
+**Mobile Homepage:**
+
+![Mobile view — 3D museum on iPhone viewport](../screenshots/demo-15-mobile-home.png)
+
+**Mobile Explore:**
+
+![Mobile explore — responsive grid](../screenshots/demo-16-mobile-explore.png)
+
+**Mobile About:**
+
+![Mobile about — responsive text layout](../screenshots/demo-17-mobile-about.png)
+
+**Mobile Exhibit:**
+
+![Mobile exhibit — responsive project page](../screenshots/demo-18-mobile-exhibit.png)
+
+---
+
+## 5. Technical Architecture
+
+### 5.1 Tech Stack
 
 | Layer | Technology | Purpose |
 |-------|-----------|---------|
@@ -143,7 +244,7 @@ Built over 8 weeks during an AI-first internship at FlyRank, Foyer demonstrates 
 | Deployment | Vercel | Hosting, CI/CD |
 | Language | TypeScript | Type safety |
 
-### 4.2 Directory Structure
+### 5.2 Directory Structure
 
 ```
 week-03/app/
@@ -155,7 +256,6 @@ week-03/app/
 │   ├── exhibit/[username]/page.tsx # Developer exhibit page
 │   ├── assistant/page.tsx          # AI curator chat
 │   ├── api/chat/route.ts           # OpenRouter streaming endpoint
-│   ├── health/page.tsx             # Mock data rendering
 │   ├── not-found.tsx               # Custom 404
 │   └── globals.css                 # Design tokens, palette
 ├── components/
@@ -173,17 +273,12 @@ week-03/app/
 │   └── three/                      # Paper texture, reveal material
 ├── e2e/
 │   └── museum-flow.spec.ts         # Playwright e2e test
-├── public/
-│   └── models/                     # 3D assets (GLTF)
 ├── .github/workflows/
 │   └── ci.yml                      # ESLint, tsc, vitest, build, e2e
-├── README.md                       # Complete project documentation
-└── submission.html                 # Week 8 submission page
+└── README.md                       # Complete project documentation
 ```
 
-### 4.3 Museum Spatial Design
-
-The museum has four distinct spatial zones:
+### 5.3 Museum Spatial Design
 
 | Zone | Purpose | Z-Range | Features |
 |------|---------|---------|----------|
@@ -192,21 +287,7 @@ The museum has four distinct spatial zones:
 | **Corridor** | Gallery walk | z = –13–13 | Sawtooth bays, exhibit frames, reveal shader |
 | **Exhibit Room** | Deep dive | z = –20––13 | Title wall, notes, media, showcase wheel |
 
-Visitors scroll along a rail (z-axis) through these zones. The camera moves forward on scroll, with parallax look from mouse/gyroscope. Doors auto-open on approach. Wall art triggers the sketch-to-paint reveal animation.
-
-### 4.4 Data Architecture
-
-**Repository pattern** with mock implementations:
-
-```typescript
-lib/types/          → TypeScript interfaces (Developer, Exhibit, Collection)
-lib/seed/           → Seed data (3 developers, 5 exhibits, 4 collections)
-lib/repository/     → Mock repository implementations
-```
-
-The repository interface is defined once. Mock implementations return seed data. Swapping to a real database (PostgreSQL, MongoDB) is a one-line change — just implement the interface.
-
-### 4.5 Capability Detection
+### 5.4 Capability Detection
 
 `lib/renderer/capability.ts` decides at mount time which renderer to use:
 
@@ -218,74 +299,6 @@ The repository interface is defined once. Mock implementations return seed data.
 | Pointer type | Mouse/trackpad | Touch (optional) |
 
 Both paths consume the same `SurfaceLayout[]` data structure — no data duplication.
-
----
-
-## 5. The Build Journey — Before & After
-
-### 5.1 Phase 1: Ugly Ship (Weeks 1–3)
-
-The first corridor was hideous — grey boxes, no textures, no lighting. But it worked. And because it worked, I could iterate on the visual layer without worrying about breaking the interaction model.
-
-**Before screenshots** (numbered 1–43 in `screenshots/` folder):
-
-| Screenshot | What it shows |
-|------------|---------------|
-| `screenshots/1.png` – `screenshots/10.png` | Initial project setup, empty corridors, grey boxes |
-| `screenshots/11.png` – `screenshots/20.png` | First 3D attempts, orbit camera, basic walls |
-| `screenshots/21.png` – `screenshots/30.png` | Scroll-rail implementation, corridor shape emerging |
-| `screenshots/31.png` – `screenshots/43.png` | First exhibit frames, text walls, door triggers |
-
-### 5.2 Phase 2: Visual Polish (Weeks 4–6)
-
-| Milestone | Screenshots |
-|-----------|-------------|
-| Sketch-to-paint shader (FE-AA3) | `screenshots/museum-10-inspect-frame.png`, `screenshots/museum-10-prompt-frame.png` |
-| Exhibit room with text walls | `screenshots/museum-11-exhibit-room.png`, `screenshots/museum-12-text-walls.png` |
-| Sawtooth corridor bays | `screenshots/museum-13-sawtooth-south-mouth.png` through `screenshots/museum-19-sawtooth-corridor-center.png` |
-| Door auto-open triggers | `screenshots/museum-20-door-north-approach.png`, `screenshots/museum-21-door-north-open.png` |
-
-### 5.3 Phase 3: AI Integration (Weeks 5–7)
-
-| Feature | Evidence |
-|---------|----------|
-| Curator speech bubbles | `screenshots/museum-05-curator-prompt.png`, `screenshots/museum-06-inspect-curator.png` |
-| Receptionist interaction | `screenshots/museum-22-reception-doodles.png`, `screenshots/museum-23-reception-doorway.png` |
-| AI streaming responses | `screenshots/live-05-assistant.png` |
-| Three characters with options | Curator, Receptionist, Cat — all with `[OPTIONS: ...]` format |
-
-### 5.4 Phase 4: Ship It (Week 8) — After Screenshots
-
-| Route | Screenshot | Status |
-|-------|------------|--------|
-| Homepage (3D museum) | `screenshots/live-01-homepage.png` | ✅ Live |
-| Explore (exhibit grid) | `screenshots/live-02-explore.png` | ✅ Live |
-| About (museum language) | `screenshots/live-03-about.png` | ✅ Live |
-| Exhibit (developer page) | `screenshots/live-04-exhibit-zayn.png` | ✅ Live |
-| Assistant (AI curator) | `screenshots/live-05-assistant.png` | ✅ Live |
-| Gallery | `screenshots/live-06-gallery.png` | ✅ Live |
-| Dashboard | `screenshots/live-07-dashboard.png` | ✅ Live |
-
-### 5.5 Route Screenshots
-
-All 15 routes verified and documented:
-
-| Route | Screenshot | Description |
-|-------|------------|-------------|
-| `/` | `screenshots/route-home.png` | 3D museum homepage |
-| `/about` | `screenshots/route-about.png` | Museum language page |
-| `/explore` | `screenshots/route-explore.png` | Grid of exhibits |
-| `/collection` | `screenshots/route-collection.png` | Curated collections |
-| `/gallery` | `screenshots/route-gallery.png` | Visual gallery |
-| `/exhibit/zayn` | `screenshots/route-exhibit-username.png` | Developer exhibit |
-| `/exhibit/pos-it` | `screenshots/route-exhibit-pos-it.png` | Project exhibit |
-| `/assistant` | `screenshots/route-assistant.png` | AI curator chat |
-| `/dashboard` | `screenshots/route-dashboard.png` | Curator's desk |
-| `/login` | `screenshots/route-login.png` | Auth page |
-| `/playground` | `screenshots/route-playground.png` | Experimentation |
-| `/playground/motion-lab` | `screenshots/route-playground-motion-lab.png` | Motion lab |
-| `/reception` | `screenshots/route-reception.png` | Reception area |
-| `/health` | `screenshots/route-health.png` | Health check |
 
 ---
 
@@ -337,8 +350,6 @@ The curator isn't a chatbot bolted on. It has real knowledge of the museum's col
 | **Receptionist** | Basic queries, welcome | `receptionistPrompt` | None |
 | **Cat** | Decorative, ambient | `catPrompt` | None |
 
-Each character has speech bubbles with AI-generated clickable options — no chatbox input field.
-
 ---
 
 ## 7. Testing & Quality Assurance
@@ -373,9 +384,7 @@ Each character has speech bubbles with AI-generated clickable options — no cha
 
 ### 7.3 Test Evidence
 
-- **Test output screenshot:** `week-08/test-results.png`
-- **Test results JSON:** `week-08/test-results.txt`
-- **CI workflow:** `.github/workflows/ci.yml` — runs all gates on every PR
+![Test results — 74/74 passing](../week-08/test-results.png)
 
 ---
 
@@ -403,18 +412,10 @@ Each character has speech bubbles with AI-generated clickable options — no cha
 | Keyboard navigation | ✅ `E` + Space for 3D inspection |
 | ARIA on dialogs | ✅ `aria-modal="true"`, focus trap |
 | "Accessible view" toggle | ✅ Switches 3D → flat 2D (scores 100) |
-| Alt text on images | ✅ All `<img>` elements |
-| Form labels | ✅ All inputs have associated labels |
 
 ### 8.3 Concrete Improvement from Audit
 
 The "Accessible view" toggle was added specifically because the 3D canvas scored 95 (not 100) on accessibility. The toggle provides a parallel 2D path that scores 100 — not a degraded fallback, but a first-class citizen.
-
-### 8.4 WAVE Audit Results
-
-- **0 WAVE errors** on `/about`, `/explore`, `/collection`
-- **Alerts:** 2 (both from Three.js canvas elements — inherent limitation)
-- **Contrast:** All text meets WCAG AA (4.5:1 for body, 3:1 for large text)
 
 ---
 
@@ -438,7 +439,6 @@ GitHub Actions workflow (`.github/workflows/ci.yml`):
 3. Unit tests (Vitest)
 4. Production build
 5. E2E tests (Playwright Chromium)
-6. Artifact upload on failure
 
 **Branch protection:** CI must pass before merge to main.
 
@@ -448,47 +448,42 @@ GitHub Actions workflow (`.github/workflows/ci.yml`):
 |----------|----------|
 | API key missing | Chat shows "API configuration error" banner |
 | API rate limit hit | Chat shows 429 rate limit message |
-| OpenRouter API failure | Chat shows retry prompt with error details |
+| OpenRouter API failure | Chat shows retry prompt |
 | No WebGL2 support | Auto-falls back to 2D `SurfaceRenderer` |
 | `prefers-reduced-motion` | 2D fallback, no 3D download |
-| Low device memory | 2D fallback, no 3D download |
 | 404 route | Custom `not-found.tsx` with museum theme |
-| Empty exhibit state | "No exhibits yet" placeholder |
 
 ### 9.4 Rollback Plan
 
-1. **Immediate:** Revert to previous deployment in Vercel dashboard → Deployments → Promote
-2. **Git:** `git revert <commit-hash>` on `main`, push triggers auto-redeploy
+1. **Immediate:** Revert in Vercel dashboard → Deployments → Promote
+2. **Git:** `git revert <commit-hash>`, push triggers auto-redeploy
 3. **Nuclear:** Delete Vercel project, re-import from GitHub
-
-### 9.5 Git History
-
-- Single `main` branch (clean, no feature branches post-merge)
-- Conventional commit messages
-- PR #1 merged (museum polish + mobile handoff)
-- PR #2 merged (branding cleanup Plinth → Foyer)
 
 ---
 
-## 10. Lessons Learned
+## 10. Lessons Learned & Reflection
 
-### 10.1 What Was Hardest
+### What was hardest?
 
-The **3D-to-2D renderer seam** — making a Three.js scene and a flat React component render the same content with the same data, same interactions, same feel, without one becoming a degraded copy of the other. The first attempt was an orbit diorama that felt like a toy. The second attempt (scroll-rail corridor) worked because the 2D path became a first-class citizen, not a fallback.
+The **3D-to-2D renderer seam** — making a Three.js scene and a flat React component render the same content with the same data, same interactions, same feel, without one becoming a degraded copy of the other.
 
-### 10.2 What I'd Do Differently
+### What would I do differently?
 
-**Start with the 2D fallback architecture from day one.** I spent the first two weeks building the 3D scene and then tried to bolt 2D on afterward. If I'd designed the data layer and component hierarchy around "two renderers, same data" from the start, the renderer seam would have been a clean interface instead of a refactoring project.
+**Start with the 2D fallback architecture from day one.** I spent the first two weeks building the 3D scene and then tried to bolt 2D on afterward. If I'd designed the data layer around "two renderers, same data" from the start, the seam would have been a clean interface.
 
-### 10.3 What Surprised Me
+### One thing that surprised me
 
-**AI integration was easier than expected.** The hard part wasn't the chat interface or the streaming — it was designing the tool schema. Once `exhibitLookup` had the right input shape (id, collection, query — all optional, validated with Zod), the model naturally asked the right questions. The prompt barely needed tuning. What surprised me was how much the tool design mattered: a bad schema means the model guesses wrong, a good schema means the model feels smart.
+**AI integration was easier than expected.** The hard part wasn't the chat interface — it was the tool schema. Once `exhibitLookup` had the right input shape, the model naturally asked the right questions. The engineering was in the schema, not the prompt.
 
-### 10.4 AI-First Development
+### What I'd tell the next intern
 
-This internship used an **ITOMDEV-style AI-first workflow:**
+**Ship the ugly version first.** My first corridor was hideous — grey boxes, no textures. But it worked. And because it worked, I could iterate on the visual layer without breaking the interaction model.
 
-- Claude designed the architecture, wrote the initial code, suggested patterns
+### AI-First Development
+
+This internship used an ITOMDEV-style AI-first workflow:
+
+- Claude designed the architecture, wrote initial code, suggested patterns
 - I reviewed, tested, and refined everything
 - The AI handled boilerplate; I handled product decisions
 - Every AI-generated line was verified against the actual running app
@@ -497,27 +492,7 @@ This internship used an **ITOMDEV-style AI-first workflow:**
 
 ---
 
-## 11. Reflection
-
-### What was hardest?
-
-The 3D-to-2D renderer seam. Getting a Three.js scene and a flat React component to render the same content — with the same data, same interactions, same feel — without one becoming a degraded copy of the other. The first attempt was an orbit diorama that felt like a toy. The second attempt (scroll-rail corridor) worked because the 2D path became a first-class citizen, not a fallback.
-
-### What would I do differently next time?
-
-Start with the 2D fallback architecture from day one. I spent the first two weeks building the 3D scene and then tried to bolt 2D on afterward. If I'd designed the data layer and component hierarchy around "two renderers, same data" from the start, the renderer seam would have been a clean interface instead of a refactoring project. The lesson: design for the constraint first, then build the experience.
-
-### One thing that surprised me
-
-AI integration was easier than expected. The hard part wasn't the chat interface or the streaming — it was designing the tool schema. Once `exhibitLookup` had the right input shape, the model naturally asked the right questions. The prompt barely needed tuning. What surprised me was how much the tool design mattered: a bad schema means the model guesses wrong, a good schema means the model feels smart. The engineering was in the schema, not the prompt.
-
-### What I'd tell the next intern
-
-Ship the ugly version first. My first corridor was hideous — grey boxes, no textures, no lighting. But it worked. And because it worked, I could iterate on the visual layer without worrying about breaking the interaction model. If you wait for it to look good before you ship it, you'll never ship it.
-
----
-
-## 12. Future Roadmap
+## 11. Future Roadmap
 
 | Phase | Goal | Timeline |
 |-------|------|----------|
@@ -533,13 +508,12 @@ Ship the ugly version first. My first corridor was hideous — grey boxes, no te
 | Lighthouse in CI | Medium | 1 hour |
 | Error tracking (Sentry) | Medium | 2 hours |
 | E2E tests for full flow | Medium | 3–4 hours |
-| 3D model optimization (LODs) | Low | 4–6 hours |
 
 ---
 
-## 13. Appendix: Deliverables Index
+## 12. Deliverables Index
 
-### 13.1 Submission Files
+### 12.1 Submission Files
 
 | # | Deliverable | File | Status |
 |---|-------------|------|--------|
@@ -550,42 +524,25 @@ Ship the ugly version first. My first corridor was hideous — grey boxes, no te
 | 5 | Performance Audit | `week-08/lighthouse-scores.md` | ✅ |
 | 6 | Deployment Checklist | `week-08/deployment-checklist.md` | ✅ |
 | 7 | Reflection | `week-08/reflection.md` | ✅ |
-| 8 | Demo Video | `week-08/demo-video-v2.mp4` | ⬜ Recording |
-| 9 | Capstone Report | `week-08/capstone-final-report.md` (this document) | ✅ |
-| 10 | Plan to Keep Building | `week-08/plan-to-keep-building.md` | ✅ |
-| 11 | Build-in-Public Post | `week-08/build-in-public-post.md` | ✅ |
-| 12 | Shader Hero Doc | `week-08/fe-aa3-shader-hero.md` | ✅ |
-| 13 | Submission Checklist | `week-08/submission-checklist.md` | ✅ |
-| 14 | Demo Video Script | `week-08/fl-09-demo-video.md` | ✅ |
+| 8 | Capstone Report | `week-08/capstone-final-report.md` (this document) | ✅ |
+| 9 | Plan to Keep Building | `week-08/plan-to-keep-building.md` | ✅ |
+| 10 | Shader Hero Doc | `week-08/fe-aa3-shader-hero.md` | ✅ |
+| 11 | Demo Video Script | `week-08/fl-09-demo-video.md` | ✅ |
+| 12 | Build-in-Public Post | `week-08/build-in-public-post.md` | ✅ |
+| 13 | Demo Walkthrough GIF | `week-08/demo-walkthrough.gif` | ✅ |
+| 14 | Demo Video | `week-08/demo-video-v2.mp4` | ⬜ Recording |
 
-### 13.2 Screenshots Inventory
+### 12.2 Screenshots Inventory
 
 | Category | Count | Location |
 |----------|:-----:|----------|
 | Before journey (numbered) | 43 | `screenshots/1.png` – `screenshots/43.png` |
 | Museum walkthrough | 26 | `screenshots/museum-*.png` |
 | Route verification | 14 | `screenshots/route-*.png` |
+| Demo walkthrough (new) | 18 | `screenshots/demo-*.png` |
 | Frontend audit | 4 | `screenshots/fe-*.png` |
 | Live production (new) | 7 | `screenshots/live-*.png` |
-| **Total** | **94** | `screenshots/` |
-
-### 13.3 Week 8 Files
-
-| File | Purpose |
-|------|---------|
-| `week-08/capstone-final-report.md` | This document — full capstone report |
-| `week-08/project-brief.md` | 1-paragraph project brief |
-| `week-08/reflection.md` | Honest reflection on the build |
-| `week-08/deployment-checklist.md` | Vercel config, error states, rollback |
-| `week-08/lighthouse-scores.md` | Lighthouse scores + WAVE audit |
-| `week-08/submission-checklist.md` | Portal copy-paste for all deliverables |
-| `week-08/plan-to-keep-building.md` | Post-capstone roadmap |
-| `week-08/fe-aa3-shader-hero.md` | Shader hero documentation |
-| `week-08/fl-09-demo-video.md` | Demo video script + walkthrough |
-| `week-08/build-in-public-post.md` | Build-in-public post for showcase |
-| `week-08/test-results.png` | Test output screenshot |
-| `week-08/test-results.txt` | Test output text |
-| `week-08/week-8-submission-summary.md` | Quick reference summary |
+| **Total** | **112** | `screenshots/` |
 
 ---
 

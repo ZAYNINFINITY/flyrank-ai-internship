@@ -6,7 +6,7 @@
 ---
 
 **Foyer** — gallery-style exhibit pages for developers.
-Live → [foyer-cyan.vercel.app](https://foyer-cyan.vercel.app)
+Live → plinth-cyan.vercel.app
 
 ## Progress
 

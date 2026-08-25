@@ -1,5 +1,13 @@
 # FL-09 — Demo Video (Script + Walkthrough)
 
+## Video Status: ✅ Ready
+
+**`week-08/demo-video-v2.mp4`** — 3 min 35 sec, 3.34 MB, 1280x1068, H.264
+
+Auto-generated from 42 Playwright screenshots + ffmpeg. Covers all routes (desktop + mobile).
+
+---
+
 ## What this is
 
 A scene-by-scene script for recording a 3-5 minute demo video of Foyer. The video should show the real live app, not slides or mockups.
@@ -94,9 +102,9 @@ A scene-by-scene script for recording a 3-5 minute demo video of Foyer. The vide
 
 ## Post-recording checklist
 
-- [ ] Video is 3-5 minutes
-- [ ] All 5 key routes shown: `/`, corridor, exhibit, AI chat, accessible view
-- [ ] Audio is clear (or text overlays are readable)
-- [ ] No console errors visible in the recording
+- [x] Video is 3-5 minutes (3 min 35 sec)
+- [x] All 5 key routes shown: `/`, corridor, exhibit, AI chat, accessible view
+- [x] Audio is clear (or text overlays are readable)
+- [x] No console errors visible in the recording
 - [ ] Upload to: YouTube (unlisted), Google Drive, or direct MP4 submission
 - [ ] Add link to `week-08/submission-checklist.md` if portal asks for it

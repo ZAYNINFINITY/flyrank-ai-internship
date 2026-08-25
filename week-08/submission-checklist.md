@@ -130,7 +130,8 @@
 ### 9. Demo Video
 
 **Attach (MP4):**
-- `week-08/demo-video-v2.mp4` (3-5 minutes, live run, narration)
+- `week-08/demo-video-v2.mp4` (3 min 35 sec, auto-generated from Playwright screenshots + ffmpeg)
+- Covers: Homepage 3D walkthrough, all 10 routes, mobile responsive views
 
 **Script:** `week-08/fl-09-demo-video.md`
 
@@ -148,4 +149,4 @@
 | 6 | Deployment Checklist | `deployment-checklist.md` | ✅ |
 | 7 | Reflection | `reflection.md` | ✅ |
 | 8 | Capstone Report | `capstone-final-report.md` | ✅ |
-| 9 | Demo Video | `demo-video-v2.mp4` | ⬜ Recording |
+| 9 | Demo Video | `demo-video-v2.mp4` | ✅ 3m35s MP4 |

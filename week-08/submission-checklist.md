@@ -4,9 +4,9 @@
 
 **Repo:** https://github.com/ZAYNINFINITY/flyrank-ai-internship
 **Branch:** `main`
-**Master packet:** https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-08/week-8-submission-summary.md
+**Master packet:** https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-08/capstone-final-report.md
 
-**Current verification (August 24, 2026):** Local checks pass, but the production URL returned HTTP 404 and the existing `demo-video.mp4` is 35 seconds. Redeployment/URL confirmation and a 3-5 minute demo recording are still required before final submission.
+**Live URL:** https://plinth-cyan.vercel.app ✅
 
 ---
 
@@ -24,7 +24,7 @@
 
 ### 2. Live Application
 
-**LINK:** https://foyer-cyan.vercel.app
+**LINK:** https://plinth-cyan.vercel.app
 
 **Key routes to verify:**
 - `/` — 3D museum homepage (or 2D fallback on low-end devices)
@@ -48,6 +48,7 @@
 - Environment variables table
 - Testing instructions
 - Known limitations & future improvements
+- AI honesty line (how AI was used)
 
 ---
 
@@ -77,7 +78,7 @@
 
 **Attach (MD):**
 - `week-08/lighthouse-scores.md`
-- `week-07/AUDIT.md` (full accessibility audit)
+- WAVE audit pass (0 errors)
 
 **Screenshots:**
 - Lighthouse scores for all routes (in lighthouse-scores.md)
@@ -113,14 +114,38 @@
 
 ---
 
+### 8. Capstone Report
+
+**Attach (MD):**
+- `week-08/capstone-final-report.md`
+
+**Covers:**
+- Full technical documentation with screenshots
+- Before/after journey with 94 screenshots
+- All assignment requirements tracked with status
+- Deliverables index
+
+---
+
+### 9. Demo Video
+
+**Attach (MP4):**
+- `week-08/demo-video-v2.mp4` (3-5 minutes, live run, narration)
+
+**Script:** `week-08/fl-09-demo-video.md`
+
+---
+
 ## Quick Reference
 
-| # | Deliverable | File | Live |
-|---|-------------|------|------|
-| 1 | Project Brief | `project-brief.md` | — |
-| 2 | Live App | — | foyer-cyan.vercel.app |
-| 3 | README | `README.md` | — |
-| 4 | Testing Evidence | `test-results.png` | — |
-| 5 | Performance Audit | `lighthouse-scores.md` + `AUDIT.md` | — |
-| 6 | Deployment Checklist | `deployment-checklist.md` | — |
-| 7 | Reflection | `reflection.md` | — |
+| # | Deliverable | File | Status |
+|---|-------------|------|--------|
+| 1 | Project Brief | `project-brief.md` | ✅ |
+| 2 | Live App | — | ✅ [plinth-cyan.vercel.app](https://plinth-cyan.vercel.app) |
+| 3 | README | `README.md` | ✅ |
+| 4 | Testing Evidence | `test-results.png` | ✅ |
+| 5 | Performance Audit | `lighthouse-scores.md` | ✅ |
+| 6 | Deployment Checklist | `deployment-checklist.md` | ✅ |
+| 7 | Reflection | `reflection.md` | ✅ |
+| 8 | Capstone Report | `capstone-final-report.md` | ✅ |
+| 9 | Demo Video | `demo-video-v2.mp4` | ⬜ Recording |

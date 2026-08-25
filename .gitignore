@@ -30,3 +30,6 @@ week-03/app/assets/
 # Misc
 *.log
 .cache/
+
+.vercel
+.env*

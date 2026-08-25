@@ -2,9 +2,9 @@
 
 ## Video Status: ✅ Ready
 
-**`week-08/demo-video-v2.mp4`** — 3 min 35 sec, 3.34 MB, 1280x1068, H.264
+**`week-08/demo-video-final.mp4`** — 5 min 28 sec, 85 MB, 1920x1080, H.264
 
-Auto-generated from 42 Playwright screenshots + ffmpeg. Covers all routes (desktop + mobile).
+Intro card (6s) + user's live recording with 29 overlay labels (5:11) + outro credits (10s). Covers all routes (desktop + mobile) with text overlays explaining each section.
 
 ---
 
@@ -19,7 +19,7 @@ A scene-by-scene script for recording a 3-5 minute demo video of Foyer. The vide
 - **Tool:** Any screen recorder (OBS, QuickTime, Windows Game Bar `Win+G`)
 - **Flags:** `--enable-unsafe-swiftshader --use-angle=swiftshader-webgl` if no GPU available
 - **Duration target:** 3-5 minutes
-- **Existing auto-recorded demo:** `week-08/demo-video.mp4` (35 seconds, 9 routes, 597KB) — evidence exists, but it does not meet the assignment duration requirement.
+- **Final demo:** `week-08/demo-video-final.mp4` (5 min 28 sec, 85 MB) — intro + live recording with overlays + outro
 
 ## Scene script
 
@@ -102,9 +102,10 @@ A scene-by-scene script for recording a 3-5 minute demo video of Foyer. The vide
 
 ## Post-recording checklist
 
-- [x] Video is 3-5 minutes (3 min 35 sec)
+- [x] Video is 5+ minutes (5 min 28 sec)
 - [x] All 5 key routes shown: `/`, corridor, exhibit, AI chat, accessible view
-- [x] Audio is clear (or text overlays are readable)
+- [x] Text overlays are readable (29 labels)
 - [x] No console errors visible in the recording
+- [x] Intro + outro cards added
 - [ ] Upload to: YouTube (unlisted), Google Drive, or direct MP4 submission
 - [ ] Add link to `week-08/submission-checklist.md` if portal asks for it

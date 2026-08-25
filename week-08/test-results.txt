@@ -1,5 +1,0 @@
- VITEST v4.1.10
-
- Test Files  10 passed (10)
-      Tests  74 passed (74)
-   Duration  21.44s

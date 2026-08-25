@@ -116,7 +116,10 @@
 
 ### 8. Capstone Report
 
-**Attach (MD):**
+**Attach (PDF):**
+- `week-08/capstone-final-report.pdf` (28 MB, Playwright-generated, 19 images embedded, Roman serif, A4 academic formatting)
+
+**Source (MD):**
 - `week-08/capstone-final-report.md`
 
 **Covers:**
@@ -130,8 +133,8 @@
 ### 9. Demo Video
 
 **Attach (MP4):**
-- `week-08/demo-video-v2.mp4` (3 min 35 sec, auto-generated from Playwright screenshots + ffmpeg)
-- Covers: Homepage 3D walkthrough, all 10 routes, mobile responsive views
+- `week-08/demo-video-final.mp4` (5 min 28 sec, intro card + live recording with 29 overlay labels + outro credits)
+- Covers: Homepage 3D walkthrough, all 10 routes, mobile responsive views, AI curator chat
 
 **Script:** `week-08/fl-09-demo-video.md`
 
@@ -148,5 +151,5 @@
 | 5 | Performance Audit | `lighthouse-scores.md` | ✅ |
 | 6 | Deployment Checklist | `deployment-checklist.md` | ✅ |
 | 7 | Reflection | `reflection.md` | ✅ |
-| 8 | Capstone Report | `capstone-final-report.md` | ✅ |
-| 9 | Demo Video | `demo-video-v2.mp4` | ✅ 3m35s MP4 |
+| 8 | Capstone Report | `capstone-final-report.pdf` | ✅ |
+| 9 | Demo Video | `demo-video-final.mp4` | ✅ 5m28s MP4 |

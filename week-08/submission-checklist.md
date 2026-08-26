@@ -1,155 +1,81 @@
 # Week 8 — Submission Checklist (Portal Copy-Paste)
 
-**Capstone: Ship It — Your First Production AI Product**
+Copy this per assignment. No code files — just evidence, links, and proof.
 
 **Repo:** https://github.com/ZAYNINFINITY/flyrank-ai-internship
 **Branch:** `main`
 **Master packet:** https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-08/capstone-final-report.md
 
-**Live URL:** https://plinth-cyan.vercel.app ✅
-
 ---
 
-## Deliverables
-
-### 1. Project Brief
+## Assignment 1 — Ship It Capstone (Frontend AI Engineering)
 
 **Attach (MD):**
-- `week-08/project-brief.md`
+- `project-brief.md`
+- `capstone-final-report.md`
+- `reflection.md`
+- `deployment-checklist.md`
+- `lighthouse-scores.md`
 
-**Repo link:**
-- https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-08/project-brief.md
+**Attach (PDF):**
+- `capstone-final-report.pdf`
 
----
+**Screenshots (IMG):**
+- `test-results.png`
 
-### 2. Live Application
+**Video (MP4):**
+- `demo-video-final.mp4`
+
+**GIF:**
+- `demo-walkthrough.gif`
+
+**JSON:**
+- `lighthouse-home.json`
+- `lighthouse-about.json`
+- `lighthouse-entrance.json`
+- `lighthouse-explore.json`
 
 **LINK:** https://plinth-cyan.vercel.app
 
-**Key routes to verify:**
-- `/` — 3D museum homepage (or 2D fallback on low-end devices)
-- `/explore` — Grid of exhibits
-- `/about` — Museum language, about page
-- `/exhibit/zayn` — Developer exhibit page
-- `/assistant` — AI curator chat
-
----
-
-### 3. Repository with Complete README
-
-**Repo link:**
+**Repo links:**
+- https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-08/project-brief.md
+- https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-08/capstone-final-report.md
+- https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-08/capstone-final-report.pdf
+- https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-08/reflection.md
+- https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-08/deployment-checklist.md
+- https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-08/lighthouse-scores.md
+- https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-08/test-results.png
+- https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-08/demo-video-final.mp4
+- https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-08/demo-walkthrough.gif
+- https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-08/lighthouse-home.json
+- https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-08/lighthouse-about.json
+- https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-08/lighthouse-entrance.json
+- https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-08/lighthouse-explore.json
 - https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-03/app/README.md
 
-**What the README covers:**
-- Project brief and what Foyer solves
-- Getting started (one command: `npm install && npm run dev`)
-- Architecture overview (what each part does)
-- AI integration explained (OpenRouter + curator + exhibitLookup tool)
-- Environment variables table
-- Testing instructions
-- Known limitations & future improvements
-- AI honesty line (how AI was used)
-
 ---
 
-### 4. Testing Evidence
-
-**Test run output:**
-- `week-08/test-results.png` — vitest verbose output showing 74/74 pass
-
-**Test files:**
-- `lib/repository/acceptance.test.ts` — 20 tests (data architecture)
-- `lib/museum/walkable-model.test.ts` — 6 tests (collision, doors, spawn)
-- `lib/renderer/capability.test.ts` — device tier detection
-- `components/ai/chat-panel.test.tsx` — chat UI
-- `components/ai/exhibit-tool-result.test.tsx` — tool rendering
-- `components/ai/tool-state-views.test.tsx` — lifecycle states
-- `lib/museum/museum-logic.test.ts` — museum logic
-- `lib/museum/via-entry.test.ts` — door entry validation
-- `components/primitives/motion-button.test.tsx` — motion button
-- `app/login/page.test.tsx` — login page
-- `e2e/museum-flow.spec.ts` — Playwright e2e
-
-**Coverage:** 74 tests across 10 unit test files + 1 e2e spec
-
----
-
-### 5. Performance & Accessibility Audit
+## Assignment 2 — Send the Link Capstone (General AI Fluency)
 
 **Attach (MD):**
-- `week-08/lighthouse-scores.md`
-- WAVE audit pass (0 errors)
+- `plan-to-keep-building.md`
 
-**Screenshots:**
-- Lighthouse scores for all routes (in lighthouse-scores.md)
-- WAVE audit pass (0 errors)
+**LINK (reminder evidence):**
+- https://github.com/ZAYNINFINITY/flyrank-ai-internship/issues/17
 
-**Concrete improvement:** "Accessible view" toggle — added because 3D canvas scored 95 (not 100) on accessibility. Toggle provides full 2D accessible path.
+**LINK (live):**
+- https://plinth-cyan.vercel.app
 
----
-
-### 6. Deployment Checklist
-
-**Attach (MD):**
-- `week-08/deployment-checklist.md`
-
-**Covers:**
-- Vercel config and environment variables
-- Build verification (tsc, eslint, vitest)
-- Error states verified (API failure, 404, no-WebGL)
-- Rollback plan (redeploy from main)
-- Known limitations
-
----
-
-### 7. Reflection
-
-**Attach (MD):**
-- `week-08/reflection.md`
-
-**Covers:**
-- What was hardest (3D-to-2D renderer seam)
-- What I'd do differently (start with 2D fallback architecture)
-- One thing that surprised me (AI integration was easier than expected — schema matters more than prompt)
-
----
-
-### 8. Capstone Report
-
-**Attach (PDF):**
-- `week-08/capstone-final-report.pdf` (28 MB, Playwright-generated, 19 images embedded, Roman serif, A4 academic formatting)
-
-**Source (MD):**
-- `week-08/capstone-final-report.md`
-
-**Covers:**
-- Full technical documentation with screenshots
-- Before/after journey with 94 screenshots
-- All assignment requirements tracked with status
-- Deliverables index
-
----
-
-### 9. Demo Video
-
-**Attach (MP4):**
-- `week-08/demo-video-final.mp4` (5 min 28 sec, intro card + live recording with 29 overlay labels + outro credits)
-- Covers: Homepage 3D walkthrough, all 10 routes, mobile responsive views, AI curator chat
-
-**Script:** `week-08/fl-09-demo-video.md`
+**Repo links:**
+- https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-08/plan-to-keep-building.md
+- https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/CLAUDE.md
+- https://github.com/ZAYNINFINITY/flyrank-ai-internship/issues/17
 
 ---
 
 ## Quick Reference
 
-| # | Deliverable | File | Status |
-|---|-------------|------|--------|
-| 1 | Project Brief | `project-brief.md` | ✅ |
-| 2 | Live App | — | ✅ [plinth-cyan.vercel.app](https://plinth-cyan.vercel.app) |
-| 3 | README | `README.md` | ✅ |
-| 4 | Testing Evidence | `test-results.png` | ✅ |
-| 5 | Performance Audit | `lighthouse-scores.md` | ✅ |
-| 6 | Deployment Checklist | `deployment-checklist.md` | ✅ |
-| 7 | Reflection | `reflection.md` | ✅ |
-| 8 | Capstone Report | `capstone-final-report.pdf` | ✅ |
-| 9 | Demo Video | `demo-video-final.mp4` | ✅ 5m28s MP4 |
+| # | Assignment | MD to attach | PDF/MP4/GIF | JSON | Screenshots | Live |
+|---|---|---|---|---|---|---|
+| 1 | Ship It Capstone | `project-brief.md` + `capstone-final-report.md` + `reflection.md` + `deployment-checklist.md` + `lighthouse-scores.md` | PDF (28MB) + MP4 (5m28s) + GIF (183KB) | 4 Lighthouse JSONs | `test-results.png` | plinth-cyan.vercel.app |
+| 2 | Send the Link Capstone | `plan-to-keep-building.md` | — | — | — | Issue #17 |

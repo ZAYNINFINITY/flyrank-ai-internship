@@ -16,15 +16,17 @@ const S = {
 
 /* ── Scroll-reveal hook ──────────────────────────────────── */
 function useReveal(threshold = 0.15) {
-  const prefersReduced =
-    typeof window !== "undefined"
-      ? window.matchMedia("(prefers-reduced-motion: reduce)").matches
-      : false;
-  const [visible, setVisible] = useState(prefersReduced);
+  const [visible, setVisible] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (prefersReduced) return;
+    const prefersReduced = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    if (prefersReduced) {
+      requestAnimationFrame(() => setVisible(true));
+      return;
+    }
 
     const el = ref.current;
     if (!el) return;
@@ -32,7 +34,7 @@ function useReveal(threshold = 0.15) {
     const obs = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setVisible(true);
+          requestAnimationFrame(() => setVisible(true));
           obs.disconnect();
         }
       },
@@ -41,23 +43,25 @@ function useReveal(threshold = 0.15) {
 
     obs.observe(el);
     return () => obs.disconnect();
-  }, [prefersReduced, threshold]);
+  }, [threshold]);
 
   return { ref, visible };
 }
 
 /* ── Count-up hook ───────────────────────────────────────── */
 function useCountUp(target: number, duration = 1200) {
-  const prefersReduced =
-    typeof window !== "undefined"
-      ? window.matchMedia("(prefers-reduced-motion: reduce)").matches
-      : false;
-  const [value, setValue] = useState(prefersReduced ? target : 0);
+  const [value, setValue] = useState(0);
   const [started, setStarted] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (prefersReduced) return;
+    const prefersReduced = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    if (prefersReduced) {
+      requestAnimationFrame(() => setValue(target));
+      return;
+    }
 
     const el = ref.current;
     if (!el) return;
@@ -65,7 +69,7 @@ function useCountUp(target: number, duration = 1200) {
     const obs = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting && !started) {
-          setStarted(true);
+          requestAnimationFrame(() => setStarted(true));
           obs.disconnect();
         }
       },
@@ -74,7 +78,7 @@ function useCountUp(target: number, duration = 1200) {
 
     obs.observe(el);
     return () => obs.disconnect();
-  }, [prefersReduced, started]);
+  }, [target, started]);
 
   useEffect(() => {
     if (!started) return;
@@ -124,9 +128,15 @@ function Reveal({
 /* ══════════════════════════════════════════════════════════ */
 
 export function OperationalRoom() {
-  const prefersReduced =
-    typeof window !== "undefined" &&
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const [prefersReduced, setPrefersReduced] = useState(false);
+
+  useEffect(() => {
+    requestAnimationFrame(() =>
+      setPrefersReduced(
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+      ),
+    );
+  }, []);
 
   return (
     <main

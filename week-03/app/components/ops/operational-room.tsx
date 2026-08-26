@@ -1,27 +1,59 @@
 import Link from "next/link";
 import { Nav } from "@/components/primitives/nav";
 
+const S = {
+  bg: "#F5F0E7",
+  surface: "#F8F3E9",
+  text: "#2E2821",
+  accent: "#C94F0A",
+  border: "rgba(46,40,33,0.12)",
+  muted: "rgba(46,40,33,0.45)",
+} as const;
+
 export function OperationalRoom() {
   return (
-    <main className="min-h-[100dvh] bg-background">
+    <main
+      className="min-h-[100dvh]"
+      style={{
+        backgroundColor: S.bg,
+        color: S.text,
+        backgroundImage:
+          "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E\")",
+      }}
+    >
       <Nav />
 
       {/* ── 01 · Hero ───────────────────────────────────── */}
       <section className="px-6 pt-16 pb-20 sm:px-8 md:px-12">
         <div className="mx-auto max-w-[1120px]">
           <div className="flex items-center gap-3 mb-4">
-            <span className="inline-block h-2 w-2 rounded-full bg-accent animate-pulse" />
-            <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-text/40">
+            <span
+              className="inline-block h-2 w-2 rounded-full"
+              style={{ backgroundColor: S.accent }}
+            />
+            <p
+              className="text-[11px] uppercase tracking-[0.2em]"
+              style={{ fontFamily: "monospace", color: S.muted }}
+            >
               Foyer · Engine Room
             </p>
           </div>
-          <h1 className="font-heading text-[32px] font-medium text-text md:text-[44px]">
+          <h1
+            className="text-[32px] font-medium md:text-[44px]"
+            style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
+          >
             Zain Ul Abideen
           </h1>
-          <p className="mt-2 font-heading text-[17px] text-text/50">
+          <p
+            className="mt-2 text-[17px]"
+            style={{ fontFamily: "Georgia, serif", color: S.muted }}
+          >
             CS Student @ PAF-IAST · MERN Stack Developer
           </p>
-          <p className="mt-6 max-w-[640px] font-body text-[15px] leading-relaxed text-text/50">
+          <p
+            className="mt-6 max-w-[640px] text-[15px] leading-relaxed"
+            style={{ color: "rgba(46,40,33,0.55)" }}
+          >
             This is the operational view behind Foyer — the 3D museum where
             developers exhibit their work as gallery rooms, not card grids.
             AI curates the experience. Your portfolio at{" "}
@@ -29,7 +61,8 @@ export function OperationalRoom() {
               href="https://zainportfoli0.netlify.app"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-text/70 underline underline-offset-2 transition-colors duration-200 hover:text-text"
+              className="underline underline-offset-2 transition-colors duration-200"
+              style={{ color: "rgba(46,40,33,0.7)" }}
             >
               zainportfoli0.netlify.app
             </a>{" "}
@@ -40,19 +73,26 @@ export function OperationalRoom() {
               href="https://zainportfoli0.netlify.app"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex min-h-[44px] items-center justify-center rounded-[3px] border border-text/20 bg-transparent px-6 py-2.5 font-body text-sm text-text transition-colors duration-200 hover:border-text/40"
+              className="inline-flex min-h-[44px] items-center justify-center rounded-[3px] border bg-transparent px-6 py-2.5 text-sm transition-colors duration-200"
+              style={{ borderColor: "rgba(46,40,33,0.18)", color: S.text }}
             >
               Portfolio ↗
             </a>
             <Link
               href="/exhibit/zayn"
-              className="inline-flex min-h-[44px] items-center justify-center rounded-[3px] border border-text/20 bg-transparent px-6 py-2.5 font-body text-sm text-text transition-colors duration-200 hover:border-text/40"
+              className="inline-flex min-h-[44px] items-center justify-center rounded-[3px] border bg-transparent px-6 py-2.5 text-sm transition-colors duration-200"
+              style={{ borderColor: "rgba(46,40,33,0.18)", color: S.text }}
             >
               View in Museum →
             </Link>
             <Link
               href="/assistant"
-              className="inline-flex min-h-[44px] items-center justify-center rounded-[3px] border border-accent/30 bg-accent/5 px-6 py-2.5 font-body text-sm text-accent transition-colors duration-200 hover:border-accent/50 hover:bg-accent/10"
+              className="inline-flex min-h-[44px] items-center justify-center rounded-[3px] border px-6 py-2.5 text-sm transition-colors duration-200"
+              style={{
+                borderColor: "rgba(201,79,10,0.3)",
+                backgroundColor: "rgba(201,79,10,0.05)",
+                color: S.accent,
+              }}
             >
               Talk to AI Curator →
             </Link>
@@ -63,20 +103,32 @@ export function OperationalRoom() {
       {/* ── 02 · The Story ───────────────────────────────── */}
       <section className="px-6 pb-20 sm:px-8 md:px-12">
         <div className="mx-auto max-w-[1120px]">
-          <div className="border-t border-text/10 pt-12">
-            <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-text/40 mb-10">
+          <div className="pt-12" style={{ borderTop: `1px solid ${S.border}` }}>
+            <p
+              className="text-[11px] uppercase tracking-[0.2em] mb-10"
+              style={{ fontFamily: "monospace", color: S.muted }}
+            >
               The Story
             </p>
 
-            {/* Beat 1 — Ordinary World */}
+            {/* Beat 1 */}
             <div className="max-w-[720px]">
-              <p className="font-mono text-[11px] uppercase tracking-[0.15em] text-accent mb-3">
+              <p
+                className="text-[11px] uppercase tracking-[0.15em] mb-3"
+                style={{ fontFamily: "monospace", color: S.accent }}
+              >
                 01 · The Problem
               </p>
-              <h2 className="font-heading text-[22px] font-medium text-text md:text-[28px] leading-snug">
+              <h2
+                className="text-[22px] font-medium md:text-[28px] leading-snug"
+                style={{ fontFamily: "Georgia, serif" }}
+              >
                 Every developer portfolio looks the same.
               </h2>
-              <p className="mt-4 font-body text-[15px] leading-relaxed text-text/50">
+              <p
+                className="mt-4 text-[15px] leading-relaxed"
+                style={{ color: "rgba(46,40,33,0.55)" }}
+              >
                 Card grids. Thumbnail clusters. Identical layouts. Projects
                 compressed into tiny boxes fighting for attention, with no room
                 to tell the story behind what was built. I had four real
@@ -86,15 +138,24 @@ export function OperationalRoom() {
               </p>
             </div>
 
-            {/* Beat 2 — Call to Adventure */}
+            {/* Beat 2 */}
             <div className="max-w-[720px] mt-12">
-              <p className="font-mono text-[11px] uppercase tracking-[0.15em] text-accent mb-3">
+              <p
+                className="text-[11px] uppercase tracking-[0.15em] mb-3"
+                style={{ fontFamily: "monospace", color: S.accent }}
+              >
                 02 · The Idea
               </p>
-              <h2 className="font-heading text-[22px] font-medium text-text md:text-[28px] leading-snug">
+              <h2
+                className="text-[22px] font-medium md:text-[28px] leading-snug"
+                style={{ fontFamily: "Georgia, serif" }}
+              >
                 What if projects had rooms, not cards?
               </h2>
-              <p className="mt-4 font-body text-[15px] leading-relaxed text-text/50">
+              <p
+                className="mt-4 text-[15px] leading-relaxed"
+                style={{ color: "rgba(46,40,33,0.55)" }}
+              >
                 A foyer is the entrance hall of a museum. It sets the tone for
                 everything that follows. I wanted to build that — a place where
                 each project gets a dedicated 3D space with architectural
@@ -104,15 +165,24 @@ export function OperationalRoom() {
               </p>
             </div>
 
-            {/* Beat 3 — The Ordeal */}
+            {/* Beat 3 */}
             <div className="max-w-[720px] mt-12">
-              <p className="font-mono text-[11px] uppercase tracking-[0.15em] text-accent mb-3">
+              <p
+                className="text-[11px] uppercase tracking-[0.15em] mb-3"
+                style={{ fontFamily: "monospace", color: S.accent }}
+              >
                 03 · What Broke
               </p>
-              <h2 className="font-heading text-[22px] font-medium text-text md:text-[28px] leading-snug">
+              <h2
+                className="text-[22px] font-medium md:text-[28px] leading-snug"
+                style={{ fontFamily: "Georgia, serif" }}
+              >
                 The 3D-to-2D seam nearly killed the project.
               </h2>
-              <p className="mt-4 font-body text-[15px] leading-relaxed text-text/50">
+              <p
+                className="mt-4 text-[15px] leading-relaxed"
+                style={{ color: "rgba(46,40,33,0.55)" }}
+              >
                 Getting a Three.js scene and a flat React component to render
                 the same content — same data, same interactions, same feel —
                 without one becoming a degraded copy of the other. The first
@@ -125,15 +195,24 @@ export function OperationalRoom() {
               </p>
             </div>
 
-            {/* Beat 4 — The Return */}
+            {/* Beat 4 */}
             <div className="max-w-[720px] mt-12">
-              <p className="font-mono text-[11px] uppercase tracking-[0.15em] text-accent mb-3">
+              <p
+                className="text-[11px] uppercase tracking-[0.15em] mb-3"
+                style={{ fontFamily: "monospace", color: S.accent }}
+              >
                 04 · What shipped
               </p>
-              <h2 className="font-heading text-[22px] font-medium text-text md:text-[28px] leading-snug">
+              <h2
+                className="text-[22px] font-medium md:text-[28px] leading-snug"
+                style={{ fontFamily: "Georgia, serif" }}
+              >
                 A working museum, not a demo.
               </h2>
-              <p className="mt-4 font-body text-[15px] leading-relaxed text-text/50">
+              <p
+                className="mt-4 text-[15px] leading-relaxed"
+                style={{ color: "rgba(46,40,33,0.55)" }}
+              >
                 74 tests passing. Lighthouse 99.25 average. AI curator powered
                 by Gemini Flash. Custom GLSL reveal shader. Accessible 2D
                 fallback for screen readers. Deployed on Vercel with CI/CD.
@@ -149,11 +228,17 @@ export function OperationalRoom() {
       {/* ── 03 · What AI Does ────────────────────────────── */}
       <section className="px-6 pb-20 sm:px-8 md:px-12">
         <div className="mx-auto max-w-[1120px]">
-          <div className="border-t border-text/10 pt-12">
-            <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-text/40 mb-2">
+          <div className="pt-12" style={{ borderTop: `1px solid ${S.border}` }}>
+            <p
+              className="text-[11px] uppercase tracking-[0.2em] mb-2"
+              style={{ fontFamily: "monospace", color: S.muted }}
+            >
               Where AI Does the Heavy Lifting
             </p>
-            <p className="font-body text-[14px] text-text/30 mb-10 max-w-[600px]">
+            <p
+              className="text-[14px] mb-10 max-w-[600px]"
+              style={{ fontFamily: "system-ui, sans-serif", color: "rgba(46,40,33,0.35)" }}
+            >
               One thing AI did that I couldn&apos;t have done alone: it manages
               the museum experience — from curating exhibits to detecting
               device capability to generating the reveal effect.
@@ -186,16 +271,25 @@ export function OperationalRoom() {
       {/* ── 04 · Projects ────────────────────────────────── */}
       <section className="px-6 pb-20 sm:px-8 md:px-12">
         <div className="mx-auto max-w-[1120px]">
-          <div className="border-t border-text/10 pt-12">
-            <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-text/40 mb-2">
+          <div className="pt-12" style={{ borderTop: `1px solid ${S.border}` }}>
+            <p
+              className="text-[11px] uppercase tracking-[0.2em] mb-2"
+              style={{ fontFamily: "monospace", color: S.muted }}
+            >
               What I Built
             </p>
-            <p className="font-body text-[14px] text-text/30 mb-10 max-w-[600px]">
+            <p
+              className="text-[14px] mb-10 max-w-[600px]"
+              style={{ color: "rgba(46,40,33,0.35)" }}
+            >
               Each project exists in two places: your portfolio and the museum.
               Same work, different presentation.
             </p>
 
-            <div className="rounded-[3px] border border-text/10 divide-y divide-text/10">
+            <div
+              className="rounded-[3px] overflow-hidden"
+              style={{ border: `1px solid ${S.border}` }}
+            >
               <ProjectRow
                 title="Collaborative Workspace"
                 stack="MERN · Socket.io · OAuth 2.0"
@@ -228,8 +322,11 @@ export function OperationalRoom() {
       {/* ── 05 · Honest Numbers ──────────────────────────── */}
       <section className="px-6 pb-20 sm:px-8 md:px-12">
         <div className="mx-auto max-w-[1120px]">
-          <div className="border-t border-text/10 pt-12">
-            <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-text/40 mb-10">
+          <div className="pt-12" style={{ borderTop: `1px solid ${S.border}` }}>
+            <p
+              className="text-[11px] uppercase tracking-[0.2em] mb-10"
+              style={{ fontFamily: "monospace", color: S.muted }}
+            >
               Honest Numbers
             </p>
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
@@ -245,8 +342,11 @@ export function OperationalRoom() {
       {/* ── 06 · Honest Limitations ──────────────────────── */}
       <section className="px-6 pb-20 sm:px-8 md:px-12">
         <div className="mx-auto max-w-[1120px]">
-          <div className="border-t border-text/10 pt-12">
-            <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-text/40 mb-10">
+          <div className="pt-12" style={{ borderTop: `1px solid ${S.border}` }}>
+            <p
+              className="text-[11px] uppercase tracking-[0.2em] mb-10"
+              style={{ fontFamily: "monospace", color: S.muted }}
+            >
               Honest Limitations
             </p>
             <div className="max-w-[720px] space-y-6">
@@ -270,15 +370,24 @@ export function OperationalRoom() {
       {/* ── 07 · What's Next ─────────────────────────────── */}
       <section className="px-6 pb-20 sm:px-8 md:px-12">
         <div className="mx-auto max-w-[1120px]">
-          <div className="border-t border-text/10 pt-12">
-            <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-text/40 mb-10">
+          <div className="pt-12" style={{ borderTop: `1px solid ${S.border}` }}>
+            <p
+              className="text-[11px] uppercase tracking-[0.2em] mb-10"
+              style={{ fontFamily: "monospace", color: S.muted }}
+            >
               What&apos;s Next
             </p>
             <div className="max-w-[720px]">
-              <p className="font-heading text-[18px] font-medium text-text">
+              <p
+                className="text-[18px] font-medium"
+                style={{ fontFamily: "Georgia, serif" }}
+              >
                 Next case study: Collaborative Workspace
               </p>
-              <p className="mt-3 font-body text-[15px] leading-relaxed text-text/50">
+              <p
+                className="mt-3 text-[15px] leading-relaxed"
+                style={{ color: "rgba(46,40,33,0.55)" }}
+              >
                 It&apos;s already built — real-time MERN app with Socket.io,
                 Kanban, OAuth. Needs to be exhibited in Foyer. Steps
                 documented in the roadmap. Reminder set: September 15, 2026.
@@ -288,7 +397,8 @@ export function OperationalRoom() {
                   href="https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-08/plan-to-keep-building.md"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex min-h-[44px] items-center justify-center rounded-[3px] border border-text/15 bg-transparent px-5 py-2 font-body text-[13px] text-text/60 transition-colors duration-200 hover:border-text/30 hover:text-text"
+                  className="inline-flex min-h-[44px] items-center justify-center rounded-[3px] border bg-transparent px-5 py-2 text-[13px] transition-colors duration-200"
+                  style={{ borderColor: "rgba(46,40,33,0.12)", color: "rgba(46,40,33,0.6)" }}
                 >
                   Read the Roadmap ↗
                 </a>
@@ -296,7 +406,8 @@ export function OperationalRoom() {
                   href="https://github.com/ZAYNINFINITY/flyrank-ai-internship/issues/17"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex min-h-[44px] items-center justify-center rounded-[3px] border border-text/15 bg-transparent px-5 py-2 font-body text-[13px] text-text/60 transition-colors duration-200 hover:border-text/30 hover:text-text"
+                  className="inline-flex min-h-[44px] items-center justify-center rounded-[3px] border bg-transparent px-5 py-2 text-[13px] transition-colors duration-200"
+                  style={{ borderColor: "rgba(46,40,33,0.12)", color: "rgba(46,40,33,0.6)" }}
                 >
                   Issue #17 ↗
                 </a>
@@ -309,8 +420,11 @@ export function OperationalRoom() {
       {/* ── 08 · Routes ──────────────────────────────────── */}
       <section className="px-6 pb-20 sm:px-8 md:px-12">
         <div className="mx-auto max-w-[1120px]">
-          <div className="border-t border-text/10 pt-12">
-            <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-text/40 mb-6">
+          <div className="pt-12" style={{ borderTop: `1px solid ${S.border}` }}>
+            <p
+              className="text-[11px] uppercase tracking-[0.2em] mb-6"
+              style={{ fontFamily: "monospace", color: S.muted }}
+            >
               Museum Routes
             </p>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -328,8 +442,11 @@ export function OperationalRoom() {
       {/* ── 09 · Stack ───────────────────────────────────── */}
       <section className="px-6 pb-20 sm:px-8 md:px-12">
         <div className="mx-auto max-w-[1120px]">
-          <div className="border-t border-text/10 pt-12">
-            <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-text/40 mb-6">
+          <div className="pt-12" style={{ borderTop: `1px solid ${S.border}` }}>
+            <p
+              className="text-[11px] uppercase tracking-[0.2em] mb-6"
+              style={{ fontFamily: "monospace", color: S.muted }}
+            >
               Stack
             </p>
             <div className="flex flex-wrap gap-2">
@@ -344,7 +461,12 @@ export function OperationalRoom() {
               ].map((skill) => (
                 <span
                   key={skill}
-                  className="rounded-[3px] border border-text/10 px-3 py-1.5 font-mono text-[12px] text-text/50"
+                  className="rounded-[3px] px-3 py-1.5 text-[12px]"
+                  style={{
+                    border: `1px solid ${S.border}`,
+                    fontFamily: "monospace",
+                    color: "rgba(46,40,33,0.5)",
+                  }}
                 >
                   {skill}
                 </span>
@@ -356,13 +478,19 @@ export function OperationalRoom() {
 
       {/* ── Footer ────────────────────────────────────────── */}
       <footer className="px-6 pb-12 sm:px-8 md:px-12">
-        <div className="mx-auto max-w-[1120px] border-t border-text/10 pt-8">
+        <div
+          className="mx-auto max-w-[1120px] pt-8"
+          style={{ borderTop: `1px solid ${S.border}` }}
+        >
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <p className="font-body text-[13px] text-text/30">
+              <p className="text-[13px]" style={{ color: "rgba(46,40,33,0.3)" }}>
                 Foyer · Open digital museum for developers
               </p>
-              <p className="font-mono text-[11px] text-text/20 mt-1">
+              <p
+                className="text-[11px] mt-1"
+                style={{ fontFamily: "monospace", color: "rgba(46,40,33,0.2)" }}
+              >
                 Built by ZAYNINFINITY · AI Fluency + Frontend AI Engineering
               </p>
             </div>
@@ -371,7 +499,8 @@ export function OperationalRoom() {
                 href="https://github.com/ZAYNINFINITY/flyrank-ai-internship"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-body text-[13px] text-text/30 transition-colors duration-200 hover:text-text/60"
+                className="text-[13px] transition-colors duration-200"
+                style={{ color: "rgba(46,40,33,0.3)" }}
               >
                 GitHub
               </a>
@@ -379,13 +508,15 @@ export function OperationalRoom() {
                 href="https://zainportfoli0.netlify.app"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-body text-[13px] text-text/30 transition-colors duration-200 hover:text-text/60"
+                className="text-[13px] transition-colors duration-200"
+                style={{ color: "rgba(46,40,33,0.3)" }}
               >
                 Portfolio
               </a>
               <Link
                 href="/about"
-                className="font-body text-[13px] text-text/30 transition-colors duration-200 hover:text-text/60"
+                className="text-[13px] transition-colors duration-200"
+                style={{ color: "rgba(46,40,33,0.3)" }}
               >
                 About
               </Link>
@@ -411,14 +542,26 @@ function AiCard({
   cta: { label: string; href: string };
 }) {
   return (
-    <div className="rounded-[3px] border border-text/10 p-6">
-      <p className="font-mono text-[11px] uppercase tracking-[0.15em] text-accent">
+    <div
+      className="rounded-[3px] p-6"
+      style={{ border: `1px solid ${S.border}`, backgroundColor: S.surface }}
+    >
+      <p
+        className="text-[11px] uppercase tracking-[0.15em]"
+        style={{ fontFamily: "monospace", color: S.accent }}
+      >
         {number}
       </p>
-      <p className="mt-3 font-heading text-[16px] font-medium text-text">
+      <p
+        className="mt-3 text-[16px] font-medium"
+        style={{ fontFamily: "Georgia, serif" }}
+      >
         {title}
       </p>
-      <p className="mt-3 font-body text-[14px] leading-relaxed text-text/50">
+      <p
+        className="mt-3 text-[14px] leading-relaxed"
+        style={{ color: "rgba(46,40,33,0.5)" }}
+      >
         {body}
       </p>
       {cta.href.startsWith("http") ? (
@@ -426,14 +569,16 @@ function AiCard({
           href={cta.href}
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-4 inline-block font-body text-[13px] text-text/40 transition-colors duration-200 hover:text-text/70"
+          className="mt-4 inline-block text-[13px] transition-colors duration-200"
+          style={{ color: "rgba(46,40,33,0.4)" }}
         >
           {cta.label} →
         </a>
       ) : (
         <Link
           href={cta.href}
-          className="mt-4 inline-block font-body text-[13px] text-text/40 transition-colors duration-200 hover:text-text/70"
+          className="mt-4 inline-block text-[13px] transition-colors duration-200"
+          style={{ color: "rgba(46,40,33,0.4)" }}
         >
           {cta.label} →
         </Link>
@@ -454,21 +599,31 @@ function ProjectRow({
   museumHref: string;
 }) {
   return (
-    <div className="flex items-start gap-4 px-6 py-5">
+    <div
+      className="flex items-start gap-4 px-6 py-5"
+      style={{ borderBottom: `1px solid ${S.border}` }}
+    >
       <div className="flex-1 min-w-0">
-        <p className="font-heading text-[15px] font-medium text-text">
+        <p
+          className="text-[15px] font-medium"
+          style={{ fontFamily: "Georgia, serif" }}
+        >
           {title}
         </p>
-        <p className="font-mono text-[12px] text-text/30 mt-0.5">
+        <p
+          className="text-[12px] mt-0.5"
+          style={{ fontFamily: "monospace", color: "rgba(46,40,33,0.3)" }}
+        >
           {stack}
         </p>
-        <p className="font-body text-[14px] text-text/40 mt-2">
+        <p className="text-[14px] mt-2" style={{ color: "rgba(46,40,33,0.4)" }}>
           {description}
         </p>
       </div>
       <Link
         href={museumHref}
-        className="flex-shrink-0 mt-1 font-body text-[12px] text-text/30 transition-colors duration-200 hover:text-text/60"
+        className="flex-shrink-0 mt-1 text-[12px] transition-colors duration-200"
+        style={{ color: "rgba(46,40,33,0.3)" }}
       >
         Museum →
       </Link>
@@ -486,14 +641,23 @@ function StatCard({
   note: string;
 }) {
   return (
-    <div className="rounded-[3px] border border-text/10 px-5 py-4">
-      <p className="font-mono text-[11px] uppercase tracking-[0.15em] text-text/40">
+    <div
+      className="rounded-[3px] px-5 py-4"
+      style={{ border: `1px solid ${S.border}`, backgroundColor: S.surface }}
+    >
+      <p
+        className="text-[11px] uppercase tracking-[0.15em]"
+        style={{ fontFamily: "monospace", color: "rgba(46,40,33,0.4)" }}
+      >
         {label}
       </p>
-      <p className="mt-2 font-heading text-[22px] font-medium text-text">
+      <p
+        className="mt-2 text-[22px] font-medium"
+        style={{ fontFamily: "Georgia, serif" }}
+      >
         {value}
       </p>
-      <p className="mt-1 font-body text-[12px] text-text/30">
+      <p className="mt-1 text-[12px]" style={{ color: "rgba(46,40,33,0.3)" }}>
         {note}
       </p>
     </div>
@@ -503,8 +667,11 @@ function StatCard({
 function Limitation({ text }: { text: string }) {
   return (
     <div className="flex gap-3">
-      <span className="mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-text/15" />
-      <p className="font-body text-[14px] leading-relaxed text-text/45">
+      <span
+        className="mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full"
+        style={{ backgroundColor: "rgba(46,40,33,0.15)" }}
+      />
+      <p className="text-[14px] leading-relaxed" style={{ color: "rgba(46,40,33,0.45)" }}>
         {text}
       </p>
     </div>
@@ -523,17 +690,27 @@ function RouteCard({
   return (
     <Link
       href={href}
-      className="group flex items-center justify-between rounded-[3px] border border-text/10 px-5 py-4 transition-colors duration-200 hover:border-text/20"
+      className="group flex items-center justify-between rounded-[3px] px-5 py-4 transition-colors duration-200"
+      style={{ border: `1px solid ${S.border}` }}
     >
       <div>
-        <span className="font-mono text-[10px] uppercase tracking-[0.15em] text-text/30">
+        <span
+          className="text-[10px] uppercase tracking-[0.15em]"
+          style={{ fontFamily: "monospace", color: "rgba(46,40,33,0.3)" }}
+        >
           {tag}
         </span>
-        <p className="mt-1 font-heading text-[15px] font-medium text-text">
+        <p
+          className="mt-1 text-[15px] font-medium"
+          style={{ fontFamily: "Georgia, serif" }}
+        >
           {label}
         </p>
       </div>
-      <span className="font-body text-[13px] text-text/20 transition-colors duration-200 group-hover:text-text/50">
+      <span
+        className="text-[13px] transition-colors duration-200"
+        style={{ color: "rgba(46,40,33,0.2)" }}
+      >
         →
       </span>
     </Link>

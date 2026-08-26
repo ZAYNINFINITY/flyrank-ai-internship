@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Nav } from "@/components/primitives/nav";
 
 export function OperationalRoom() {
@@ -43,18 +44,18 @@ export function OperationalRoom() {
             >
               Portfolio ↗
             </a>
-            <a
+            <Link
               href="/exhibit/zayn"
               className="inline-flex min-h-[44px] items-center justify-center rounded-[3px] border border-text/20 bg-transparent px-6 py-2.5 font-body text-sm text-text transition-colors duration-200 hover:border-text/40"
             >
               View in Museum →
-            </a>
-            <a
+            </Link>
+            <Link
               href="/assistant"
               className="inline-flex min-h-[44px] items-center justify-center rounded-[3px] border border-accent/30 bg-accent/5 px-6 py-2.5 font-body text-sm text-accent transition-colors duration-200 hover:border-accent/50 hover:bg-accent/10"
             >
               Talk to AI Curator →
-            </a>
+            </Link>
           </div>
         </div>
       </section>
@@ -382,12 +383,12 @@ export function OperationalRoom() {
               >
                 Portfolio
               </a>
-              <a
+              <Link
                 href="/about"
                 className="font-body text-[13px] text-text/30 transition-colors duration-200 hover:text-text/60"
               >
                 About
-              </a>
+              </Link>
             </div>
           </div>
         </div>
@@ -420,14 +421,23 @@ function AiCard({
       <p className="mt-3 font-body text-[14px] leading-relaxed text-text/50">
         {body}
       </p>
-      <a
-        href={cta.href}
-        target={cta.href.startsWith("http") ? "_blank" : undefined}
-        rel={cta.href.startsWith("http") ? "noopener noreferrer" : undefined}
-        className="mt-4 inline-block font-body text-[13px] text-text/40 transition-colors duration-200 hover:text-text/70"
-      >
-        {cta.label} →
-      </a>
+      {cta.href.startsWith("http") ? (
+        <a
+          href={cta.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-4 inline-block font-body text-[13px] text-text/40 transition-colors duration-200 hover:text-text/70"
+        >
+          {cta.label} →
+        </a>
+      ) : (
+        <Link
+          href={cta.href}
+          className="mt-4 inline-block font-body text-[13px] text-text/40 transition-colors duration-200 hover:text-text/70"
+        >
+          {cta.label} →
+        </Link>
+      )}
     </div>
   );
 }
@@ -456,12 +466,12 @@ function ProjectRow({
           {description}
         </p>
       </div>
-      <a
+      <Link
         href={museumHref}
         className="flex-shrink-0 mt-1 font-body text-[12px] text-text/30 transition-colors duration-200 hover:text-text/60"
       >
         Museum →
-      </a>
+      </Link>
     </div>
   );
 }
@@ -511,7 +521,7 @@ function RouteCard({
   href: string;
 }) {
   return (
-    <a
+    <Link
       href={href}
       className="group flex items-center justify-between rounded-[3px] border border-text/10 px-5 py-4 transition-colors duration-200 hover:border-text/20"
     >
@@ -526,6 +536,6 @@ function RouteCard({
       <span className="font-body text-[13px] text-text/20 transition-colors duration-200 group-hover:text-text/50">
         →
       </span>
-    </a>
+    </Link>
   );
 }

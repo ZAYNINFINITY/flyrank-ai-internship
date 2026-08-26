@@ -1,3 +1,5 @@
+export const maxDuration = 30;
+
 import { streamText, convertToModelMessages } from "ai";
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 import type { UIMessage } from "ai";

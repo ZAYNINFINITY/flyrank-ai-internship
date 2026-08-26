@@ -66,3 +66,10 @@ Foyer is ready to keep building when:
 - [ ] The museum has 10+ real developers with real projects
 - [ ] The AI curator can answer questions about any exhibit in the museum
 - [ ] The 3D experience loads in under 3 seconds on a mid-range phone
+
+## Reminder
+
+**Set:** August 26, 2026
+**Next review:** September 15, 2026
+**Action:** Add first real developer exhibit (Collaborative Workspace) to Foyer
+**Evidence:** GitHub Issue #17

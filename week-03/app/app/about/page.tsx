@@ -1,21 +1,22 @@
 import { Reveal } from "@/components/ops/reveal";
 import { S } from "@/components/ops/theme";
+import { ContactForm } from "@/components/ops/contact-form";
 
 /* eslint-disable @next/next/no-img-element */
 
 const rooms = [
   {
-    src: "/images/about/entrance.png",
+    src: "/images/about/entrance.webp",
     name: "The Entrance Hall",
     note: "Where every visit begins — the lobby sets the tone before you walk in.",
   },
   {
-    src: "/images/about/corridor.png",
+    src: "/images/about/corridor.webp",
     name: "The Main Corridor",
     note: "Exhibits hang on the walls as you move through the space, room to room.",
   },
   {
-    src: "/images/about/reception.png",
+    src: "/images/about/reception.webp",
     name: "The Reception Desk",
     note: "A human receptionist — not a card grid — greets you at the door.",
   },
@@ -190,6 +191,47 @@ export default function AboutPage() {
               </div>
             </div>
           </Reveal>
+        </div>
+      </section>
+
+      {/* ── 03.5 · Contact ───────────────────────────────── */}
+      <section className="px-6 pb-24 sm:px-8 md:px-12">
+        <div className="mx-auto max-w-[1120px]">
+          <div
+            style={{
+              borderTop: `1px solid ${S.border}`,
+              borderBottom: `1px solid ${S.border}`,
+            }}
+          >
+            <div className="py-16">
+              <Reveal>
+                <p
+                  className="text-[11px] uppercase tracking-[0.2em] mb-6"
+                  style={{ fontFamily: "monospace", color: S.accent }}
+                >
+                  Get in touch
+                </p>
+                <h2
+                  className="text-[28px] font-medium leading-[1.15] md:text-[38px]"
+                  style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
+                >
+                  Working on something worth building?
+                </h2>
+                <p
+                  className="mt-4 max-w-[560px] text-[15px] leading-[1.75]"
+                  style={{ color: "rgba(46,40,33,0.55)" }}
+                >
+                  Whether it&apos;s an internship, a collaboration, or a quick
+                  question about the museum — this form sends straight to my
+                  inbox, no backend of mine in between.
+                </p>
+              </Reveal>
+
+              <div className="mt-12">
+                <ContactForm />
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 

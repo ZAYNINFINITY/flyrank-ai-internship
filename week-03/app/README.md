@@ -126,6 +126,8 @@ npx playwright test
 
 Average performance: 99.25. Accessibility = 95 on 3D routes because Three.js canvas has no ARIA labels; "Accessible view" toggle provides full 2D accessible path scoring 100.
 
+> **Eval note:** No formal v1 baseline was captured for these scores. They are the post-production (August 2026) measurements against the deployed app.
+
 ## Known limitations
 
 - **3D canvas has no ARIA labels** — Three.js WebGL limitation. "Accessible view" toggle provides full access.

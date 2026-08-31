@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Space_Grotesk, Inter } from "next/font/google";
-import Link from "next/link";
 import { Nav } from "@/components/primitives/nav";
+import { SiteFooter } from "@/components/primitives/site-footer";
 import { AudioProvider } from "@/components/ui/audio-provider";
 import "./globals.css";
 
@@ -53,20 +53,7 @@ export default function RootLayout({
         <AudioProvider>
           <main id="main-content" className="flex-1">{children}</main>
         </AudioProvider>
-        <footer className="flex items-center gap-6 border-t border-text/10 px-6 py-6 sm:px-8 md:px-12">
-          <Link
-            href="/about"
-            className="font-body text-sm text-text/40 transition-colors duration-200 hover:text-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-          >
-            About
-          </Link>
-          <Link
-            href="/dashboard"
-            className="font-body text-sm text-text/40 transition-colors duration-200 hover:text-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-          >
-            Dashboard
-          </Link>
-        </footer>
+        <SiteFooter />
       </body>
     </html>
   );

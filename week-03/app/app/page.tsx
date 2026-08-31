@@ -1,12 +1,14 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useMemo } from "react";
+import { Suspense, useMemo } from "react";
+import { useSearchParams } from "next/navigation";
 import { createPlacementMap, populateExhibitRoom } from "@/lib/museum/placement";
 import { getSurfaceLayout } from "@/lib/museum/queries";
-import { useCapableRenderer } from "@/lib/renderer/use-capable-renderer";
 import { getPortfolioRouteForExhibitId } from "@/lib/museum/navigation-adapter";
+import type { RendererQuality } from "@/lib/renderer/capability";
 import { OperationalRoom } from "@/components/ops/operational-room";
+import { StoryIntro } from "@/components/ops/story-intro";
 
 // Loaded client-side only — three.js/r3f can't run during SSR.
 const ExhibitRoom3D = dynamic(
@@ -27,14 +29,18 @@ const ExhibitRoom3D = dynamic(
 // corridor door) reveals every other exhibit hanging on the corridor walls.
 const HOME_EXHIBIT_ID = "pos-it";
 
-// This is the front door of Foyer. No hero text, no "Enter the Museum"
-// button, no marketing beats to scroll past first — the museum itself IS
-// the homepage, the same way itom's site puts you straight into the space
-// instead of behind a landing page. Low-power / no-WebGL devices still get
-// a minimal flat entrance below, since that's a real accessibility need,
-// not a design choice.
-export default function HomePage() {
-  const capability = useCapableRenderer();
+// A clean `/` link is Foyer's front door: it hands the visitor a choice of
+// how to step inside rather than silently committing to one renderer.
+// - `/`             → the story chooser (3D or 2D)
+// - `/?view=2d`     → the flat 2D engine room
+// - `/?view=3d`     → the 3D museum
+// Reading the path's ?view via useSearchParams is reactive on navigation and
+// server-aware on direct loads, so switching modes never flashes a wrong page.
+const QUALITY_3D: RendererQuality = { maxDpr: 2, shadows: true };
+
+function HomeContent() {
+  const params = useSearchParams();
+  const view = params.get("view");
 
   const layout = useMemo(
     () =>
@@ -45,17 +51,29 @@ export default function HomePage() {
     []
   );
 
-  if (capability.mode !== "3d") {
+  if (view === "2d") {
     return <OperationalRoom />;
   }
 
+  if (view === "3d") {
+    return (
+      <ExhibitRoom3D
+        layout={layout}
+        exhibitId={HOME_EXHIBIT_ID}
+        portfolioRoute={getPortfolioRouteForExhibitId()}
+        quality={QUALITY_3D}
+        arrivedVia={null}
+      />
+    );
+  }
+
+  return <StoryIntro />;
+}
+
+export default function HomePage() {
   return (
-    <ExhibitRoom3D
-      layout={layout}
-      exhibitId={HOME_EXHIBIT_ID}
-      portfolioRoute={getPortfolioRouteForExhibitId()}
-      quality={capability.quality}
-      arrivedVia={null}
-    />
+    <Suspense fallback={null}>
+      <HomeContent />
+    </Suspense>
   );
 }

@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 /**
  * Primary Foyer museum flow, end to end.
  *
- * Home → Enter the Museum → Entrance → Reception Hall door → Reception →
+ * Home (landing chooser) → Museum Entrance → Reception Hall door → Reception →
  * Curator Studio door → Curator chat → Send.
  *
  * The AI layer is stubbed: the `/api/chat` POST is intercepted and answered
@@ -57,19 +57,16 @@ test.describe("primary museum flow", () => {
       });
     });
 
-    // ── Home (3D museum-as-homepage or flat fallback) ─────
+    // ── Home: the landing is now a story chooser (3D or 2D) ──
     await page.goto("/");
-    const flatEnter = page.getByRole("link", { name: "Enter the Museum" });
-    // The 3D room's escape hatch carries a descriptive aria-label
-    // ("Open accessible text view of this room") — match on the stable part.
-    const textWalls = page.getByRole("button", { name: /accessible text view/i });
-    await expect(flatEnter.or(textWalls)).toBeVisible({ timeout: 45000 });
-
-    if (await flatEnter.isVisible()) {
-      await flatEnter.click();
-    } else {
-      await page.goto("/entrance");
-    }
+    // The front door hands the visitor a real choice of how to enter.
+    await expect(
+      page.getByRole("link", { name: /enter in 3d/i }),
+    ).toBeVisible({ timeout: 45000 });
+    await expect(page.getByRole("link", { name: /explore in 2d/i })).toBeVisible();
+    // Step straight into the museum. Doing this by URL keeps the test
+    // deterministic regardless of whether CI's headless WebGL is available.
+    await page.goto("/entrance");
 
     // ── Entrance ──────────────────────────────────────────
     await expect(page).toHaveURL(/\/entrance$/);

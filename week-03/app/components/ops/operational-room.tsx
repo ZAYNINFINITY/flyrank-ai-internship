@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { Nav } from "@/components/primitives/nav";
+
+/* eslint-disable @next/next/no-img-element */
 
 /* ── Palette (warm editorial) ─────────────────────────────── */
 const S = {
@@ -123,6 +124,82 @@ function Reveal({
   );
 }
 
+/* ── Hand-drawn line illustration ─────────────────────────
+   The recurring corridor sketch used in "The Exhibits"
+   section. Stroke-only SVG — no dependency on the 3D renderer.
+──────────────────────────────────────────────────────────── */
+
+function CorridorIllustration() {
+  const figure = "#3A2E22";
+  const frames = [
+    { x: 46, tone: S.accent },
+    { x: 106, tone: "#8B6F47" },
+    { x: 166, tone: "#B89968" },
+    { x: 226, tone: "#6B5636" },
+  ];
+  return (
+    <svg viewBox="0 0 270 150" fill="none" className="h-auto w-full" aria-hidden="true">
+      <defs>
+        <linearGradient id="corridorWall" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#EFE4CD" />
+          <stop offset="100%" stopColor="#DCC79A" />
+        </linearGradient>
+        <linearGradient id="corridorFloor" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#C7AE82" />
+          <stop offset="100%" stopColor="#9C7F52" />
+        </linearGradient>
+      </defs>
+
+      <rect x="0" y="0" width="270" height="96" fill="url(#corridorWall)" />
+      <rect x="0" y="96" width="270" height="54" fill="url(#corridorFloor)" />
+
+      {frames.map(({ x, tone }) => (
+        <g key={x}>
+          <rect x={x - 16} y="27" width="36" height="46" rx="1" fill="#3A2E22" opacity="0.15" />
+          <rect x={x - 18} y="24" width="36" height="46" rx="1" fill="#F5EEDD" stroke="#3A2E22" strokeWidth="1.4" />
+          <rect x={x - 12} y="30" width="24" height="34" rx="1" fill={tone} opacity="0.75" />
+        </g>
+      ))}
+
+      {/* figure touring the corridor */}
+      <circle cx="26" cy="86" r="8" fill={figure} />
+      <path
+        d="M26 94c-9 0-15 8-15 18v34h14l1-24 1 24h16l1-24 1 24h14v-34c0-10-6-18-15-18z"
+        fill={figure}
+      />
+    </svg>
+  );
+}
+
+function DoorwayIllustration() {
+  const figure = "#3A2E22";
+  return (
+    <svg viewBox="0 0 160 170" fill="none" className="h-auto w-full" aria-hidden="true">
+      <defs>
+        <radialGradient id="nextGlow" cx="80%" cy="45%" r="60%">
+          <stop offset="0%" stopColor="#F7D9A0" stopOpacity="0.9" />
+          <stop offset="100%" stopColor="#F7D9A0" stopOpacity="0" />
+        </radialGradient>
+        <linearGradient id="nextDoor" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#E4D3AE" />
+          <stop offset="100%" stopColor="#C7AE82" />
+        </linearGradient>
+      </defs>
+
+      <circle cx="120" cy="75" r="70" fill="url(#nextGlow)" />
+      <rect x="90" y="20" width="50" height="120" rx="2" fill="#3A2E22" opacity="0.85" />
+      <path d="M115 22l25 10v96l-25 10z" fill="url(#nextDoor)" />
+
+      {/* figure heading toward the light */}
+      <circle cx="35" cy="112" r="8" fill={figure} />
+      <path
+        d="M35 120c-9 0-15 8-15 18v30h13l1-20 1 20h15l1-20 1 20h13v-30c0-10-6-18-15-18z"
+        fill={figure}
+      />
+    </svg>
+  );
+}
+
 /* ══════════════════════════════════════════════════════════ */
 /* ── Main component                                       */
 /* ══════════════════════════════════════════════════════════ */
@@ -148,144 +225,187 @@ export function OperationalRoom() {
           "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E\")",
       }}
     >
-      <Nav />
+      {/* Switch to the full 3D museum experience. The 2D room is the
+          accessible/fallback layer, so the escape hatch back to the
+          walkable corridor is always one tap away. */}
+      <Link
+        href="/?view=3d"
+        className="fixed bottom-5 right-5 z-40 min-h-[44px] rounded-sm border px-4 py-2 text-[11px] font-medium uppercase tracking-[0.2em] shadow-lg backdrop-blur-sm transition-all duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+        style={{
+          color: "#f5efe0",
+          backgroundColor: "rgba(20,22,35,0.85)",
+          borderColor: "rgba(245,240,224,0.25)",
+        }}
+      >
+        View in 3D
+      </Link>
 
       {/* ── 01 · Hero ─────────────────────────────────────── */}
       <section className="px-6 pt-20 pb-28 sm:px-8 md:px-12">
         <div className="mx-auto max-w-[1120px]">
-          {/* Dot + label */}
-          <div
-            className="flex items-center gap-3 mb-5"
-            style={{
-              opacity: prefersReduced ? 1 : undefined,
-              animation: prefersReduced
-                ? undefined
-                : "fadeSlideUp 0.5s ease 0ms both",
-            }}
-          >
-            <span
-              className="inline-block h-2 w-2 rounded-full"
-              style={{ backgroundColor: S.accent }}
-            />
-            <p
-              className="text-[11px] uppercase tracking-[0.2em]"
-              style={{ fontFamily: "monospace", color: S.muted }}
-            >
-              Foyer · Engine Room
-            </p>
-          </div>
-
-          {/* Name */}
-          <h1
-            className="text-[36px] font-medium md:text-[52px] leading-[1.1]"
-            style={{
-              fontFamily: "Georgia, 'Times New Roman', serif",
-              animation: prefersReduced
-                ? undefined
-                : "fadeSlideUp 0.5s ease 120ms both",
-            }}
-          >
-            Zain Ul Abideen
-          </h1>
-
-          {/* Subtitle */}
-          <p
-            className="mt-3 text-[17px]"
-            style={{
-              fontFamily: "Georgia, serif",
-              color: S.muted,
-              animation: prefersReduced
-                ? undefined
-                : "fadeSlideUp 0.5s ease 240ms both",
-            }}
-          >
-            CS Student @ PAF-IAST · MERN Stack Developer
-          </p>
-
-          {/* Intro */}
-          <p
-            className="mt-8 max-w-[640px] text-[15px] leading-[1.75]"
-            style={{
-              color: "rgba(46,40,33,0.55)",
-              animation: prefersReduced
-                ? undefined
-                : "fadeSlideUp 0.5s ease 360ms both",
-            }}
-          >
-            This is the operational view behind Foyer — the 3D museum where
-            developers exhibit their work as gallery rooms, not card grids.
-            AI curates the experience. Your portfolio at{" "}
-            <a
-              href="https://zainportfoli0.netlify.app"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline underline-offset-4 decoration-1 transition-colors duration-200"
-              style={{ color: "rgba(46,40,33,0.7)" }}
-            >
-              zainportfoli0.netlify.app
-            </a>{" "}
-            is the public face. This is the engine room.
-          </p>
-
-          {/* Buttons */}
-          <div
-            className="mt-10 flex flex-wrap gap-4"
-            style={{
-              animation: prefersReduced
-                ? undefined
-                : "fadeSlideUp 0.5s ease 480ms both",
-            }}
-          >
-            <a
-              href="https://zainportfoli0.netlify.app"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex min-h-[44px] items-center justify-center rounded-[3px] border bg-transparent px-6 py-2.5 text-sm transition-colors duration-200"
-              style={{ borderColor: "rgba(46,40,33,0.18)", color: S.text }}
-            >
-              Portfolio ↗
-            </a>
-            <Link
-              href="/exhibit/zayn"
-              className="inline-flex min-h-[44px] items-center justify-center rounded-[3px] border bg-transparent px-6 py-2.5 text-sm transition-colors duration-200"
-              style={{ borderColor: "rgba(46,40,33,0.18)", color: S.text }}
-            >
-              View in Museum →
-            </Link>
-            <Link
-              href="/assistant"
-              className="inline-flex min-h-[44px] items-center justify-center rounded-[3px] border px-6 py-2.5 text-sm transition-colors duration-200"
-              style={{
-                borderColor: "rgba(201,79,10,0.3)",
-                backgroundColor: "rgba(201,79,10,0.05)",
-                color: S.accent,
-              }}
-            >
-              Talk to AI Curator →
-            </Link>
-          </div>
-
-          {/* Scroll cue */}
-          {!prefersReduced && (
-            <div
-              className="mt-16 flex flex-col items-start gap-2"
-              style={{ animation: "fadeSlideUp 0.5s ease 700ms both" }}
-            >
-              <span
-                className="text-[11px] uppercase tracking-[0.15em]"
-                style={{ fontFamily: "monospace", color: S.muted }}
-              >
-                Scroll ↓
-              </span>
+          <div className="flex flex-col gap-12 md:flex-row md:items-start md:justify-between">
+            <div className="max-w-[640px]">
+              {/* Dot + label */}
               <div
-                className="h-[1px] w-8"
+                className="flex items-center gap-3 mb-5"
                 style={{
-                  backgroundColor: S.accent,
-                  animation: "bobDown 2s ease-in-out infinite",
+                  opacity: prefersReduced ? 1 : undefined,
+                  animation: prefersReduced
+                    ? undefined
+                    : "fadeSlideUp 0.5s ease 0ms both",
                 }}
-              />
+              >
+                <span
+                  className="inline-block h-2 w-2 rounded-full"
+                  style={{ backgroundColor: S.accent }}
+                />
+                <p
+                  className="text-[11px] uppercase tracking-[0.2em]"
+                  style={{ fontFamily: "monospace", color: S.muted }}
+                >
+                  Foyer · Engine Room
+                </p>
+              </div>
+
+              {/* Name */}
+              <h1
+                className="text-[36px] font-medium md:text-[52px] leading-[1.1]"
+                style={{
+                  fontFamily: "Georgia, 'Times New Roman', serif",
+                  animation: prefersReduced
+                    ? undefined
+                    : "fadeSlideUp 0.5s ease 120ms both",
+                }}
+              >
+                Zain Ul Abideen
+              </h1>
+
+              {/* Subtitle */}
+              <p
+                className="mt-3 text-[17px]"
+                style={{
+                  fontFamily: "Georgia, serif",
+                  color: S.muted,
+                  animation: prefersReduced
+                    ? undefined
+                    : "fadeSlideUp 0.5s ease 240ms both",
+                }}
+              >
+                CS Student @ PAF-IAST · MERN Stack Developer
+              </p>
+
+              {/* Intro — this page is the engine room under the 3D
+                  museum, not a portfolio landing page. */}
+              <p
+                className="mt-8 text-[15px] leading-[1.75]"
+                style={{
+                  color: "rgba(46,40,33,0.55)",
+                  animation: prefersReduced
+                    ? undefined
+                    : "fadeSlideUp 0.5s ease 360ms both",
+                }}
+              >
+                Foyer is a 3D museum — a corridor of exhibit rooms where projects
+                live as gallery spaces, not portfolio cards, with an AI curator
+                guiding the tour. This page is the engine room: the same museum,
+                the same exhibits, running in plain 2D for devices that
+                can&apos;t render WebGL, for screen readers, and for anyone
+                auditing how it was built. The 3D corridor is the real
+                experience — step inside if your device supports it.
+              </p>
+
+              {/* Buttons */}
+              <div
+                className="mt-10 flex flex-wrap gap-4"
+                style={{
+                  animation: prefersReduced
+                    ? undefined
+                    : "fadeSlideUp 0.5s ease 480ms both",
+                }}
+              >
+                <Link
+                  href="/exhibit/zayn"
+                  className="inline-flex min-h-[44px] items-center justify-center rounded-[3px] border px-6 py-2.5 text-sm transition-colors duration-200"
+                  style={{
+                    borderColor: "rgba(46,40,33,0.3)",
+                    backgroundColor: "rgba(46,40,33,0.04)",
+                    color: S.text,
+                  }}
+                >
+                  Step Into the 3D Museum →
+                </Link>
+                <Link
+                  href="/assistant"
+                  className="inline-flex min-h-[44px] items-center justify-center rounded-[3px] border px-6 py-2.5 text-sm transition-colors duration-200"
+                  style={{
+                    borderColor: "rgba(201,79,10,0.3)",
+                    backgroundColor: "rgba(201,79,10,0.05)",
+                    color: S.accent,
+                  }}
+                >
+                  Talk to AI Curator →
+                </Link>
+              </div>
+
+              {/* Scroll cue — kept, with the real sketch below it */}
+              {!prefersReduced && (
+                <div
+                  className="mt-16 flex flex-col items-start gap-2"
+                  style={{ animation: "fadeSlideUp 0.5s ease 700ms both" }}
+                >
+                  <span
+                    className="text-[11px] uppercase tracking-[0.15em]"
+                    style={{ fontFamily: "monospace", color: S.muted }}
+                  >
+                    Scroll ↓
+                  </span>
+                  <div
+                    className="h-[1px] w-8"
+                    style={{
+                      backgroundColor: S.accent,
+                      animation: "bobDown 2s ease-in-out infinite",
+                    }}
+                  />
+                </div>
+              )}
+              <div className="mt-6 w-[170px] sm:w-[200px]">
+                <div className="rounded-[4px] p-[3px]" style={{ backgroundColor: "rgba(46,40,33,0.06)" }}>
+                  <img
+                    src="/images/story/scroll.png"
+                    alt="Scroll cue — move through the museum"
+                    className="block h-auto w-full rounded-[2px]"
+                    style={{ aspectRatio: "1024 / 1240", objectFit: "cover" }}
+                  />
+                </div>
+              </div>
             </div>
-          )}
+
+            <div className="relative mx-auto w-[220px] flex-shrink-0 md:mx-0 md:mt-4 md:w-[260px]">
+              {/* arched doorway frame — echoes the museum's arches — with a warm
+                  paper mount beneath, and multiply blending so the sketch reads
+                  as part of the page, not a pasted image */}
+              <div
+                className="overflow-hidden"
+                style={{
+                  borderRadius: "180px 180px 14px 14px",
+                  backgroundColor: "rgba(46,40,33,0.05)",
+                  padding: "6px",
+                }}
+              >
+                <img
+                  src="/images/story/dev.png"
+                  alt="A developer at work in the engine room"
+                  className="block h-auto w-full"
+                  style={{
+                    aspectRatio: "1 / 1",
+                    objectFit: "contain",
+                    borderRadius: "174px 174px 9px 9px",
+                    mixBlendMode: "multiply",
+                  }}
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -301,7 +421,7 @@ export function OperationalRoom() {
             </p>
           </Reveal>
 
-          {/* Beat 1 */}
+          {/* Beat 1 — The Problem: crossed-out card grid */}
           <Reveal>
             <div className="relative mb-20">
               <span
@@ -313,30 +433,42 @@ export function OperationalRoom() {
               >
                 01
               </span>
-              <div className="relative">
-                <p
-                  className="text-[11px] uppercase tracking-[0.15em] mb-3"
-                  style={{ fontFamily: "monospace", color: S.accent }}
-                >
-                  The Problem
-                </p>
-                <h2
-                  className="text-[24px] font-medium md:text-[30px] leading-snug"
-                  style={{ fontFamily: "Georgia, serif" }}
-                >
-                  Every developer portfolio looks the same.
-                </h2>
-                <p
-                  className="mt-5 max-w-[640px] text-[15px] leading-[1.75]"
-                  style={{ color: "rgba(46,40,33,0.55)" }}
-                >
-                  Card grids. Thumbnail clusters. Identical layouts. Projects
-                  compressed into tiny boxes fighting for attention, with no room
-                  to tell the story behind what was built. I had four real
-                  projects — a real-time collab platform, a live e-commerce
-                  site, a browser extension, a POS system — and they all
-                  deserved better than a list.
-                </p>
+              <div className="relative flex flex-col gap-10 md:flex-row md:items-start md:justify-between">
+                <div className="max-w-[620px]">
+                  <p
+                    className="text-[11px] uppercase tracking-[0.15em] mb-3"
+                    style={{ fontFamily: "monospace", color: S.accent }}
+                  >
+                    The Problem
+                  </p>
+                  <h2
+                    className="text-[24px] font-medium md:text-[30px] leading-snug"
+                    style={{ fontFamily: "Georgia, serif" }}
+                  >
+                    Every developer portfolio looks the same.
+                  </h2>
+                  <p
+                    className="mt-5 max-w-[600px] text-[15px] leading-[1.75]"
+                    style={{ color: "rgba(46,40,33,0.55)" }}
+                  >
+                    Card grids. Thumbnail clusters. Identical layouts. Projects
+                    compressed into tiny boxes fighting for attention, with no room
+                    to tell the story behind what was built. I had four real
+                    projects — a real-time collab platform, a live e-commerce
+                    site, a browser extension, a POS system — and they all
+                    deserved better than a list.
+                  </p>
+                </div>
+                <div className="mx-auto w-[170px] flex-shrink-0 md:mx-0 md:mt-2 md:w-[200px]">
+                  <div className="rounded-[4px] p-[3px]" style={{ backgroundColor: "rgba(46,40,33,0.06)" }}>
+                    <img
+                      src="/images/story/problem.png"
+                      alt="Every developer portfolio looking identical — the same card grid, repeated"
+                      className="block h-auto w-full rounded-[2px]"
+                      style={{ aspectRatio: "527 / 713", objectFit: "cover" }}
+                    />
+                  </div>
+                </div>
               </div>
               <div
                 className="mt-16 h-[1px]"
@@ -345,7 +477,7 @@ export function OperationalRoom() {
             </div>
           </Reveal>
 
-          {/* Beat 2 */}
+          {/* Beat 2 — The Idea: figure viewing a framed exhibit in an archway */}
           <Reveal>
             <div className="relative mb-20">
               <span
@@ -357,30 +489,42 @@ export function OperationalRoom() {
               >
                 02
               </span>
-              <div className="relative">
-                <p
-                  className="text-[11px] uppercase tracking-[0.15em] mb-3"
-                  style={{ fontFamily: "monospace", color: S.accent }}
-                >
-                  The Idea
-                </p>
-                <h2
-                  className="text-[24px] font-medium md:text-[30px] leading-snug"
-                  style={{ fontFamily: "Georgia, serif" }}
-                >
-                  What if projects had rooms, not cards?
-                </h2>
-                <p
-                  className="mt-5 max-w-[640px] text-[15px] leading-[1.75]"
-                  style={{ color: "rgba(46,40,33,0.55)" }}
-                >
-                  A foyer is the entrance hall of a museum. It sets the tone for
-                  everything that follows. I wanted to build that — a place where
-                  each project gets a dedicated 3D space with architectural
-                  presence. A scrollable corridor, exhibit frames with a
-                  sketch-to-paint reveal shader, an AI curator that answers
-                  questions about what&apos;s on display. Not a portfolio. A museum.
-                </p>
+              <div className="relative flex flex-col gap-10 md:flex-row-reverse md:items-start md:justify-between">
+                <div className="max-w-[620px]">
+                  <p
+                    className="text-[11px] uppercase tracking-[0.15em] mb-3"
+                    style={{ fontFamily: "monospace", color: S.accent }}
+                  >
+                    The Idea
+                  </p>
+                  <h2
+                    className="text-[24px] font-medium md:text-[30px] leading-snug"
+                    style={{ fontFamily: "Georgia, serif" }}
+                  >
+                    What if projects had rooms, not cards?
+                  </h2>
+                  <p
+                    className="mt-5 max-w-[600px] text-[15px] leading-[1.75]"
+                    style={{ color: "rgba(46,40,33,0.55)" }}
+                  >
+                    A foyer is the entrance hall of a museum. It sets the tone for
+                    everything that follows. I wanted to build that — a place where
+                    each project gets a dedicated 3D space with architectural
+                    presence. A scrollable corridor, exhibit frames with a
+                    sketch-to-paint reveal shader, an AI curator that answers
+                    questions about what&apos;s on display. Not a portfolio. A museum.
+                  </p>
+                </div>
+                <div className="mx-auto w-[170px] flex-shrink-0 md:mx-0 md:mt-2 md:w-[200px]">
+                  <div className="rounded-[4px] p-[3px]" style={{ backgroundColor: "rgba(46,40,33,0.06)" }}>
+                    <img
+                      src="/images/story/idea.png"
+                      alt="A figure stepping into an arched museum room"
+                      className="block h-auto w-full rounded-[2px]"
+                      style={{ aspectRatio: "541 / 731", objectFit: "cover" }}
+                    />
+                  </div>
+                </div>
               </div>
               <div
                 className="mt-16 h-[1px]"
@@ -389,7 +533,7 @@ export function OperationalRoom() {
             </div>
           </Reveal>
 
-          {/* Beat 3 */}
+          {/* Beat 3 — What Broke: the 3D↔2D seam, shown wide */}
           <Reveal>
             <div className="relative mb-20">
               <span
@@ -401,33 +545,45 @@ export function OperationalRoom() {
               >
                 03
               </span>
-              <div className="relative">
-                <p
-                  className="text-[11px] uppercase tracking-[0.15em] mb-3"
-                  style={{ fontFamily: "monospace", color: S.accent }}
-                >
-                  What Broke
-                </p>
-                <h2
-                  className="text-[24px] font-medium md:text-[30px] leading-snug"
-                  style={{ fontFamily: "Georgia, serif" }}
-                >
-                  The 3D-to-2D seam nearly killed the project.
-                </h2>
-                <p
-                  className="mt-5 max-w-[640px] text-[15px] leading-[1.75]"
-                  style={{ color: "rgba(46,40,33,0.55)" }}
-                >
-                  Getting a Three.js scene and a flat React component to render
-                  the same content — same data, same interactions, same feel —
-                  without one becoming a degraded copy of the other. The first
-                  attempt was an orbit diorama that felt like a toy. The second
-                  attempt worked because the 2D path became a first-class
-                  citizen, not a fallback. Capability detection at mount time
-                  decides which renderer to use. Both consume the same data
-                  layer. Making that seam invisible was the hardest architectural
-                  decision in the project.
-                </p>
+              <div className="relative flex flex-col gap-10 md:flex-row md:items-start md:justify-between">
+                <div className="max-w-[620px]">
+                  <p
+                    className="text-[11px] uppercase tracking-[0.15em] mb-3"
+                    style={{ fontFamily: "monospace", color: S.accent }}
+                  >
+                    What Broke
+                  </p>
+                  <h2
+                    className="text-[24px] font-medium md:text-[30px] leading-snug"
+                    style={{ fontFamily: "Georgia, serif" }}
+                  >
+                    The 3D-to-2D seam nearly killed the project.
+                  </h2>
+                  <p
+                    className="mt-5 max-w-[640px] text-[15px] leading-[1.75]"
+                    style={{ color: "rgba(46,40,33,0.55)" }}
+                  >
+                    Getting a Three.js scene and a flat React component to render
+                    the same content — same data, same interactions, same feel —
+                    without one becoming a degraded copy of the other. The first
+                    attempt was an orbit diorama that felt like a toy. The second
+                    attempt worked because the 2D path became a first-class
+                    citizen, not a fallback. Capability detection at mount time
+                    decides which renderer to use. Both consume the same data
+                    layer. Making that seam invisible was the hardest architectural
+                    decision in the project.
+                  </p>
+                </div>
+                <div className="mx-auto w-[170px] flex-shrink-0 md:mx-0 md:mt-2 md:w-[200px]">
+                  <div className="rounded-[4px] p-[3px]" style={{ backgroundColor: "rgba(46,40,33,0.06)" }}>
+                    <img
+                      src="/images/story/what-broke.png"
+                      alt="The seam between the 3D scene and its flat 2D equivalent"
+                      className="block h-auto w-full rounded-[2px]"
+                      style={{ aspectRatio: "530 / 723", objectFit: "cover" }}
+                    />
+                  </div>
+                </div>
               </div>
               <div
                 className="mt-16 h-[1px]"
@@ -436,7 +592,7 @@ export function OperationalRoom() {
             </div>
           </Reveal>
 
-          {/* Beat 4 */}
+          {/* Beat 4 — What Shipped: stamp/seal */}
           <Reveal>
             <div className="relative mb-20">
               <span
@@ -448,30 +604,42 @@ export function OperationalRoom() {
               >
                 04
               </span>
-              <div className="relative">
-                <p
-                  className="text-[11px] uppercase tracking-[0.15em] mb-3"
-                  style={{ fontFamily: "monospace", color: S.accent }}
-                >
-                  What shipped
-                </p>
-                <h2
-                  className="text-[24px] font-medium md:text-[30px] leading-snug"
-                  style={{ fontFamily: "Georgia, serif" }}
-                >
-                  A working museum, not a demo.
-                </h2>
-                <p
-                  className="mt-5 max-w-[640px] text-[15px] leading-[1.75]"
-                  style={{ color: "rgba(46,40,33,0.55)" }}
-                >
-                  74 tests passing. Lighthouse 99.25 average. AI curator powered
-                  by Gemini Flash. Custom GLSL reveal shader. Accessible 2D
-                  fallback for screen readers. Deployed on Vercel with CI/CD.
-                  Rate limiting, input validation, error states verified,
-                  rollback plan documented. This isn&apos;t a class artifact.
-                  It&apos;s a product.
-                </p>
+              <div className="relative flex flex-col gap-10 md:flex-row md:items-start md:justify-between">
+                <div className="max-w-[620px]">
+                  <p
+                    className="text-[11px] uppercase tracking-[0.15em] mb-3"
+                    style={{ fontFamily: "monospace", color: S.accent }}
+                  >
+                    What shipped
+                  </p>
+                  <h2
+                    className="text-[24px] font-medium md:text-[30px] leading-snug"
+                    style={{ fontFamily: "Georgia, serif" }}
+                  >
+                    A working museum, not a demo.
+                  </h2>
+                  <p
+                    className="mt-5 max-w-[600px] text-[15px] leading-[1.75]"
+                    style={{ color: "rgba(46,40,33,0.55)" }}
+                  >
+                    74 tests passing. Lighthouse 99.25 average. AI curator powered
+                    by Gemini Flash. Custom GLSL reveal shader. Accessible 2D
+                    fallback for screen readers. Deployed on Vercel with CI/CD.
+                    Rate limiting, input validation, error states verified,
+                    rollback plan documented. This isn&apos;t a class artifact.
+                    It&apos;s a product.
+                  </p>
+                </div>
+                <div className="mx-auto w-[170px] flex-shrink-0 md:mx-0 md:mt-2 md:w-[200px]">
+                  <div className="rounded-[4px] p-[3px]" style={{ backgroundColor: "rgba(46,40,33,0.06)" }}>
+                    <img
+                      src="/images/story/what-shipped.png"
+                      alt="The finished museum — a working product, not a demo"
+                      className="block h-auto w-full rounded-[2px]"
+                      style={{ aspectRatio: "509 / 660", objectFit: "cover" }}
+                    />
+                  </div>
+                </div>
               </div>
             </div>
           </Reveal>
@@ -482,20 +650,22 @@ export function OperationalRoom() {
       <section className="px-6 pb-24 sm:px-8 md:px-12">
         <div className="mx-auto max-w-[1120px]">
           <Reveal>
-            <p
-              className="text-[11px] uppercase tracking-[0.2em] mb-3"
-              style={{ fontFamily: "monospace", color: S.muted }}
-            >
-              Where AI Does the Heavy Lifting
-            </p>
-            <p
-              className="text-[14px] mb-16 max-w-[600px]"
-              style={{ color: "rgba(46,40,33,0.35)" }}
-            >
-              One thing AI did that I couldn&apos;t have done alone: it manages
-              the museum experience — from curating exhibits to detecting
-              device capability to generating the reveal effect.
-            </p>
+            <div className="mb-16 max-w-[600px]">
+              <p
+                className="text-[11px] uppercase tracking-[0.2em] mb-3"
+                style={{ fontFamily: "monospace", color: S.muted }}
+              >
+                Where AI Does the Heavy Lifting
+              </p>
+              <p
+                className="text-[14px]"
+                style={{ color: "rgba(46,40,33,0.35)" }}
+              >
+                One thing AI did that I couldn&apos;t have done alone: it manages
+                the museum experience — from curating exhibits to detecting
+                device capability to generating the reveal effect.
+              </p>
+            </div>
           </Reveal>
 
           {/* AI 01 — left icon */}
@@ -679,23 +849,31 @@ export function OperationalRoom() {
         </div>
       </section>
 
-      {/* ── 04 · Projects ──────────────────────────────────── */}
+      {/* ── 04 · The Exhibits ──────────────────────────────── */}
       <section className="px-6 pb-24 sm:px-8 md:px-12">
         <div className="mx-auto max-w-[1120px]">
           <Reveal>
-            <p
-              className="text-[11px] uppercase tracking-[0.2em] mb-3"
-              style={{ fontFamily: "monospace", color: S.muted }}
-            >
-              What I Built
-            </p>
-            <p
-              className="text-[14px] mb-16 max-w-[600px]"
-              style={{ color: "rgba(46,40,33,0.35)" }}
-            >
-              Each project exists in two places: your portfolio and the museum.
-              Same work, different presentation.
-            </p>
+            <div className="mb-16 flex flex-col gap-8 md:flex-row md:items-start md:justify-between">
+              <div className="max-w-[600px]">
+                <p
+                  className="text-[11px] uppercase tracking-[0.2em] mb-3"
+                  style={{ fontFamily: "monospace", color: S.muted }}
+                >
+                  The Exhibits
+                </p>
+                <p
+                  className="text-[14px]"
+                  style={{ color: "rgba(46,40,33,0.35)" }}
+                >
+                  These four projects are what&apos;s currently on display inside
+                  Foyer — real, shipped work, each with its own room in the
+                  museum. Not a résumé. A collection.
+                </p>
+              </div>
+              <div className="mx-auto w-[220px] flex-shrink-0 md:mx-0 md:w-[240px]">
+                <CorridorIllustration />
+              </div>
+            </div>
           </Reveal>
 
           <ProjectBlock
@@ -793,46 +971,51 @@ export function OperationalRoom() {
             </Reveal>
 
             <Reveal>
-              <div className="max-w-[720px]">
-                <p
-                  className="text-[22px] font-medium"
-                  style={{ fontFamily: "Georgia, serif" }}
-                >
-                  Next case study: Collaborative Workspace
-                </p>
-                <p
-                  className="mt-4 text-[15px] leading-[1.75]"
-                  style={{ color: "rgba(46,40,33,0.55)" }}
-                >
-                  It&apos;s already built — real-time MERN app with Socket.io,
-                  Kanban, OAuth. Needs to be exhibited in Foyer. Steps
-                  documented in the roadmap. Reminder set: September 15, 2026.
-                </p>
-                <div className="mt-8 flex flex-wrap gap-4">
-                  <a
-                    href="https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-08/plan-to-keep-building.md"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex min-h-[44px] items-center justify-center rounded-[3px] border bg-transparent px-5 py-2 text-[13px] transition-colors duration-200"
-                    style={{
-                      borderColor: "rgba(46,40,33,0.12)",
-                      color: "rgba(46,40,33,0.6)",
-                    }}
+              <div className="flex flex-col gap-10 md:flex-row-reverse md:items-start md:justify-between">
+                <div className="max-w-[600px]">
+                  <p
+                    className="text-[22px] font-medium"
+                    style={{ fontFamily: "Georgia, serif" }}
                   >
-                    Read the Roadmap ↗
-                  </a>
-                  <a
-                    href="https://github.com/ZAYNINFINITY/flyrank-ai-internship/issues/17"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex min-h-[44px] items-center justify-center rounded-[3px] border bg-transparent px-5 py-2 text-[13px] transition-colors duration-200"
-                    style={{
-                      borderColor: "rgba(46,40,33,0.12)",
-                      color: "rgba(46,40,33,0.6)",
-                    }}
+                    Next case study: Collaborative Workspace
+                  </p>
+                  <p
+                    className="mt-4 text-[15px] leading-[1.75]"
+                    style={{ color: "rgba(46,40,33,0.55)" }}
                   >
-                    Issue #17 ↗
-                  </a>
+                    It&apos;s already built — real-time MERN app with Socket.io,
+                    Kanban, OAuth. Needs to be exhibited in Foyer. Steps
+                    documented in the roadmap. Reminder set: September 15, 2026.
+                  </p>
+                  <div className="mt-8 flex flex-wrap gap-4">
+                    <a
+                      href="https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-08/plan-to-keep-building.md"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex min-h-[44px] items-center justify-center rounded-[3px] border bg-transparent px-5 py-2 text-[13px] transition-colors duration-200"
+                      style={{
+                        borderColor: "rgba(46,40,33,0.12)",
+                        color: "rgba(46,40,33,0.6)",
+                      }}
+                    >
+                      Read the Roadmap ↗
+                    </a>
+                    <a
+                      href="https://github.com/ZAYNINFINITY/flyrank-ai-internship/issues/17"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex min-h-[44px] items-center justify-center rounded-[3px] border bg-transparent px-5 py-2 text-[13px] transition-colors duration-200"
+                      style={{
+                        borderColor: "rgba(46,40,33,0.12)",
+                        color: "rgba(46,40,33,0.6)",
+                      }}
+                    >
+                      Issue #17 ↗
+                    </a>
+                  </div>
+                </div>
+                <div className="mx-auto w-[130px] flex-shrink-0 md:mx-0 md:w-[150px]">
+                  <DoorwayIllustration />
                 </div>
               </div>
             </Reveal>

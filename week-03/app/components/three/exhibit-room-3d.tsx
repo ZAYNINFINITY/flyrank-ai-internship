@@ -372,6 +372,13 @@ export function ExhibitRoom3D({
         >
           Accessible view
         </button>
+        <Link
+          href="/?view=2d"
+          className="min-h-[44px] rounded-sm border border-[#c94f0a]/40 bg-[#efe9da]/85 px-3 py-1.5 text-[10px] font-medium uppercase tracking-[0.2em] text-[#c94f0a] shadow-sm backdrop-blur-sm transition-all duration-300 hover:border-[#c94f0a] hover:bg-[#c94f0a] hover:text-[#efe9da] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+          aria-label="Switch to the 2D view of this room"
+        >
+          2D view
+        </Link>
       </div>
 
       {/* Time of day controls — bottom-left, below the scene */}
@@ -529,9 +536,12 @@ export function ExhibitRoom3D({
 
       {/* Exit back to the flat museum. Shifted right of the corner (left-20,
           not left-4) so it doesn't collide with the site's own chat/profile
-          widget, which lives in that exact bottom-left corner. */}
+          widget, which lives in that exact bottom-left corner. On the home
+          museum there's no separate portfolio route — the museum IS the front
+          door — so "leaving" drops you to the flat 2D view instead of a
+          self-referential link to the very room you're already in. */}
       <Link
-        href={portfolioRoute ?? "/"}
+        href={portfolioRoute ?? "/?view=2d"}
         className="pointer-events-auto absolute bottom-4 left-20 min-h-[44px] rounded-sm border border-[#2a2a30]/20 bg-[#efe9da]/85 px-3 py-1.5 text-[10px] uppercase tracking-[0.2em] text-[#2a2a30]/70 shadow-sm backdrop-blur-sm transition-all duration-300 hover:border-[#2a2a30]/50 hover:text-[#2a2a30] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
       >
         &larr; Leave the room

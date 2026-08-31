@@ -13,11 +13,12 @@ Copy this per assignment. No code files — just evidence, links, and proof.
 **Attach (MD):**
 - `fe-aa3-shader-hero.md`
 
-**LINK:** https://plinth-cyan.vercel.app
+**LINK (live hero):**
+- https://plinth-cyan.vercel.app/shader-hero
 
 **Repo links:**
 - https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-08/fe-aa3-shader-hero.md
-- https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-03/app/lib/three/reveal-material.ts
+- https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-03/app/app/shader-hero/page.tsx
 
 ---
 

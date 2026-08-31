@@ -121,3 +121,33 @@ case is *cheap to add*.
 - `week-08/gai-week8-send-the-link.md` — this note
 - `week-08/foyer-add-case-reminder.ps1` — the reminder script
 - `week-08/foyer-add-next-case.ics` — the calendar note
+
+---
+
+## Evidence gallery — the live Foyer portfolio
+
+Real full-page screenshots of the live site (https://plinth-cyan.vercel.app) —
+the visual identity the next case will inherit, so future cases stay consistent
+(frame the work, never upstage it).
+
+| # | Screenshot | What it shows |
+|---|---|---|
+| 1 | ![About page](img-foyer-about.png) | About — the warm-editorial identity (`#F5F0E7` parchment, Georgia serif headings, monospace eyebrows) |
+| 2 | ![Explore page](img-foyer-explore.png) | Explore — the same identity applied consistently to a different page |
+| 3 | ![2D home](img-foyer-2d-home.png) | 2D home — the framed museum, where the design recedes and the work carries the proof |
+
+---
+
+## Master submission links (table)
+
+Copy any of these into the portal's **"Deliverable links"** field (one http(s) URL per line).
+
+| Item | Submittable link |
+|---|---|
+| **▶ Primary — this deliverable (MD note)** | `https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-08/gai-week8-send-the-link.md` |
+| Reminder script (Windows Scheduled Task source) | `https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-08/foyer-add-case-reminder.ps1` |
+| Calendar note (recurring .ics) | `https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-08/foyer-add-next-case.ics` |
+| Screenshot — About | `https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-08/img-foyer-about.png` |
+| Screenshot — Explore | `https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-08/img-foyer-explore.png` |
+| Screenshot — 2D home | `https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-08/img-foyer-2d-home.png` |
+| Live portfolio (context for reviewers) | `https://plinth-cyan.vercel.app/about` |

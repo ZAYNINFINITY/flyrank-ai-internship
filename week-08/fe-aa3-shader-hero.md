@@ -1,52 +1,41 @@
-# FE-AA3 — Shader Hero (RevealMaterial)
+FE-AA3 — Signature Hero Shader ("Foyer Aurora")
+
+## Live URL
+
+https://plinth-cyan.vercel.app/shader-hero
+
+(Verified live 2026-08-30 — renders the aurora shader with the "Foyer" headline, intro line, and "Enter the Museum" CTA on top.)
 
 ## What it is
 
-A custom `THREE.ShaderMaterial` subclass that creates a brush-stroke sketch-to-paint reveal effect. When the camera approaches an exhibit frame, the sketch layer dissolves from bottom to top with a noisy brush edge, revealing the painted content underneath.
+A fullscreen, custom fragment shader (raw WebGL + GLSL, no Three.js/R3F) rendered as a hero behind the page's headline. Not a remix of the session playground — written from scratch for Foyer's palette and museum concept.
 
-**Source:** `lib/three/reveal-material.ts` (77 lines)
-**Adapted from:** MIT-licensed [itomdev.com](https://github.com/ITomPoland/portfolio-itom) technique, customized for Foyer's museum context.
+**Source:** `app/shader-hero/page.tsx` (`FRAGMENT_SHADER` constant + the WebGL setup/render-loop code around it)
 
-## How it works
+## The shader, section by section
 
-The shader hooks into Three.js's `onBeforeCompile` pipeline — it does NOT replace the material, it injects two small GLSL blocks into the existing `MeshBasicMaterial` fragment shader:
+1. **Palette** — three Foyer tones (dark navy `#0a0b16`, ivory `#f5efe0`, gold `#d4a94c`) blended with `smoothstep` so the transition bands stay soft instead of banding.
+2. **Noise stack** — a `hash` function seeds a `noise` (value noise) function, which feeds a 3-octave `fbm` (fractal brownian motion). This is the standard "aurora/nebula" noise recipe — three layered fbm calls at different scales and speeds produce the drifting cloud-like bands.
+3. **Mouse influence** — `u_mouse` is remapped to roughly `[-0.3, 0.3]` and added directly into the noise coordinate space, so the aurora visibly leans toward wherever the cursor (or last touch point) is, rather than the mouse just tinting a color.
+4. **Vignette** — radial darkening (`1.0 - 0.55 * length(...)`) so the center, where the headline sits, stays high-contrast against the ivory text regardless of what the noise is doing there.
+5. **Grain** — a cheap per-pixel hash-based dither (`±0.02` around zero) added on top, purely for texture so large flat noise regions don't look like a flat digital gradient.
 
-1. **Uniform injection** (`#include <common>`): Adds `uProgress` (0..1) plus two noise functions (`revealRand`, `revealNoise`) that generate a procedural brush-stroke pattern.
+## Uniforms used
 
-2. **Discard logic** (`#include <alphatest_fragment>`): For each pixel, computes `maskValue = (1.0 - uv.y) + noise`. If `maskValue < uProgress * 1.5`, the pixel is discarded (transparent), creating the bottom-to-top brush dissolve.
+All three core uniforms, not just the minimum two required:
 
-The noise is squared (`res*res`) exactly like the source technique — this makes the dissolve edge read as blotchy brush strokes rather than a clean line.
+- `u_time` — drives the animation (scaled by `0.15` so it drifts slowly)
+- `u_resolution` — keeps the fullscreen quad's aspect ratio correct on resize
+- `u_mouse` — normalized `[0..1]` cursor/touch position, feeds the flow-lean effect above
 
-## Integration
+## Shipping responsibly — the required one-liner
 
-| Piece | File |
-|-------|------|
-| Shader class | `lib/three/reveal-material.ts` |
-| Texture cache | `lib/three/paper-texture.ts` (generates sketch + painted pairs) |
-| Scene usage | `components/three/walkable-world.tsx` — `SketchCard` component |
-| React Three extend | `extend({ RevealMaterial })` at bottom of reveal-material.ts |
+**DPR is capped at 1.5** (`Math.min(window.devicePixelRatio, 1.5)`) to avoid full native-resolution shader cost on high-DPI screens; **rendering pauses on `document.hidden`** (skips the `gl.drawArrays` call while the tab is backgrounded, and resumes by re-basing the elapsed-time clock so the animation doesn't jump); and **`prefers-reduced-motion` skips WebGL entirely** — a separate render branch shows a static radial gradient in the same palette, with no canvas or GL context created at all, so there's zero animation and zero extra GPU/battery cost for users who've asked for reduced motion.
 
-The `SketchCard` component in `walkable-world.tsx` creates two layered planes:
-- **Back plane:** painted texture (full color, always visible)
-- **Front plane:** sketch texture with `RevealMaterial` (dissolves as camera approaches)
+## Contrast / readability
 
-Each frame, `useFrame` computes distance from camera to the frame's Z position and lerps `uProgress` from 0 (full sketch) to 1 (fully dissolved, painted visible).
+Headline and body text are rendered in `#f5efe0` (the shader's own ivory palette stop) over the vignette-darkened center of the shader, so text contrast was designed against the actual rendered output, not layered on as an afterthought.
 
-```
-dist = |camera.z - frame.z|
-target = clamp((7.5 - dist) / 5, 0, 1)
-uProgress = lerp(uProgress, target, 0.06)
-```
+## Honest gaps
 
-This means exhibits "paint themselves" as you walk toward them — the sketch dissolves into the finished piece.
-
-## Why it matters
-
-This is the signature visual effect of Foyer's museum. Without it, exhibits are static textured planes. With it, the museum feels alive — each piece reveals itself as you approach, creating a sense of discovery that a card grid or thumbnail cluster can never match.
-
-## Evidence
-
-- Shader compiles and runs on all WebGL2-capable devices
-- Fallback: on devices without WebGL2, the `SurfaceRenderer` shows flat 2D content (no shader needed)
-- The brush-stroke noise pattern is seeded per-exhibit, so each reveal looks slightly different
-- Performance: single `onBeforeCompile` per material instance, no per-frame GPU overhead beyond the existing `useFrame` distance check
+- The tab-hidden pause skips the draw call but doesn't cancel the `requestAnimationFrame` loop itself — the callback still fires every frame while hidden, it just returns early before any GPU work. Functionally correct (no rendering happens), but a fully idle pause would also stop the rAF loop and restart it on visibility return.

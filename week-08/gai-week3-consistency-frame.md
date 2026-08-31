@@ -81,6 +81,21 @@ build partner, and I checked myself:
 - **I verified everything** — typecheck, lint (0 errors), 74 tests, and a build
   pass confirm AI-generated code compiles and works, not just "looks right."
 
+## Evidence gallery
+
+Real full-page captures of the live site (https://plinth-cyan.vercel.app) — the
+visual identity applied consistently across pages:
+
+| Page | Screenshot |
+|---|---|
+| About (warm editorial identity) | [img-foyer-about.png](./img-foyer-about.png) |
+| Explore (same identity, consistent) | [img-foyer-explore.png](./img-foyer-explore.png) |
+| 2D home — the framed museum (frame, not upstage) | [img-foyer-2d-home.png](./img-foyer-2d-home.png) |
+
+These are **real screenshots, not generated images** — which is exactly the point
+of the "image selection" part of this assignment: when the goal is to prove
+consistency and show the work, a real capture beats a generated mockup.
+
 ## Where the system lives
 
 - `week-03/app/components/ops/theme.ts` — the single identity token file

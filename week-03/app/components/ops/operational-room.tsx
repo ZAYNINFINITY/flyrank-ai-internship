@@ -371,7 +371,7 @@ export function OperationalRoom() {
               <div className="mt-6 w-[170px] sm:w-[200px]">
                 <div className="rounded-[4px] p-[3px]" style={{ backgroundColor: "rgba(46,40,33,0.06)" }}>
                   <img
-                    src="/images/story/scroll.png"
+                    src="/images/story/scroll.webp"
                     alt="Scroll cue — move through the museum"
                     className="block h-auto w-full rounded-[2px]"
                     style={{ aspectRatio: "1024 / 1240", objectFit: "cover" }}
@@ -393,7 +393,7 @@ export function OperationalRoom() {
                 }}
               >
                 <img
-                  src="/images/story/dev.png"
+                  src="/images/story/dev.webp"
                   alt="A developer at work in the engine room"
                   className="block h-auto w-full"
                   style={{
@@ -462,7 +462,7 @@ export function OperationalRoom() {
                 <div className="mx-auto w-[170px] flex-shrink-0 md:mx-0 md:mt-2 md:w-[200px]">
                   <div className="rounded-[4px] p-[3px]" style={{ backgroundColor: "rgba(46,40,33,0.06)" }}>
                     <img
-                      src="/images/story/problem.png"
+                      src="/images/story/problem.webp"
                       alt="Every developer portfolio looking identical — the same card grid, repeated"
                       className="block h-auto w-full rounded-[2px]"
                       style={{ aspectRatio: "527 / 713", objectFit: "cover" }}
@@ -518,7 +518,7 @@ export function OperationalRoom() {
                 <div className="mx-auto w-[170px] flex-shrink-0 md:mx-0 md:mt-2 md:w-[200px]">
                   <div className="rounded-[4px] p-[3px]" style={{ backgroundColor: "rgba(46,40,33,0.06)" }}>
                     <img
-                      src="/images/story/idea.png"
+                      src="/images/story/idea.webp"
                       alt="A figure stepping into an arched museum room"
                       className="block h-auto w-full rounded-[2px]"
                       style={{ aspectRatio: "541 / 731", objectFit: "cover" }}
@@ -577,7 +577,7 @@ export function OperationalRoom() {
                 <div className="mx-auto w-[170px] flex-shrink-0 md:mx-0 md:mt-2 md:w-[200px]">
                   <div className="rounded-[4px] p-[3px]" style={{ backgroundColor: "rgba(46,40,33,0.06)" }}>
                     <img
-                      src="/images/story/what-broke.png"
+                      src="/images/story/what-broke.webp"
                       alt="The seam between the 3D scene and its flat 2D equivalent"
                       className="block h-auto w-full rounded-[2px]"
                       style={{ aspectRatio: "530 / 723", objectFit: "cover" }}
@@ -633,7 +633,7 @@ export function OperationalRoom() {
                 <div className="mx-auto w-[170px] flex-shrink-0 md:mx-0 md:mt-2 md:w-[200px]">
                   <div className="rounded-[4px] p-[3px]" style={{ backgroundColor: "rgba(46,40,33,0.06)" }}>
                     <img
-                      src="/images/story/what-shipped.png"
+                      src="/images/story/what-shipped.webp"
                       alt="The finished museum — a working product, not a demo"
                       className="block h-auto w-full rounded-[2px]"
                       style={{ aspectRatio: "509 / 660", objectFit: "cover" }}

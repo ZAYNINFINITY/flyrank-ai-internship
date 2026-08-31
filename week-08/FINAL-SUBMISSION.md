@@ -26,7 +26,7 @@
 | Reflection | MD | [week-08/reflection.md](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-08/reflection.md) |
 | Capstone report | PDF | [week-08/capstone-final-report.pdf](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-08/capstone-final-report.pdf) (28MB, 19 images embedded, A4 academic formatting) |
 | Capstone report source | MD | [week-08/capstone-final-report.md](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-08/capstone-final-report.md) (329 lines, 12 narrative sections) |
-| Demo video | MP4 | [week-08/demo-video-final.mp4](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-08/demo-video-final.mp4) (5m28s, 85MB — intro + live walkthrough with 29 overlays + outro) |
+| Demo video | MP4 | [YouTube (unlisted)](https://youtu.be/09ydadUL_4o) \| [week-08/demo-video-final.mp4](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-08/demo-video-final.mp4) (5m28s, 85MB — intro + live walkthrough with 29 overlays + outro) |
 | Demo walkthrough | GIF | [week-08/demo-walkthrough.gif](https://github.com/ZAYNINFINITY/flyrank-ai-internship/blob/main/week-08/demo-walkthrough.gif) (183KB — 14-step animated) |
 
 ---

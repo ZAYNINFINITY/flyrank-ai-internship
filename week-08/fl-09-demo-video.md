@@ -107,5 +107,5 @@ A scene-by-scene script for recording a 3-5 minute demo video of Foyer. The vide
 - [x] Text overlays are readable (29 labels)
 - [x] No console errors visible in the recording
 - [x] Intro + outro cards added
-- [ ] Upload to: YouTube (unlisted), Google Drive, or direct MP4 submission
-- [ ] Add link to `week-08/submission-checklist.md` if portal asks for it
+- [x] Upload to: YouTube (unlisted), Google Drive, or direct MP4 submission — **hosted: https://youtu.be/09ydadUL_4o**
+- [x] Add link to `week-08/submission-checklist.md` if portal asks for it

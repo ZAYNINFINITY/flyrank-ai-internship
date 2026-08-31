@@ -44,6 +44,9 @@ Copy this per assignment. No code files — just evidence, links, and proof.
 **Video (MP4):**
 - `demo-video-final.mp4`
 
+**Video (LINK):**
+- https://youtu.be/09ydadUL_4o
+
 **GIF:**
 - `demo-walkthrough.gif`
 
@@ -102,6 +105,9 @@ Copy this per assignment. No code files — just evidence, links, and proof.
 
 **Video (MP4):**
 - `demo-video-final.mp4`
+
+**Video (LINK):**
+- https://youtu.be/09ydadUL_4o
 
 **GIF:**
 - `demo-walkthrough.gif`

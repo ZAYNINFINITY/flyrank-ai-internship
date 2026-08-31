@@ -95,8 +95,8 @@ into the **data layer**. Exact steps (each maps to a real file, not a guess):
    wait for the `ci` check → `gh pr merge --merge --delete-branch`. Never commit
    straight to `main`.
 
-This exact path (without Red the seed data) is already implemented — it is how
-every existing case got into the museum.
+This exact path (without replacing the seed data) is already implemented — it is
+how every existing case got into the museum.
 
 ---
 
@@ -125,8 +125,7 @@ conversation, not a rebuild:
   (warm-editorial palette, Georgia serif + monospace system)
 - `week-03/app/app/globals.css` — global theme tokens
 - `CLAUDE.md` at the repo root — project conventions, stack, and rules for AI
-  assistants
-- `AGENTS.md` — identity, voice, and stack record
+  assistants (the repo-level conventions file)
 - `git log` + the merged PR trail — proof of how everything was built
 
 Because all of this is saved, "take Foyer to real data" is a short conversation
